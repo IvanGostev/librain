@@ -1,0 +1,232 @@
+// Variables
+$font-family-sans-serif: 'Inter', system-ui, -apple-system, sans-serif;
+$primary: #0ea5e9; // Sky-500 (Fresh Blue)
+$secondary: #10b981; // Emerald-500 (Fresh Green)
+$success: #22c55e;
+$info: #06b6d4;
+$warning: #f59e0b;
+$danger: #ef4444;
+$body-bg: #12151c; // rgb(18, 21, 28)
+$body-color: #e2e8f0; // Slate-200
+
+// ... existing code ...
+
+.bg-darker {
+    background-color: #12151c;
+}
+
+.bg-dark-card {
+    background-color: #12151c;
+    /* Solid color as requested for header/cards match */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+// Ensure navbar uses this specific color
+.navbar {
+    background-color: rgba(18, 21, 28, 0.95) !important; // Slightly transparent version of #12151c or solid
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+// Bootstrap
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Custom Utilities
+.text-emerald {
+    color: #10b981 !important;
+}
+
+.bg-emerald {
+    background-color: #10b981 !important;
+}
+
+.text-sky {
+    color: #0ea5e9 !important;
+}
+
+.bg-sky {
+    background-color: #0ea5e9 !important;
+}
+
+.text-pink {
+    color: #f472b6 !important;
+}
+
+.bg-pink {
+    background-color: #f472b6 !important;
+}
+
+// Animations
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 30px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.animate-fade-in-up {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-fill-mode: both;
+}
+
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+.delay-300 {
+    animation-delay: 0.3s;
+}
+
+.delay-400 {
+    animation-delay: 0.4s;
+}
+
+// Navbar Generic
+.navbar {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+// Theme
+:root {
+    --glass-bg: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] {
+    body {
+        background-color: $body-bg;
+        color: $body-color;
+        overflow-x: hidden;
+    }
+
+    .bg-body-tertiary {
+        background-color: #12151c !important;
+    }
+}
+
+// Helper Classes
+.glass-effect {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.border-white-10 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.bg-white-10 {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.hover-bg-white-10:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.bg-darker {
+    background-color: #12151c;
+}
+
+.bg-dark-card {
+    background-color: #12151c;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.navbar {
+    background-color: rgba(18, 21, 28, 0.9) !important;
+    backdrop-filter: blur(10px);
+}
+
+.tracking-wider {
+    letter-spacing: 0.05em;
+}
+
+// Nav Specifics
+.nav-link {
+    font-weight: 500;
+    transition: color 0.2s ease;
+    color: rgba(255, 255, 255, 0.7);
+
+    &:hover {
+        color: $primary;
+    }
+
+    &.active {
+        color: $primary;
+    }
+}
+
+// Ensure nav-pills active text is white against primary background
+.nav-pills .nav-link.active {
+    color: #fff !important;
+    background-color: $primary;
+}
+
+.btn-primary {
+    background-color: $primary;
+    border-color: $primary;
+    font-weight: 600;
+
+    &:hover {
+        background-color: darken($primary, 5%);
+        border-color: darken($primary, 5%);
+    }
+}
+
+.btn-ghost {
+    color: #cbd5e1;
+    transition: all 0.2s;
+
+    &:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+.placeholder-muted::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.focus-ring-primary:focus {
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.5);
+    outline: none;
+}
+
+// Dark Input Styles
+.form-control-dark {
+    background-color: #20232a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+
+    &:focus {
+        background-color: #262a33 !important;
+        border-color: $primary !important;
+        box-shadow: 0 0 0 0.25rem rgba($primary, 0.25);
+    }
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+}
+
+.input-group-text-dark {
+    background-color: #20232a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.bg-feature-card {
+    background-color: #20232a;
+    /* rgb(32, 35, 42) */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
