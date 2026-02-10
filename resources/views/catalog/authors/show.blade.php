@@ -6,14 +6,14 @@
 
 @section('schema')
     <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "Person",
-          "name": "{{ $author->name }}",
-          "description": "{{ Str::limit(strip_tags($author->bio), 200) }}",
-          "image": "{{ $author->photo ? asset('storage/' . $author->photo) : 'https://placehold.co/400x400' }}"
-        }
-        </script>
+            {
+              "@@context": "https://schema.org",
+              "@@type": "Person",
+              "name": "{{ $author->name }}",
+              "description": "{{ Str::limit(strip_tags($author->bio), 200) }}",
+              "image": "{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
+            }
+            </script>
 @endsection
 
 @section('content')
@@ -25,7 +25,7 @@
                     <div class="card-body text-center p-4">
                         <div class="rounded-circle overflow-hidden border border-4 border-dark shadow-xl mx-auto mb-4"
                             style="width: 150px; height: 150px;">
-                            <img src="{{ $author->photo ? asset('storage/' . $author->photo) : 'https://placehold.co/400x400/334155/cbd5e1?text=' . substr($author->name, 0, 1) }}"
+                            <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
                                 alt="{{ $author->name }}" class="w-100 h-100 object-fit-cover">
                         </div>
                         <h3 class="fw-bold text-white mb-1">{{ $author->name }}</h3>

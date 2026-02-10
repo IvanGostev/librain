@@ -60,7 +60,7 @@
                                     <div class="card-body p-3">
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0 me-4">
-                                                <img src="{{ $author->photo ? asset('storage/' . $author->photo) : 'https://placehold.co/200x200/334155/cbd5e1?text=' . substr($author->name, 0, 1) }}"
+                                                <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
                                                     alt="{{ $author->name }}"
                                                     class="rounded-circle border border-white-10 shadow-sm"
                                                     style="width: 80px; height: 80px; object-fit: cover;">

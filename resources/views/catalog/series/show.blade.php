@@ -52,7 +52,7 @@
 
                                     <!-- Cover (Small) -->
                                     <a href="{{ route('books.show', $book->slug) }}" class="me-3 d-none d-sm-block">
-                                        <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : 'https://placehold.co/100x150/1e293b/cbd5e1?text=Cover' }}"
+                                        <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                                             alt="{{ $book->title }}" class="rounded shadow-sm"
                                             style="width: 50px; height: 75px; object-fit: cover;">
                                     </a>
