@@ -4,6 +4,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        // Init theme immediately
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
@@ -88,18 +95,7 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <!-- Left: Navigation Links -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-3 fw-medium">
-                        <li class="nav-item">
-                            @if(request()->is('catalog'))
-                                <span class="nav-link active text-primary cursor-default">
-                                    <i class="bi bi-grid-fill me-1"></i> Каталог
-                                </span>
-                            @else
-                                <a class="nav-link {{ request()->is('catalog*') ? 'active text-primary' : '' }}"
-                                    href="{{ url('/catalog') }}">
-                                    <i class="bi bi-grid-fill me-1"></i> Каталог
-                                </a>
-                            @endif
-                        </li>
+
                         <li class="nav-item">
                             @if(request()->is('genres'))
                                 <span class="nav-link active text-primary cursor-default">Жанры</span>
@@ -151,6 +147,10 @@
 
                     <!-- Right: User Actions -->
                     <div class="d-flex align-items-center gap-2 ms-lg-3 mt-3 mt-lg-0">
+                        <button class="btn btn-icon btn-ghost p-2 text-white-50 hover-text-white me-2" id="theme-toggle"
+                            title="Переключить тему">
+                            <i class="bi bi-sun-fill"></i>
+                        </button>
                         @guest
                             @if (Route::has('login'))
                                 <a class="btn btn-outline-light rounded-pill px-4 me-2"
@@ -268,6 +268,37 @@
             </div>
         </footer>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            const icon = themeToggle.querySelector('i');
+
+            // Function to update icon
+            const updateIcon = (theme) => {
+                if (theme === 'dark') {
+                    icon.classList.remove('bi-moon-stars-fill');
+                    icon.classList.add('bi-sun-fill');
+                } else {
+                    icon.classList.remove('bi-sun-fill');
+                    icon.classList.add('bi-moon-stars-fill');
+                }
+            };
+
+            // Set initial icon
+            updateIcon(html.getAttribute('data-bs-theme'));
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                html.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateIcon(newTheme);
+            });
+        });
+    </script>
 </body>
 
 </html>

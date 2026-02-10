@@ -1,15 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
-        <div class="text-center mb-5 animate-fade-in-up">
-            <h6 class="text-primary text-uppercase tracking-wider fw-bold mb-2">Рейтинг</h6>
-            <h1 class="display-4 fw-bold text-white mb-3">Топ 100 Книг</h1>
-            <p class="text-muted lead mx-auto" style="max-width: 600px;">
-                Самые популярные и обсуждаемые произведения нашей библиотеки.
-            </p>
-        </div>
+    <div class="container pb-5">
+        <h1 class="h2 fw-bold text-white mb-4">Топ-100 лучших книг</h1>
 
+        <div class="d-flex gap-2 mb-4 flex-wrap animate-fade-in-up delay-100">
+            <a href="{{ route('top100') }}"
+                class="btn {{ !request('period') ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За все время</a>
+            <a href="{{ route('top100', ['period' => 'week']) }}"
+                class="btn {{ request('period') === 'week' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За неделю</a>
+            <a href="{{ route('top100', ['period' => 'month']) }}"
+                class="btn {{ request('period') === 'month' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За месяц</a>
+            <a href="{{ route('top100', ['period' => 'half_year']) }}"
+                class="btn {{ request('period') === 'half_year' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За полгода</a>
+            <a href="{{ route('top100', ['period' => 'year']) }}"
+                class="btn {{ request('period') === 'year' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За год</a>
+        </div>
         @if($books->count() > 0)
             <div class="row g-4 animate-fade-in-up delay-200">
                 @foreach($books as $index => $book)
@@ -28,7 +34,7 @@
                                 <div class="me-4 d-none d-sm-block">
                                     <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : 'https://placehold.co/100x150/1e293b/cbd5e1?text=Cover' }}"
                                         alt="{{ $book->title }}" class="rounded shadow-sm"
-                                        style="width: 70px; height: 105px; object-fit: cover;">
+                                        style="width: 120px; height: 180px; object-fit: cover;">
                                 </div>
 
                                 <!-- Info -->

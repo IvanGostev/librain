@@ -1,32 +1,41 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
-        <div class="text-center mb-5 animate-fade-in-up">
-            <h6 class="text-secondary text-uppercase tracking-wider fw-bold mb-2">Библиотека</h6>
-            <h1 class="display-4 fw-bold text-white mb-3">Каталог книг</h1>
-            <p class="text-muted lead mx-auto mb-4" style="max-width: 600px;">
-                Исследуйте нашу коллекцию фантастических историй и найдите свое следующее приключение.
-            </p>
-            <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-4 py-2 fw-bold animate-fade-in-up delay-100">
-                Всего книг: {{ $books->total() }}
-            </div>
-        </div>
+    <div class="container pb-5">
+
 
         <!-- Filters/Categories Links (Optional) -->
         <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap animate-fade-in-up delay-100">
-            <a href="{{ route('genres.index') }}" class="btn btn-outline-light rounded-pill px-4">Жанры</a>
-            <a href="{{ route('authors.index') }}" class="btn btn-outline-light rounded-pill px-4">Авторы</a>
-            <a href="{{ route('series.index') }}" class="btn btn-outline-light rounded-pill px-4">Серии</a>
+            <a href="{{ route('catalog.index', ['sort' => 'new']) }}"
+                class="btn {{ request('sort', 'new') === 'new' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">Новые</a>
+            <a href="{{ route('catalog.index', ['sort' => 'popular']) }}"
+                class="btn {{ request('sort') === 'popular' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">Популярные</a>
+            <a href="{{ route('catalog.index', ['sort' => 'commented']) }}"
+                class="btn {{ request('sort') === 'commented' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">Комментируемые</a>
             <a href="{{ route('top100') }}" class="btn btn-outline-warning rounded-pill px-4"><i
                     class="bi bi-star-fill me-2"></i>Топ 100</a>
         </div>
 
+        @if(request('sort') === 'popular')
+            <div class="d-flex justify-content-center gap-2 mb-5 animate-fade-in-up delay-150" style="margin-top: -1.5rem;">
+                <a href="{{ route('catalog.index', ['sort' => 'popular', 'period' => 'week']) }}"
+                    class="btn {{ request('period') === 'week' ? 'btn-light' : 'btn-outline-secondary text-white-50 border-0' }} px-3 rounded-pill btn-sm">За
+                    неделю</a>
+                <a href="{{ route('catalog.index', ['sort' => 'popular', 'period' => 'month']) }}"
+                    class="btn {{ request('period') === 'month' ? 'btn-light' : 'btn-outline-secondary text-white-50 border-0' }} px-3 rounded-pill btn-sm">За
+                    месяц</a>
+                <a href="{{ route('catalog.index', ['sort' => 'popular']) }}"
+                    class="btn {{ !request('period') ? 'btn-light' : 'btn-outline-secondary text-white-50 border-0' }} px-3 rounded-pill btn-sm">За
+                    все время</a>
+            </div>
+        @endif
+
         @if($books->count() > 0)
-            <div class="row row-cols-1 g-3 animate-fade-in-up delay-200">
+            <div
+                class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-200">
                 @foreach($books as $book)
                     <div class="col">
-                        <x-book-card :book="$book" />
+                        <x-book-card-vertical :book="$book" />
                     </div>
                 @endforeach
             </div>

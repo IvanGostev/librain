@@ -1,0 +1,225 @@
+// Light Theme Overrides
+[data-bs-theme="light"] {
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #334155; // Slate-700
+
+    // Body & Structure
+    body {
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color) !important;
+    }
+
+    .bg-body-tertiary {
+        background-color: #f8fafc !important;
+    }
+
+    .bg-darker {
+        background-color: #f1f5f9; // Slate-100
+    }
+
+    // Cards
+    .bg-dark-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0; // Slate-200
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-title {
+        color: #1e293b !important; // Slate-800
+    }
+
+    // Navbar
+    .navbar {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+        border-bottom: 1px solid #e2e8f0;
+        backdrop-filter: blur(10px);
+
+        .navbar-brand {
+            color: #1e293b;
+
+            span.text-primary {
+                color: $primary !important;
+            }
+        }
+
+        .nav-link {
+            color: #64748b; // Slate-500
+
+            &:hover,
+            &.active {
+                color: $primary;
+            }
+        }
+
+        .navbar-toggler {
+            border-color: #e2e8f0;
+
+            &:focus {
+                box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25);
+            }
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        .btn-ghost {
+            color: #64748b;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.05);
+                color: #1e293b;
+            }
+        }
+    }
+
+    // Text & Utilities Overrides
+    // Crucial: Override .text-white used everywhere
+    .text-white {
+        color: #1e293b !important; // Slate-800
+    }
+
+    .text-white-50 {
+        color: #64748b !important; // Slate-500
+    }
+
+    .text-muted {
+        color: #94a3b8 !important; // Slate-400
+    }
+
+    // Borders
+    .border-white-10 {
+        border-color: #e2e8f0 !important; // Slate-200
+    }
+
+    .border-bottom {
+        border-bottom-color: #e2e8f0 !important;
+    }
+
+    // Form Elements
+    .form-control,
+    .form-control-dark,
+    .form-select,
+    .input-group-text,
+    input[type="search"] {
+        background-color: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        color: #1e293b !important;
+
+        &::placeholder {
+            color: #94a3b8;
+        }
+
+        &:focus {
+            background-color: #ffffff !important;
+            border-color: $primary !important;
+            box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.25) !important;
+        }
+    }
+
+    .bg-white.bg-opacity-10 {
+        background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .bg-opacity-10.placeholder-muted {
+        color: #94a3b8 !important;
+    }
+
+    // Dropdowns
+    .dropdown-menu {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+        .dropdown-item {
+            color: #334155;
+
+            &:hover,
+            &:focus {
+                background-color: #f1f5f9;
+                color: #1e293b;
+            }
+        }
+
+        .dropdown-divider {
+            border-top-color: #e2e8f0;
+        }
+
+        .text-white {
+            color: #334155 !important;
+        }
+
+        .hover-bg-white-10:hover {
+            background-color: #f1f5f9 !important;
+        }
+    }
+
+    // Footer
+    footer {
+        background-color: #ffffff !important;
+        border-top: 1px solid #e2e8f0 !important;
+
+        p,
+        a {
+            color: #64748b !important;
+        }
+
+        a:hover {
+            color: $primary !important;
+        }
+    }
+
+    // Specific Fixes
+    .bg-black.bg-opacity-50 {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+        border-color: #e2e8f0 !important;
+
+
+    }
+
+    // Buttons
+    .btn-outline-light {
+        color: #64748b;
+        border-color: #cbd5e1;
+
+        &:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+    }
+
+    // Generic Nav Links (outside navbar)
+    .nav-link {
+        color: #64748b;
+
+        &:hover {
+            color: $primary;
+        }
+
+        &.active {
+            color: $primary;
+        }
+    }
+
+    .nav-pills .nav-link.active {
+        color: #ffffff !important;
+        background-color: $primary !important;
+    }
+
+    // Interactive & Feature Cards
+    .bg-feature-card {
+        background-color: #ffffff !important;
+        border-color: #e2e8f0 !important;
+    }
+
+    .bg-dark-glass {
+        background-color: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+        color: #1e293b !important;
+    }
+
+    .hover-text-white:hover {
+        color: $primary !important;
+    }
+}

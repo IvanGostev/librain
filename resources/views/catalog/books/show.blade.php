@@ -73,7 +73,7 @@
 
                             <div class="position-absolute top-0 end-0 p-3">
                                 <span
-                                    class="badge bg-dark bg-opacity-75 backdrop-blur-sm text-white border border-white-10 fs-6">
+                                    class="badge bg-dark bg-opacity-75 backdrop-blur-sm fs-6" style="color: #fff !important;">
                                     <i class="bi bi-star-fill text-warning me-1"></i> {{ number_format($book->rating, 1) }}
                                 </span>
                             </div>
@@ -205,24 +205,24 @@
             <div class="col-lg-8 col-md-7 animate-fade-in-up delay-200">
                 <h1 class="display-5 fw-bold text-white mb-2">{{ $book->title }}</h1>
 
-                <div class="d-flex align-items-center gap-3 mb-3 text-muted">
+                <div class="d-flex align-items-center gap-3 mb-3 text-white">
                     <a href="{{ route('authors.show', $book->author->slug) }}"
                         class="text-decoration-none text-primary fw-semibold fs-5">
                         {{ $book->author->name }}
                     </a>
                     <span>•</span>
-                    <span class="d-flex align-items-center text-warning">
-                        <i class="bi bi-star-fill me-1"></i> {{ number_format($book->rating, 1) }}
+                    <span class="d-flex align-items-center">
+                        <i class="bi bi-star-fill text-warning me-1"></i> <span class="text-white">{{ number_format($book->rating, 1) }}</span>
                     </span>
                     <span>•</span>
-                    <span>{{ $book->views }} просмотров</span>
+                    <span class="text-white">{{ $book->views }} просмотров</span>
                     <span>•</span>
                     <span>{{ $book->published_year }}</span>
                 </div>
 
                 <!-- New Info Line: Status, Age, Volume, Date -->
                 <div class="d-flex flex-wrap align-items-center gap-3 mb-4 text-muted small">
-                    <span class="badge bg-{{ $book->status === 'finished' ? 'success' : 'warning' }} text-dark rounded-pill">
+                    <span class="badge bg-{{ $book->status === 'finished' ? 'success' : 'warning text-dark' }} rounded-pill">
                         {{ $book->status === 'finished' ? 'Завершена' : 'В процессе' }}
                     </span>
                     
@@ -252,7 +252,7 @@
 
                 <div class="mb-5">
                     <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">О книге</h5>
-                    <div class="text-light text-opacity-75 lead" style="font-size: 1.1rem; line-height: 1.8;">
+                    <div class="text-white lead" style="font-size: 1.1rem; line-height: 1.8;">
                         {!! nl2br(e($book->description)) !!}
                     </div>
                 </div>
@@ -262,7 +262,7 @@
                     <div class="d-flex flex-wrap gap-2">
                         @foreach($book->genres as $genre)
                             <a href="{{ route('genres.show', $genre->slug) }}"
-                                class="btn btn-sm btn-dark-glass rounded-pill border-white-10 text-white-50 hover-text-white">
+                                class="btn btn-sm btn-dark-glass rounded-pill border-white-10">
                                 {{ $genre->name }}
                             </a>
                         @endforeach
@@ -275,7 +275,7 @@
                         <div class="list-group list-group-flush bg-transparent">
                             @foreach($book->chapters as $chapter)
                                 <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $chapter->order]) }}"
-                                    class="list-group-item list-group-item-action bg-transparent border-white-10 text-white-50 hover-text-white d-flex justify-content-between align-items-center px-0 py-3">
+                                    class="list-group-item list-group-item-action bg-transparent border-white-10 text-white d-flex justify-content-between align-items-center px-0 py-3">
                                     <span class="d-flex align-items-center">
                                         <i class="bi bi-file-text me-3 opacity-50"></i>
                                         <span>{{ $chapter->title }}</span>

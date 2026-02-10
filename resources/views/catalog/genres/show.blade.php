@@ -10,7 +10,7 @@
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}"
+                        <li class="breadcrumb-item"><a href="{{ route('catalog.index') }}"
                                 class="text-muted text-decoration-none">Главная</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('genres.index') }}"
                                 class="text-muted text-decoration-none">Жанры</a></li>
@@ -39,10 +39,11 @@
 
         <!-- Book List -->
         @if($books->count() > 0)
-            <div class="row row-cols-1 g-3 animate-fade-in-up delay-100">
+            <div
+                class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-100">
                 @foreach($books as $book)
                     <div class="col">
-                        <x-book-card :book="$book" />
+                        <x-book-card-vertical :book="$book" />
                     </div>
                 @endforeach
             </div>

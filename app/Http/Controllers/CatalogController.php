@@ -15,9 +15,39 @@ class CatalogController extends Controller
 {
     public function index()
     {
-        $books = Book::where('is_published', true)->orderByDesc('created_at')->paginate(24);
+        $sort = request('sort', 'new');
+        $period = request('period');
+
+        $query = Book::where('is_published', true)->with('author')->withCount('reviews');
+
+        if ($period) {
+            $date = match ($period) {
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                default => null
+            };
+
+            if ($date) {
+                $query->where('created_at', '>=', $date);
+            }
+        }
+
+        switch ($sort) {
+            case 'popular':
+                $query->orderByDesc('views');
+                break;
+            case 'commented':
+                $query->orderByDesc('reviews_count');
+                break;
+            default:
+                $query->orderByDesc('created_at');
+        }
+
+        $books = $query->paginate(24);
+        $books->appends(request()->query());
+
         $title = 'Каталог книг - Читать онлайн на Librain';
-        return view('catalog.index', compact('books', 'title'));
+        return view('catalog.index', compact('books', 'title', 'sort', 'period'));
     }
 
     public function genres()
@@ -53,9 +83,53 @@ class CatalogController extends Controller
 
     public function authors()
     {
-        $authors = Author::withCount('books')->orderBy('name')->paginate(20);
+        $sort = request('sort');
+        $currentLetter = request('letter');
+
+        $query = Author::withCount('books');
+
+        if ($currentLetter) {
+            $query->where('name', 'like', $currentLetter . '%');
+        }
+
+        switch ($sort) {
+            case 'count':
+                $query->orderByDesc('books_count');
+                break;
+            case 'views':
+                $query->orderByDesc('views_count');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'name':
+            case 'alphabet':
+                $query->orderBy('name');
+                break;
+            default:
+                $query->orderBy('name');
+        }
+
+        $letters = collect();
+        if ($sort === 'alphabet' || $currentLetter) {
+            $letters = Author::query()
+                ->selectRaw('SUBSTR(name, 1, 1) as l')
+                ->distinct()
+                ->pluck('l')
+                ->map(fn($l) => mb_strtoupper($l))
+                ->unique()
+                ->sort()
+                ->values();
+        }
+
+        $authors = $query->paginate(20);
+        $authors->appends(request()->query());
+
         $title = 'Все авторы - Librain';
-        return view('catalog.authors.index', compact('authors', 'title'));
+        return view('catalog.authors.index', compact('authors', 'title', 'sort', 'letters', 'currentLetter'));
     }
 
     public function author($slug)
@@ -77,16 +151,59 @@ class CatalogController extends Controller
 
     public function series()
     {
-        $series = Series::withCount('books')
+        $sort = request('sort');
+        $currentLetter = request('letter');
+
+        $query = Series::withCount('books')
             ->with([
                     'books' => function ($q) {
                         $q->select('books.id', 'books.views')->withCount('reviews');
                     }
-                ])
-            ->orderBy('name')
-            ->paginate(20);
+                ]);
+
+        if ($currentLetter) {
+            $query->where('name', 'like', $currentLetter . '%');
+        }
+
+        switch ($sort) {
+            case 'count':
+                $query->orderByDesc('books_count');
+                break;
+            case 'views':
+                $query->withSum('books', 'views');
+                $query->orderByDesc('books_sum_views');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'name':
+            case 'alphabet':
+                $query->orderBy('name');
+                break;
+            default:
+                $query->orderBy('name');
+        }
+
+        $letters = collect();
+        if ($sort === 'alphabet' || $currentLetter) {
+            $letters = Series::query()
+                ->selectRaw('SUBSTR(name, 1, 1) as l')
+                ->distinct()
+                ->pluck('l')
+                ->map(fn($l) => mb_strtoupper($l))
+                ->unique()
+                ->sort()
+                ->values();
+        }
+
+        $series = $query->paginate(20);
+        $series->appends(request()->query());
+
         $title = 'Все книжные серии - Librain';
-        return view('catalog.series.index', compact('series', 'title'));
+        return view('catalog.series.index', compact('series', 'title', 'sort', 'letters', 'currentLetter'));
     }
 
     public function seriesShow($slug)
@@ -212,12 +329,29 @@ class CatalogController extends Controller
 
     public function top100()
     {
-        $books = Book::where('is_published', true)
-            ->orderByDesc('views')
+        $period = request('period');
+
+        $query = Book::where('is_published', true);
+
+        if ($period) {
+            $date = match ($period) {
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                'half_year' => now()->subMonths(6),
+                'year' => now()->subYear(),
+                default => null
+            };
+
+            if ($date) {
+                $query->where('created_at', '>=', $date);
+            }
+        }
+
+        $books = $query->orderByDesc('views')
             ->take(100)
             ->get();
         $title = 'Топ-100 популярных книг - Librain';
-        return view('catalog.top100', compact('books', 'title'));
+        return view('catalog.top100', compact('books', 'title', 'period'));
     }
 
     public function search(Request $request)

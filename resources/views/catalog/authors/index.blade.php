@@ -1,14 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
-        <div class="text-center mb-5 animate-fade-in-up">
-            <h6 class="text-primary text-uppercase tracking-wider fw-bold mb-2">Авторы</h6>
-            <h1 class="display-4 fw-bold text-white mb-3">Наши писатели</h1>
-            <p class="text-muted lead mx-auto" style="max-width: 600px;">
-                Познакомьтесь с талантливыми создателями миров.
-            </p>
+    <div class="container pb-5">
+        <h1 class="h2 fw-bold text-white mb-4">Авторы</h1>
+
+        <div class="d-flex gap-2 mb-4 flex-wrap animate-fade-in-up delay-100">
+            <a href="{{ route('authors.index', ['sort' => 'count']) }}"
+                class="btn {{ request('sort') === 'count' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">По
+                количеству</a>
+            <a href="{{ route('authors.index', ['sort' => 'views']) }}"
+                class="btn {{ request('sort') === 'views' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">По
+                просмотрам</a>
+
+            @php
+                $currentSort = request('sort');
+                $nameNext = 'name_asc';
+                $nameClass = 'btn-outline-light';
+                $nameIcon = '';
+
+                if ($currentSort === 'name_asc') {
+                    $nameNext = 'name_desc';
+                    $nameClass = 'btn-light';
+                    $nameIcon = '<i class="bi bi-sort-alpha-down me-1"></i>';
+                } elseif ($currentSort === 'name_desc') {
+                    $nameNext = null;
+                    $nameClass = 'btn-light';
+                    $nameIcon = '<i class="bi bi-sort-alpha-up-alt me-1"></i>';
+                }
+            @endphp
+            <a href="{{ route('authors.index', ['sort' => $nameNext]) }}"
+                class="btn {{ $nameClass }} rounded-pill px-4">{!! $nameIcon !!}По имени</a>
+            <a href="{{ route('authors.index', ['sort' => 'alphabet']) }}"
+                class="btn {{ (request('sort') === 'alphabet' || request('letter')) ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">По
+                алфавиту</a>
         </div>
+
+        @if(isset($letters) && $letters->isNotEmpty())
+            <div class="d-flex flex-wrap gap-2 mb-5 p-4 bg-dark-card rounded-4 animate-fade-in-up delay-150">
+                <a href="{{ route('authors.index', ['sort' => 'alphabet']) }}"
+                    class="btn btn-sm {{ !request('letter') ? 'btn-primary' : 'btn-outline-secondary border-0 text-white-50 hover-text-white' }}">Все</a>
+                @foreach($letters as $l)
+                    <a href="{{ route('authors.index', ['sort' => 'alphabet', 'letter' => $l]) }}"
+                        class="btn btn-sm {{ request('letter') == $l ? 'btn-primary' : 'btn-outline-secondary border-0 text-white-50 hover-text-white' }}">
+                        {{ $l }}
+                    </a>
+                @endforeach
+            </div>
+        @endif
 
         <section>
             <h2 class="visually-hidden">Список наших авторов</h2>

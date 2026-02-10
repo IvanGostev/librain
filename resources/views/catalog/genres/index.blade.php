@@ -1,14 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-5">
-        <div class="text-center mb-5 animate-fade-in-up">
-            <h6 class="text-primary text-uppercase tracking-wider fw-bold mb-2">Каталог</h6>
-            <h1 class="display-4 fw-bold text-white mb-3">Жанры книг</h1>
-            <p class="text-muted lead mx-auto" style="max-width: 600px;">
-                Исследуйте нашу коллекцию по категориям. Найдите именно то, что соответствует вашему настроению сегодня.
-            </p>
-        </div>
+    <div class="container pb-5">
+        <h1 class="h2 fw-bold text-white mb-4">Книги по жанрам</h1>
 
         <section>
             <h2 class="visually-hidden">Список всех жанров</h2>

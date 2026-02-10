@@ -2,19 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    $booksCount = \App\Models\Book::where('is_published', true)->count();
-    $authorsCount = \App\Models\Author::count();
-    $title = 'Librain - Ваша цифровая библиотека книг';
-    return view('welcome', compact('booksCount', 'authorsCount', 'title'));
-})->name('welcome');
+// Route::get('/', function () {
+//     $booksCount = \App\Models\Book::where('is_published', true)->count();
+//     $authorsCount = \App\Models\Author::count();
+//     $title = 'Librain - Ваша цифровая библиотека книг';
+//     return view('welcome', compact('booksCount', 'authorsCount', 'title'));
+// })->name('welcome');
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Catalog Index Routes
-Route::get('/catalog', [App\Http\Controllers\CatalogController::class, 'index'])->name('catalog.index');
+Route::redirect('/catalog', '/');
+Route::get('/', [App\Http\Controllers\CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/genres', [App\Http\Controllers\CatalogController::class, 'genres'])->name('genres.index');
 Route::get('/genres/{slug}', [App\Http\Controllers\CatalogController::class, 'genre'])->name('genres.show');
 

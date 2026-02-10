@@ -32,10 +32,10 @@
                         <p class="text-muted small mb-3">{{ '@' . ($user->username ?? Str::slug($user->name)) }}</p>
 
                         <div class="d-flex justify-content-center gap-2 mb-4">
-                            <span class="badge bg-dark border border-white-10 text-white-50">
+                            <span class="badge bg-body-tertiary border border-white-10 text-muted">
                                 {{ $user->gender == 'male' ? 'Мужской' : ($user->gender == 'female' ? 'Женский' : 'Пол не указан') }}
                             </span>
-                            <span class="badge bg-dark border border-white-10 text-white-50">
+                            <span class="badge bg-body-tertiary border border-white-10 text-muted">
                                 С нами с {{ $user->created_at->format('d.m.Y') }}
                             </span>
                         </div>
@@ -95,19 +95,19 @@
                     <h4 class="fw-bold text-white mb-3">Статистика</h4>
                     <div class="row g-4">
                         <div class="col-md-4">
-                            <div class="p-3 bg-dark rounded-3 border border-white-10 text-center">
+                            <div class="p-3 bg-body-tertiary rounded-3 border border-white-10 text-center">
                                 <div class="h2 fw-bold text-sky mb-0">{{ $stats['finished_books'] }}</div>
                                 <div class="small text-muted">Прочитано книг</div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-dark rounded-3 border border-white-10 text-center">
+                            <div class="p-3 bg-body-tertiary rounded-3 border border-white-10 text-center">
                                 <div class="h2 fw-bold text-emerald mb-0">{{ $stats['reviews_count'] }}</div>
                                 <div class="small text-muted">Комментариев</div>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-dark rounded-3 border border-white-10 text-center">
+                            <div class="p-3 bg-body-tertiary rounded-3 border border-white-10 text-center">
                                 <div class="h2 fw-bold text-warning mb-0">{{ $stats['days_on_site'] }}</div>
                                 <div class="small text-muted">Дней на сайте</div>
                             </div>

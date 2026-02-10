@@ -35,7 +35,7 @@
                     @endfor
                 </div>
             @endif
-            <p class="text-light text-opacity-75 mb-2" style="font-size: 0.95rem; line-height: 1.6;">
+            <p class="text-white mb-2" style="font-size: 0.95rem; line-height: 1.6;">
                 {{ $review->comment }}
             </p>
 

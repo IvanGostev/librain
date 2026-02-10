@@ -6,12 +6,7 @@
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
-    <url>
-        <loc>{{ url('/catalog') }}</loc>
-        <lastmod>{{ now()->startOfDay()->toAtomString() }}</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.9</priority>
-    </url>
+
     <url>
         <loc>{{ url('/top/100') }}</loc>
         <lastmod>{{ now()->startOfDay()->toAtomString() }}</lastmod>
