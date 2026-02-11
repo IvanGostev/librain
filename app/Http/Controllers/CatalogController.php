@@ -18,6 +18,11 @@ class CatalogController extends Controller
         $sort = request('sort', 'new');
         $period = request('period');
 
+        // Set default period to 'week' when sort is 'popular' and no period is specified
+        if ($sort === 'popular' && !$period) {
+            $period = 'week';
+        }
+
         $query = Book::where('is_published', true)->with('author')->withCount('reviews');
 
         if ($period) {
@@ -47,7 +52,11 @@ class CatalogController extends Controller
         $books->appends(request()->query());
 
         $title = 'Каталог книг - Читать онлайн на Librain';
-        return view('catalog.index', compact('books', 'title', 'sort', 'period'));
+
+        $bottomTitle = \App\Models\SiteSetting::where('key', 'home_bottom_title')->value('value');
+        $bottomText = \App\Models\SiteSetting::where('key', 'home_bottom_text')->value('value');
+
+        return view('catalog.index', compact('books', 'title', 'sort', 'period', 'bottomTitle', 'bottomText'));
     }
 
     public function genres()
@@ -60,14 +69,32 @@ class CatalogController extends Controller
     public function genre(Request $request, $slug)
     {
         $genre = Genre::where('slug', $slug)->firstOrFail();
-        $sort = $request->get('sort', 'popular');
+        $sort = $request->get('sort', 'latest');
+        $period = $request->get('period');
+
+        // Set default period to 'week' when sort is 'popular' and no period is specified
+        if ($sort === 'popular' && !$period) {
+            $period = 'week';
+        }
 
         $query = $genre->books()->where('is_published', true);
 
+        if ($period && $sort === 'popular') {
+            $date = match ($period) {
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                default => null
+            };
+
+            if ($date) {
+                $query->where('created_at', '>=', $date);
+            }
+        }
+
         if ($sort === 'latest') {
             $query->latest();
-        } elseif ($sort === 'rating') {
-            $query->orderByDesc('rating');
+        } elseif ($sort === 'commented') {
+            $query->withCount('reviews')->orderByDesc('reviews_count');
         } else {
             $query->orderByDesc('views');
         }
@@ -78,7 +105,7 @@ class CatalogController extends Controller
         $description = $genre->seo_description ?? 'Книги в жанре ' . $genre->name . '. Читайте лучшие произведения онлайн на Librain.';
         $keywords = $genre->seo_keywords ?? $genre->name . ', книги, читать онлайн';
 
-        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'title', 'description', 'keywords'));
+        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'description', 'keywords'));
     }
 
     public function authors()
@@ -86,18 +113,31 @@ class CatalogController extends Controller
         $sort = request('sort');
         $currentLetter = request('letter');
 
-        $query = Author::withCount('books');
+        $query = Author::withCount('books')
+            ->with([
+                'books' => function ($q) {
+                    $q->select('id', 'author_id', 'views')->withCount('reviews');
+                }
+            ]);
 
         if ($currentLetter) {
             $query->where('name', 'like', $currentLetter . '%');
         }
 
         switch ($sort) {
+            case 'count_desc':
             case 'count':
                 $query->orderByDesc('books_count');
                 break;
+            case 'count_asc':
+                $query->orderBy('books_count');
+                break;
+            case 'views_desc':
             case 'views':
                 $query->orderByDesc('views_count');
+                break;
+            case 'views_asc':
+                $query->orderBy('views_count');
                 break;
             case 'name_asc':
                 $query->orderBy('name', 'asc');
@@ -105,8 +145,14 @@ class CatalogController extends Controller
             case 'name_desc':
                 $query->orderBy('name', 'desc');
                 break;
-            case 'name':
+            case 'alphabet_asc':
             case 'alphabet':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'alphabet_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'name':
                 $query->orderBy('name');
                 break;
             default:
@@ -114,7 +160,7 @@ class CatalogController extends Controller
         }
 
         $letters = collect();
-        if ($sort === 'alphabet' || $currentLetter) {
+        if (in_array($sort, ['alphabet', 'alphabet_asc', 'alphabet_desc']) || $currentLetter) {
             $letters = Author::query()
                 ->selectRaw('SUBSTR(name, 1, 1) as l')
                 ->distinct()
@@ -156,22 +202,31 @@ class CatalogController extends Controller
 
         $query = Series::withCount('books')
             ->with([
-                    'books' => function ($q) {
-                        $q->select('books.id', 'books.views')->withCount('reviews');
-                    }
-                ]);
+                'books' => function ($q) {
+                    $q->select('books.id', 'books.views')->withCount('reviews');
+                }
+            ]);
 
         if ($currentLetter) {
             $query->where('name', 'like', $currentLetter . '%');
         }
 
         switch ($sort) {
+            case 'count_desc':
             case 'count':
                 $query->orderByDesc('books_count');
                 break;
+            case 'count_asc':
+                $query->orderBy('books_count');
+                break;
+            case 'views_desc':
             case 'views':
                 $query->withSum('books', 'views');
                 $query->orderByDesc('books_sum_views');
+                break;
+            case 'views_asc':
+                $query->withSum('books', 'views');
+                $query->orderBy('books_sum_views');
                 break;
             case 'name_asc':
                 $query->orderBy('name', 'asc');
@@ -179,8 +234,14 @@ class CatalogController extends Controller
             case 'name_desc':
                 $query->orderBy('name', 'desc');
                 break;
-            case 'name':
+            case 'alphabet_asc':
             case 'alphabet':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'alphabet_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'name':
                 $query->orderBy('name');
                 break;
             default:
@@ -188,7 +249,7 @@ class CatalogController extends Controller
         }
 
         $letters = collect();
-        if ($sort === 'alphabet' || $currentLetter) {
+        if (in_array($sort, ['alphabet', 'alphabet_asc', 'alphabet_desc']) || $currentLetter) {
             $letters = Series::query()
                 ->selectRaw('SUBSTR(name, 1, 1) as l')
                 ->distinct()
@@ -224,38 +285,41 @@ class CatalogController extends Controller
         $book = Book::where('slug', $slug)
             ->with(['author', 'genres', 'series'])
             ->with([
-                    'chapters' => function ($q) {
-                        $q->select('id', 'book_id', 'title', 'order', 'symbols_count')
-                            ->orderBy('order');
-                    }
-                ])
+                'chapters' => function ($q) {
+                    $q->select('id', 'book_id', 'title', 'order', 'symbols_count')
+                        ->orderBy('order');
+                }
+            ])
             ->with([
-                    'reviews' => function ($q) use ($reviewsSort) {
-                        $q->whereNull('parent_id')
-                            ->where('is_approved', true)
-                            ->with([
+                'reviews' => function ($q) use ($reviewsSort) {
+                    $q->whereNull('parent_id')
+                        ->where('is_approved', true)
+                        ->with([
+                            'user',
+                            'children' => function ($q) {
+                                $q->where('is_approved', true)->with([
                                     'user',
                                     'children' => function ($q) {
-                                        $q->where('is_approved', true)->with([
-                                            'user',
-                                            'children' => function ($q) {
-                                                $q->where('is_approved', true)->with('user');
-                                            }
-                                        ]);
+                                        $q->where('is_approved', true)->with('user');
                                     }
                                 ]);
+                            }
+                        ]);
 
-                        if ($reviewsSort === 'best') {
-                            $q->orderByDesc('rating')->orderByDesc('created_at');
-                        } else {
-                            $q->latest();
-                        }
+                    if ($reviewsSort === 'best') {
+                        $q->orderByDesc('rating')->orderByDesc('created_at');
+                    } else {
+                        $q->latest();
                     }
-                ])
+                }
+            ])
             ->firstOrFail();
 
 
         $book->increment('views');
+        \App\Models\BookDailyView::firstOrCreate(
+            ['book_id' => $book->id, 'date' => now()->toDateString()]
+        )->increment('views');
 
         $isFavorite = false;
         $isPlanned = false;
@@ -282,10 +346,10 @@ class CatalogController extends Controller
         $book = Book::where('slug', $slug)
             ->where('is_published', true)
             ->with([
-                    'chapters' => function ($q) {
-                        $q->orderBy('order');
-                    }
-                ])
+                'chapters' => function ($q) {
+                    $q->orderBy('order');
+                }
+            ])
             ->firstOrFail();
 
         $chapter = $book->chapters->where('order', $chapterOrder)->first();
@@ -343,14 +407,23 @@ class CatalogController extends Controller
             };
 
             if ($date) {
-                $query->where('created_at', '>=', $date);
+                // Calculate views sum for the period
+                $query->withSum([
+                    'dailyViews as period_views' => function ($q) use ($date) {
+                        $q->where('date', '>=', $date);
+                    }
+                ], 'views')
+                    ->orderByDesc('period_views');
+            } else {
+                $query->orderByDesc('views');
             }
+        } else {
+            $query->orderByDesc('views');
         }
 
-        $books = $query->orderByDesc('views')
-            ->take(100)
-            ->get();
+        $books = $query->take(100)->get();
         $title = 'Топ-100 популярных книг - Librain';
+
         return view('catalog.top100', compact('books', 'title', 'period'));
     }
 

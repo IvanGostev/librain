@@ -5,43 +5,83 @@
         <h1 class="h2 fw-bold text-white mb-4">Серии</h1>
 
         <div class="d-flex gap-2 mb-4 flex-wrap animate-fade-in-up delay-100">
-            <a href="{{ route('series.index', ['sort' => 'count']) }}"
-                class="btn {{ request('sort') === 'count' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">По
-                количеству</a>
-            <a href="{{ route('series.index', ['sort' => 'views']) }}"
-                class="btn {{ request('sort') === 'views' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">По
-                просмотрам</a>
-
             @php
                 $currentSort = request('sort');
+
+                // Count filter logic
+                $countNext = 'count_desc';
+                $countClass = 'btn-outline-light';
+                $countIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
+                if ($currentSort === 'count_desc') {
+                    $countNext = 'count_asc';
+                    $countClass = 'btn-primary';
+                    $countIcon = '<i class="bi bi-sort-numeric-down ms-1"></i>';
+                } elseif ($currentSort === 'count_asc' || $currentSort === 'count') {
+                    $countNext = null;
+                    $countClass = 'btn-primary';
+                    $countIcon = '<i class="bi bi-sort-numeric-up-alt ms-1"></i>';
+                }
+
+                // Views filter logic
+                $viewsNext = 'views_desc';
+                $viewsClass = 'btn-outline-light';
+                $viewsIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
+                if ($currentSort === 'views_desc' || $currentSort === 'views') {
+                    $viewsNext = 'views_asc';
+                    $viewsClass = 'btn-primary';
+                    $viewsIcon = '<i class="bi bi-sort-numeric-down ms-1"></i>';
+                } elseif ($currentSort === 'views_asc') {
+                    $viewsNext = null;
+                    $viewsClass = 'btn-primary';
+                    $viewsIcon = '<i class="bi bi-sort-numeric-up-alt ms-1"></i>';
+                }
+
+                // Name filter logic
                 $nameNext = 'name_asc';
                 $nameClass = 'btn-outline-light';
-                $nameIcon = '';
-
+                $nameIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
                 if ($currentSort === 'name_asc') {
                     $nameNext = 'name_desc';
-                    $nameClass = 'btn-light';
-                    $nameIcon = '<i class="bi bi-sort-alpha-down me-1"></i>';
+                    $nameClass = 'btn-primary';
+                    $nameIcon = '<i class="bi bi-sort-alpha-down ms-1"></i>';
                 } elseif ($currentSort === 'name_desc') {
                     $nameNext = null;
-                    $nameClass = 'btn-light';
-                    $nameIcon = '<i class="bi bi-sort-alpha-up-alt me-1"></i>';
+                    $nameClass = 'btn-primary';
+                    $nameIcon = '<i class="bi bi-sort-alpha-up-alt ms-1"></i>';
+                }
+
+                // Alphabet filter logic
+                $alphabetNext = 'alphabet_asc';
+                $alphabetClass = 'btn-outline-light';
+                $alphabetIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
+                if ($currentSort === 'alphabet_asc' || $currentSort === 'alphabet' || request('letter')) {
+                    $alphabetNext = 'alphabet_desc';
+                    $alphabetClass = 'btn-primary';
+                    $alphabetIcon = '<i class="bi bi-sort-alpha-down ms-1"></i>';
+                } elseif ($currentSort === 'alphabet_desc') {
+                    $alphabetNext = null;
+                    $alphabetClass = 'btn-primary';
+                    $alphabetIcon = '<i class="bi bi-sort-alpha-up-alt ms-1"></i>';
                 }
             @endphp
-            <a href="{{ route('series.index', ['sort' => $nameNext]) }}"
-                class="btn {{ $nameClass }} rounded-pill px-4">{!! $nameIcon !!}По имени</a>
-            <a href="{{ route('series.index', ['sort' => 'alphabet']) }}"
-                class="btn {{ (request('sort') === 'alphabet' || request('letter')) ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">По
-                алфавиту</a>
+
+            <a href="{{ route('series.index', ['sort' => $countNext]) }}" class="btn {{ $countClass }} rounded-pill px-4">По
+                количеству{!! $countIcon !!}</a>
+            <a href="{{ route('series.index', ['sort' => $viewsNext]) }}" class="btn {{ $viewsClass }} rounded-pill px-4">По
+                просмотрам{!! $viewsIcon !!}</a>
+            <a href="{{ route('series.index', ['sort' => $nameNext]) }}" class="btn {{ $nameClass }} rounded-pill px-4">По
+                имени{!! $nameIcon !!}</a>
+            <a href="{{ route('series.index', ['sort' => $alphabetNext]) }}"
+                class="btn {{ $alphabetClass }} rounded-pill px-4">По алфавиту{!! $alphabetIcon !!}</a>
         </div>
 
         @if(isset($letters) && $letters->isNotEmpty())
             <div class="d-flex flex-wrap gap-2 mb-5 p-4 bg-dark-card rounded-4 animate-fade-in-up delay-150">
                 <a href="{{ route('series.index', ['sort' => 'alphabet']) }}"
-                    class="btn btn-sm {{ !request('letter') ? 'btn-primary' : 'btn-outline-secondary border-0 text-white-50 hover-text-white' }}">Все</a>
+                    class="btn btn-sm alphabet-filter {{ !request('letter') ? 'btn-primary' : 'btn-outline-light' }}">Все</a>
                 @foreach($letters as $l)
                     <a href="{{ route('series.index', ['sort' => 'alphabet', 'letter' => $l]) }}"
-                        class="btn btn-sm {{ request('letter') == $l ? 'btn-primary' : 'btn-outline-secondary border-0 text-white-50 hover-text-white' }}">
+                        class="btn btn-sm alphabet-filter {{ request('letter') == $l ? 'btn-primary' : 'btn-outline-light' }}">
                         {{ $l }}
                     </a>
                 @endforeach
@@ -66,12 +106,8 @@
                                                     onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                                             </div>
                                             <div class="flex-grow-1 min-w-0">
-                                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                                    <h3
-                                                        class="h5 fw-bold text-white mb-0 text-truncate group-hover:text-secondary transition-colors">
-                                                        {{ $item->name }}
-                                                    </h3>
-                                                    <div class="d-flex flex-wrap gap-2 ms-3">
+                                                <div class="mb-2">
+                                                    <div class="d-flex flex-wrap gap-2 mb-2">
                                                         <span
                                                             class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3"
                                                             title="Книг в серии">
@@ -93,6 +129,11 @@
                                                             <i class="bi bi-chat-left-text me-1"></i> {{ $totalReviews }}
                                                         </span>
                                                     </div>
+                                                    <h3
+                                                        class="h5 fw-bold text-white mb-2 group-hover:text-secondary transition-colors">
+                                                        {{ $item->name }}
+                                                    </h3>
+
                                                 </div>
                                                 <p class="text-white-50 small mb-0 text-truncate d-none d-md-block"
                                                     style="max-width: 80%;">
@@ -125,4 +166,28 @@
             @endif
         </section>
     </div>
+
+    <style>
+        /* Filter buttons styling */
+        .btn-outline-light {
+            border: 1px solid var(--bs-primary) !important;
+            color: var(--bs-primary) !important;
+        }
+
+        .btn-primary {
+            border: 1px solid var(--bs-primary) !important;
+            color: white !important;
+        }
+
+        /* Alphabet filter buttons */
+        .alphabet-filter.btn-outline-light {
+            transition: all 0.3s ease;
+        }
+
+        .alphabet-filter.btn-outline-light:hover {
+            background-color: var(--bs-primary);
+            color: white !important;
+            transform: translateY(-2px);
+        }
+    </style>
 @endsection

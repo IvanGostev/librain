@@ -47,7 +47,8 @@
                                     <div class="me-3 d-flex flex-column align-items-center justify-content-center bg-dark rounded-3 border border-white-10"
                                         style="width: 50px; height: 50px; min-width: 50px;">
                                         <span class="small text-muted text-uppercase" style="font-size: 0.6rem;">Книга</span>
-                                        <span class="h4 fw-bold text-white mb-0">{{ $book->pivot->order ?? $index + 1 }}</span>
+                                        <span class="h4 fw-bold text-white mb-0"
+                                            style="color: #fff !important;">{{ $book->pivot->order ?? $index + 1 }}</span>
                                     </div>
 
                                     <!-- Cover (Small) -->

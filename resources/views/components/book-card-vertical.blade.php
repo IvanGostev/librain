@@ -40,6 +40,7 @@
         </h5>
 
         <p class="card-text text-muted small mb-2 text-truncate">
+            {{ $book->created_at->format('d.m.Y') }} -
             @if($book->author)
                 <a href="{{ route('authors.show', $book->author->slug) }}"
                     class="text-muted text-decoration-none hover-text-primary transition-colors">

@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-            {
-              "@@context": "https://schema.org",
-              "@@type": "Book",
-              "name": "{{ $book->title }}",
-              "author": {
-                "@@type": "Person",
-                "name": "{{ $book->author->name ?? 'Unknown' }}"
-              },
-              "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-              "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-              "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-              "aggregateRating": {
-                "@@type": "AggregateRating",
-                "ratingValue": "{{ $book->rating }}",
-                "reviewCount": "{{ $book->reviews->count() }}"
-              }
-            }
-            </script>
+                {
+                  "@@context": "https://schema.org",
+                  "@@type": "Book",
+                  "name": "{{ $book->title }}",
+                  "author": {
+                    "@@type": "Person",
+                    "name": "{{ $book->author->name ?? 'Unknown' }}"
+                  },
+                  "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                  "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                  "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                  "aggregateRating": {
+                    "@@type": "AggregateRating",
+                    "ratingValue": "{{ $book->rating }}",
+                    "reviewCount": "{{ $book->reviews->count() }}"
+                  }
+                }
+                </script>
 @endsection
 
 @section('content')
@@ -72,8 +72,8 @@
                                 onerror="this.src='{{ asset('images/no-cover.svg') }}'">
 
                             <div class="position-absolute top-0 end-0 p-3">
-                                <span
-                                    class="badge bg-dark bg-opacity-75 backdrop-blur-sm fs-6" style="color: #fff !important;">
+                                <span class="badge bg-dark bg-opacity-75 backdrop-blur-sm fs-6"
+                                    style="color: #fff !important;">
                                     <i class="bi bi-star-fill text-warning me-1"></i> {{ number_format($book->rating, 1) }}
                                 </span>
                             </div>
@@ -103,7 +103,7 @@
                                         @csrf
                                         <button type="submit"
                                             class="btn {{ $isFavorite ? 'btn-danger' : 'btn-dark-glass' }} btn-lg rounded-pill fw-semibold border-white-10 hover-elevate">
-                                            <i class="bi bi-heart{{ $isFavorite ? '-fill' : '' }}"></i>
+                                            <i class="bi bi-heart{{ $isFavorite ? '-fill' : '' }} text-white"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -114,44 +114,45 @@
                                 <i class="bi bi-bookmark-plus me-2"></i> Хочу прочитать
                             </a>
                         @endauth
-                        @auth
-                            @if($book->file_txt || $book->file_fb2 || $book->file_epub)
-                                <div class="dropdown">
-                                    <button
-                                        class="btn btn-dark-glass btn-lg rounded-pill fw-semibold border-white-10 hover-elevate w-100"
-                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-download me-2"></i> Скачать
-                                    </button>
-                                    <ul
-                                        class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-dark-card border-white-10 shadow-lg p-2 mt-2 w-100">
-                                        @if($book->file_txt)
-                                            <li>
-                                                <a class="dropdown-item rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
-                                                    href="{{ asset('storage/' . $book->file_txt) }}" download>
-                                                    <i class="bi bi-file-text fs-5 text-primary"></i> Скачать TXT
-                                                </a>
-                                            </li>
-                                        @endif
-                                        @if($book->file_fb2)
-                                            <li>
-                                                <a class="dropdown-item rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
-                                                    href="{{ asset('storage/' . $book->file_fb2) }}" download>
-                                                    <i class="bi bi-book fs-5 text-info"></i> Скачать FB2
-                                                </a>
-                                            </li>
-                                        @endif
-                                        @if($book->file_epub)
-                                            <li>
-                                                <a class="dropdown-item rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
-                                                    href="{{ asset('storage/' . $book->file_epub) }}" download>
-                                                    <i class="bi bi-journal-richtext fs-5 text-success"></i> Скачать EPUB
-                                                </a>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            @endif
-                        @endauth
+                        @if($book->file_txt || $book->file_fb2 || $book->file_epub)
+                            <div class="dropdown">
+                                <button
+                                    class="btn btn-dark-glass btn-lg rounded-pill fw-semibold border-white-10 hover-elevate w-100"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-download me-2"></i> Скачать
+                                </button>
+                                <ul
+                                    class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-dark-card border-white-10 shadow-lg p-2 mt-2 w-100">
+                                    @if($book->file_txt)
+                                        <li>
+                                            <a class="dropdown-item download-link rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
+                                                href="{{ asset('storage/' . $book->file_txt) }}"
+                                                data-auth="{{ auth()->check() ? '1' : '0' }}" download>
+                                                <i class="bi bi-file-text fs-5 text-primary"></i> Скачать TXT
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if($book->file_fb2)
+                                        <li>
+                                            <a class="dropdown-item download-link rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
+                                                href="{{ asset('storage/' . $book->file_fb2) }}"
+                                                data-auth="{{ auth()->check() ? '1' : '0' }}" download>
+                                                <i class="bi bi-book fs-5 text-info"></i> Скачать FB2
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if($book->file_epub)
+                                        <li>
+                                            <a class="dropdown-item download-link rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
+                                                href="{{ asset('storage/' . $book->file_epub) }}"
+                                                data-auth="{{ auth()->check() ? '1' : '0' }}" download>
+                                                <i class="bi bi-journal-richtext fs-5 text-success"></i> Скачать EPUB
+                                            </a>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </div>
+                        @endif
 
                         <!-- Share Button -->
                         <div class="dropdown">
@@ -166,8 +167,10 @@
                                     <a class="dropdown-item rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
                                         href="https://vk.com/share.php?url={{ urlencode(url()->current()) }}"
                                         target="_blank">
-                                        <svg class="text-primary" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                                            <path d="M15.07294,2H8.9375C3.33331,2,2,3.33331,2,8.92706V15.0625C2,20.66663,3.32294,22,8.92706,22H15.0625C20.66669,22,22,20.67706,22,15.07288V8.9375C22,3.33331,20.67706,2,15.07294,2Zm3.07287,14.27081H16.6875c-.55206,0-.71875-.44793-1.70831-1.4375-.86463-.83331-1.22919-.9375-1.44794-.9375-.30206,0-.38544.08332-.38544.5v1.3125c0,.35419-.11456.5625-1.04162.5625a5.69214,5.69214,0,0,1-4.44794-2.66668A11.62611,11.62611,0,0,1,5.35419,8.77081c0-.21875.08331-.41668.5-.41668H7.3125c.375,0,.51044.16668.65625.55212.70831,2.08331,1.91669,3.89581,2.40625,3.89581.1875,0,.27081-.08331.27081-.55206V10.10413c-.0625-.97913-.58331-1.0625-.58331-1.41663a.36008.36008,0,0,1,.375-.33337h2.29169c.3125,0,.41662.15625.41662.53125v2.89587c0,.3125.13544.41663.22919.41663.1875,0,.33331-.10413.67706-.44788a11.99877,11.99877,0,0,0,1.79169-2.97919.62818.62818,0,0,1,.63544-.41668H17.9375c.4375,0,.53125.21875.4375.53125A18.20507,18.20507,0,0,1,16.41669,12.25c-.15625.23956-.21875.36456,0,.64581.14581.21875.65625.64582,1,1.05207a6.48553,6.48553,0,0,1,1.22912,1.70837C18.77081,16.0625,18.5625,16.27081,18.14581,16.27081Z"/>
+                                        <svg class="text-primary" width="20" height="20" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                                            <path
+                                                d="M15.07294,2H8.9375C3.33331,2,2,3.33331,2,8.92706V15.0625C2,20.66663,3.32294,22,8.92706,22H15.0625C20.66669,22,22,20.67706,22,15.07288V8.9375C22,3.33331,20.67706,2,15.07294,2Zm3.07287,14.27081H16.6875c-.55206,0-.71875-.44793-1.70831-1.4375-.86463-.83331-1.22919-.9375-1.44794-.9375-.30206,0-.38544.08332-.38544.5v1.3125c0,.35419-.11456.5625-1.04162.5625a5.69214,5.69214,0,0,1-4.44794-2.66668A11.62611,11.62611,0,0,1,5.35419,8.77081c0-.21875.08331-.41668.5-.41668H7.3125c.375,0,.51044.16668.65625.55212.70831,2.08331,1.91669,3.89581,2.40625,3.89581.1875,0,.27081-.08331.27081-.55206V10.10413c-.0625-.97913-.58331-1.0625-.58331-1.41663a.36008.36008,0,0,1,.375-.33337h2.29169c.3125,0,.41662.15625.41662.53125v2.89587c0,.3125.13544.41663.22919.41663.1875,0,.33331-.10413.67706-.44788a11.99877,11.99877,0,0,0,1.79169-2.97919.62818.62818,0,0,1,.63544-.41668H17.9375c.4375,0,.53125.21875.4375.53125A18.20507,18.20507,0,0,1,16.41669,12.25c-.15625.23956-.21875.36456,0,.64581.14581.21875.65625.64582,1,1.05207a6.48553,6.48553,0,0,1,1.22912,1.70837C18.77081,16.0625,18.5625,16.27081,18.14581,16.27081Z" />
                                         </svg> ВКонтакте
                                     </a>
                                 </li>
@@ -212,7 +215,8 @@
                     </a>
                     <span>•</span>
                     <span class="d-flex align-items-center">
-                        <i class="bi bi-star-fill text-warning me-1"></i> <span class="text-white">{{ number_format($book->rating, 1) }}</span>
+                        <i class="bi bi-star-fill text-warning me-1"></i> <span
+                            class="text-white">{{ number_format($book->rating, 1) }}</span>
                     </span>
                     <span>•</span>
                     <span class="text-white">{{ $book->views }} просмотров</span>
@@ -222,17 +226,18 @@
 
                 <!-- New Info Line: Status, Age, Volume, Date -->
                 <div class="d-flex flex-wrap align-items-center gap-3 mb-4 text-muted small">
-                    <span class="badge bg-{{ $book->status === 'finished' ? 'success' : 'warning text-dark' }} rounded-pill">
+                    <span
+                        class="badge bg-{{ $book->status === 'finished' ? 'success' : 'warning text-dark' }} rounded-pill">
                         {{ $book->status === 'finished' ? 'Завершена' : 'В процессе' }}
                     </span>
-                    
+
                     <span class="badge bg-secondary rounded-pill border border-white-10">{{ $book->age_rating }}</span>
-                    
+
                     <span title="Объем текста" class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-text me-1"></i> 
+                        <i class="bi bi-file-earmark-text me-1"></i>
                         {{ number_format($totalSymbols, 0, ',', ' ') }} зн. / ~{{ $totalPages }} стр.
                     </span>
-                    
+
                     <span title="Дата публикации" class="d-flex align-items-center">
                         <i class="bi bi-calendar3 me-1"></i> {{ $book->created_at->format('d.m.Y') }}
                     </span>
@@ -270,7 +275,8 @@
                 </div>
 
                 <div class="mb-5">
-                    <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">Содержание <span class="text-muted ms-2">({{ $book->chapters->count() }})</span></h5>
+                    <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">Содержание <span
+                            class="text-muted ms-2">({{ $book->chapters->count() }})</span></h5>
                     @if($book->chapters->isNotEmpty())
                         <div class="list-group list-group-flush bg-transparent">
                             @foreach($book->chapters as $chapter)
@@ -294,47 +300,57 @@
                             @if($book->reviews->isNotEmpty()) <span
                             class="text-muted ms-2">{{ $book->reviews->count() }}</span> @endif
                         </h5>
-                        
+
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-dark-glass dropdown-toggle rounded-pill border-white-10 text-muted" type="button" data-bs-toggle="dropdown">
-                                Сортировка: {{ request('reviews_sort', 'newest') === 'best' ? 'По рейтингу' : 'Сначала новые' }}
+                            <button class="btn btn-sm btn-outline-light dropdown-toggle rounded-pill" type="button"
+                                data-bs-toggle="dropdown">
+                                Сортировка:
+                                {{ request('reviews_sort', 'newest') === 'best' ? 'По рейтингу' : 'Сначала новые' }}
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-dark-card border-white-10 shadow-lg">
-                                <li><a class="dropdown-item {{ request('reviews_sort', 'newest') !== 'best' ? 'active' : '' }}" href="{{ request()->fullUrlWithQuery(['reviews_sort' => 'newest']) }}">Сначала новые</a></li>
-                                <li><a class="dropdown-item {{ request('reviews_sort') === 'best' ? 'active' : '' }}" href="{{ request()->fullUrlWithQuery(['reviews_sort' => 'best']) }}">По рейтингу</a></li>
+                            <ul
+                                class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-dark-card border-white-10 shadow-lg">
+                                <li><a class="dropdown-item {{ request('reviews_sort', 'newest') !== 'best' ? 'active' : '' }}"
+                                        href="{{ request()->fullUrlWithQuery(['reviews_sort' => 'newest']) }}">Сначала
+                                        новые</a></li>
+                                <li><a class="dropdown-item {{ request('reviews_sort') === 'best' ? 'active' : '' }}"
+                                        href="{{ request()->fullUrlWithQuery(['reviews_sort' => 'best']) }}">По рейтингу</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
 
-                    @auth
-                        <div class="card bg-feature-card border-white-10 p-4 mb-5">
-                            <h6 class="text-white fw-bold mb-3">Оставить отзыв</h6>
-                            <form action="{{ route('reviews.store', $book->id) }}" method="POST">
-                                @csrf
+                    <div class="card bg-feature-card border-white-10 p-4 mb-5">
+                        <h6 class="text-white fw-bold mb-3">Оставить отзыв</h6>
+                        <form action="{{ route('reviews.store', $book->id) }}" method="POST">
+                            @csrf
+
+                            @guest
                                 <div class="mb-3">
-                                    <label class="form-label text-muted small">Ваша оценка</label>
-                                    <div class="d-flex gap-2 fs-4 text-warning" id="rating-stars">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="bi bi-star cursor-pointer rating-star" data-rating="{{ $i }}"
-                                                onclick="setRating({{ $i }})"></i>
-                                        @endfor
-                                    </div>
-                                    <input type="hidden" name="rating" id="rating-input" value="">
+                                    <label class="form-label text-muted small">Ваше имя <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" name="guest_name" class="form-control form-control-dark" required
+                                        placeholder="Представьтесь">
                                 </div>
-                                <div class="mb-3">
-                                    <textarea name="comment" class="form-control form-control-dark" rows="4"
-                                        placeholder="Поделитесь вашим мнением о книге..." required></textarea>
+                            @endguest
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Ваша оценка</label>
+                                <div class="d-flex gap-2 fs-4 text-warning" id="rating-stars">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="bi bi-star cursor-pointer rating-star" data-rating="{{ $i }}"
+                                            onclick="setRating({{ $i }})"></i>
+                                    @endfor
                                 </div>
-                                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow">Отправить
-                                    отзыв</button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="alert bg-dark-glass border-white-10 text-white-50 text-center py-4 mb-5">
-                            Пожалуйста, <a href="{{ route('login') }}"
-                                class="text-primary text-decoration-none fw-bold">войдите</a>, чтобы оставить отзыв.
-                        </div>
-                    @endauth
+                                <input type="hidden" name="rating" id="rating-input" value="">
+                            </div>
+                            <div class="mb-3">
+                                <textarea name="comment" class="form-control form-control-dark" rows="4"
+                                    placeholder="Поделитесь вашим мнением о книге..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow">Отправить
+                                отзыв</button>
+                        </form>
+                    </div>
 
                     <div class="reviews-list">
                         @forelse($book->reviews as $review)
@@ -377,5 +393,69 @@
         function hideReplyForm(reviewId) {
             document.getElementById('reply-form-' + reviewId).classList.add('d-none');
         }
+    </script>
+    <style>
+        /* Filter buttons styling */
+        .btn-outline-light {
+            border: 1px solid var(--bs-primary) !important;
+            color: var(--bs-primary) !important;
+        }
+
+        .btn-primary,
+        .btn-danger {
+            color: white !important;
+        }
+
+        /* Heart icon should always be white */
+        .bi-heart-fill {
+            color: white !important;
+        }
+    </style>
+
+    <!-- Download Timer Overlay -->
+    <div id="download-timer-overlay"
+        class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark z-3 d-flex flex-column justify-content-center align-items-center"
+        style="z-index: 9999 !important; background-color: #0f172a !important;">
+        <h2 class="mb-4" style="color: #ffffff !important;">Подготовка ссылки...</h2>
+        <div class="display-1 text-primary fw-bold mb-4" id="download-timer">15</div>
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-4" style="color: rgba(255, 255, 255, 0.5) !important;">Пожалуйста, подождите</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.download-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const isAuth = this.dataset.auth === '1';
+
+                    if (!isAuth) {
+                        alert('Сначала авторизируйтесь для скачивания книг.');
+                        window.location.href = "{{ route('login') }}";
+                        return;
+                    }
+
+                    const url = this.href;
+                    const overlay = document.getElementById('download-timer-overlay');
+                    const timerEl = document.getElementById('download-timer');
+                    let timeLeft = 15;
+
+                    overlay.classList.remove('d-none');
+                    timerEl.textContent = timeLeft;
+
+                    const interval = setInterval(() => {
+                        timeLeft--;
+                        timerEl.textContent = timeLeft;
+                        if (timeLeft <= 0) {
+                            clearInterval(interval);
+                            window.location.href = url;
+                            setTimeout(() => {
+                                overlay.classList.add('d-none');
+                            }, 2000);
+                        }
+                    }, 1000);
+                });
+            });
+        });
     </script>
 @endsection

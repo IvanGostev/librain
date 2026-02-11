@@ -9,6 +9,10 @@ use App\Models\Author;
 use App\Models\Series;
 use App\Models\Book;
 use App\Models\Review;
+use Illuminate\Support\Facades\Storage; // Needed for file generation
+use Carbon\Carbon; // Needed for daily stats
+
+use App\Models\SiteSetting;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +21,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seeding Site Settings
+        SiteSetting::updateOrCreate(['key' => 'home_bottom_title'], ['value' => 'О библиотеке Librain']);
+        SiteSetting::updateOrCreate(['key' => 'home_bottom_text'], ['value' => '<p>Librain - это современная электронная библиотека, где вы найдете тысячи книг различных жанров. Мы стремимся сделать чтение доступным и удобным для каждого. Наша коллекция регулярно пополняется новинками, а удобный поиск поможет вам быстро найти нужную книгу.</p><p>Присоединяйтесь к нашему сообществу читателей, оставляйте отзывы, делитесь впечатлениями и открывайте для себя новые литературные миры вместе с Librain!</p>']);
+
         // Users
         User::factory()->create([
             'name' => 'Test User',
@@ -47,22 +55,41 @@ class DatabaseSeeder extends Seeder
             ]);
 
             foreach ($books as $book) {
+                // Generate download files (dummy content)
+                foreach (['txt', 'fb2', 'epub'] as $format) {
+                    $filename = "books/{$book->id}.{$format}";
+                    Storage::disk('public')->put($filename, "Dummy content for {$book->title} ({$format})");
+                    $book->{'file_' . $format} = $filename;
+                }
+
                 $book->save();
 
                 // Assign a random series sometimes
                 if (rand(0, 100) < 30 && $seriesList->count() > 0) {
                     $series = $seriesList->random();
-                    // Attach via pivot table 'book_series'
-                    // Pivot columns: series_id, book_id, order
-                    // We assume Many-to-Many or One-to-Many but via pivot.
-                    // If Book model doesn't have 'series' relationship defined as belongsToMany, we might need to use DB façade or define it.
-                    // Assuming Book belongsToMany Series (or belongsTo if pivot is just for order? No, migration says book_series).
-                    // Let's assume belongsToMany in model for 'series'.
                     $book->series()->attach($series->id, ['order' => rand(1, 10)]);
                 }
 
                 // Attach genres
                 $book->genres()->attach($genres->random(rand(1, 3))->pluck('id'));
+
+                // Generate Daily Views Stats (last year)
+                $startDate = Carbon::now()->subYear();
+                for ($i = 0; $i <= 365; $i++) {
+                    $date = $startDate->copy()->addDays($i);
+                    // 30% chance of views on any given day
+                    if (rand(0, 100) < 30) {
+                        \App\Models\BookDailyView::create([
+                            'book_id' => $book->id,
+                            'date' => $date->toDateString(),
+                            'views' => rand(1, 50) // Random views per day
+                        ]);
+                    }
+                }
+
+                // Update total views based on daily stats
+                $book->views = $book->dailyViews()->sum('views');
+                $book->save();
 
                 // Create chapters
                 $chapterCount = rand(5, 15);
@@ -74,6 +101,12 @@ class DatabaseSeeder extends Seeder
                         'content' => fake()->realText(2000),
                     ]);
                 }
+
+                // Generate reviews
+                \App\Models\Review::factory(rand(0, 5))->create([
+                    'book_id' => $book->id,
+                    'user_id' => User::inRandomOrder()->first()->id
+                ]);
             }
         });
     }

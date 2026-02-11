@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    protected $fillable = ['user_id', 'book_id', 'rating', 'comment', 'parent_id', 'is_approved'];
+    use HasFactory;
+
+    protected $fillable = ['user_id', 'book_id', 'rating', 'comment', 'parent_id', 'is_approved', 'guest_name'];
 
     protected static function boot()
     {

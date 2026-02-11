@@ -4,36 +4,38 @@
 @section('description', 'Лучшие книги в жанре ' . $genre->name . '. Обширная библиотека произведений, доступных для чтения онлайн.')
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-3">
+        <!-- Filters/Categories Links -->
+        <div class="d-flex justify-content-center gap-3 mb-3 flex-wrap animate-fade-in-up">
+            <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'latest']) }}"
+                class="btn {{ request('sort', 'latest') === 'latest' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">Новые</a>
+            <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'popular']) }}"
+                class="btn {{ request('sort') === 'popular' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">Популярные</a>
+            <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'commented']) }}"
+                class="btn {{ request('sort') === 'commented' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">Комментируемые</a>
+        </div>
+
+        @if(request('sort') === 'popular')
+            <div class="d-flex justify-content-center gap-2 mb-3 animate-fade-in-up delay-150" style="margin-top: -0.5rem;">
+                <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'popular', 'period' => 'week']) }}"
+                    class="btn {{ $period === 'week' ? 'btn-primary' : 'btn-outline-light' }} px-3 rounded-pill btn-sm">За
+                    неделю</a>
+                <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'popular', 'period' => 'month']) }}"
+                    class="btn {{ $period === 'month' ? 'btn-primary' : 'btn-outline-light' }} px-3 rounded-pill btn-sm">За
+                    месяц</a>
+                <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'popular', 'period' => 'all']) }}"
+                    class="btn {{ $period === 'all' ? 'btn-primary' : 'btn-outline-light' }} px-3 rounded-pill btn-sm">За
+                    все время</a>
+            </div>
+        @endif
+
         <!-- Header -->
-        <div class="d-flex align-items-center justify-content-between mb-5 animate-fade-in-up">
+        <div class="d-flex align-items-center justify-content-between mb-3 animate-fade-in-up delay-100">
             <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item"><a href="{{ route('catalog.index') }}"
-                                class="text-muted text-decoration-none">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('genres.index') }}"
-                                class="text-muted text-decoration-none">Жанры</a></li>
-                        <li class="breadcrumb-item active text-white" aria-current="page">{{ $genre->name }}</li>
-                    </ol>
-                </nav>
                 <h1 class="display-5 fw-bold text-white mb-0">{{ $genre->name }}</h1>
                 <div class="text-muted small mt-2">
                     Найдено {{ $books->total() }} {{ trans_choice('книга|книги|книг', $books->total()) }}
                 </div>
-            </div>
-
-            <!-- Filter/Sort -->
-            <div class="d-none d-md-block">
-                <form action="{{ url()->current() }}" method="GET" id="sortForm">
-                    <select name="sort"
-                        class="form-select bg-dark text-white border-white-10 shadow-sm rounded-pill ps-4 pe-5"
-                        style="min-width: 200px;" onchange="document.getElementById('sortForm').submit()">
-                        <option value="popular" {{ $sort === 'popular' ? 'selected' : '' }}>По популярности</option>
-                        <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>По новизне</option>
-                        <option value="rating" {{ $sort === 'rating' ? 'selected' : '' }}>По рейтингу</option>
-                    </select>
-                </form>
             </div>
         </div>
 
@@ -65,6 +67,18 @@
     </div>
 
     <style>
+        /* Filter buttons with primary border - only for outline variants */
+        .btn-outline-light {
+            border: 1px solid var(--bs-primary) !important;
+            color: var(--bs-primary) !important;
+        }
+
+        /* Primary buttons already have background, no need for special border */
+        .btn-primary {
+            border: 1px solid var(--bs-primary) !important;
+            color: white !important;
+        }
+
         .backdrop-blur {
             backdrop-filter: blur(4px);
         }

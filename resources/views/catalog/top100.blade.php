@@ -6,15 +6,20 @@
 
         <div class="d-flex gap-2 mb-4 flex-wrap animate-fade-in-up delay-100">
             <a href="{{ route('top100') }}"
-                class="btn {{ !request('period') ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За все время</a>
+                class="btn {{ !request('period') ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За все
+                время</a>
             <a href="{{ route('top100', ['period' => 'week']) }}"
-                class="btn {{ request('period') === 'week' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За неделю</a>
+                class="btn {{ request('period') === 'week' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
+                неделю</a>
             <a href="{{ route('top100', ['period' => 'month']) }}"
-                class="btn {{ request('period') === 'month' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За месяц</a>
+                class="btn {{ request('period') === 'month' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
+                месяц</a>
             <a href="{{ route('top100', ['period' => 'half_year']) }}"
-                class="btn {{ request('period') === 'half_year' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За полгода</a>
+                class="btn {{ request('period') === 'half_year' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
+                полгода</a>
             <a href="{{ route('top100', ['period' => 'year']) }}"
-                class="btn {{ request('period') === 'year' ? 'btn-light' : 'btn-outline-light' }} rounded-pill px-4">За год</a>
+                class="btn {{ request('period') === 'year' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
+                год</a>
         </div>
         @if($books->count() > 0)
             <div class="row g-4 animate-fade-in-up delay-200">
@@ -24,8 +29,7 @@
                             <div class="card-body p-3 p-md-4 d-flex align-items-center">
                                 <!-- Rank -->
                                 <div class="me-4 text-center" style="min-width: 60px;">
-                                    <div class="h2 fw-bold text-outline-light mb-0"
-                                        style="-webkit-text-stroke: 1px rgba(255,255,255,0.3); color: transparent;">
+                                    <div class="h2 fw-bold rank-number mb-0">
                                         #{{ $index + 1 }}
                                     </div>
                                 </div>
@@ -74,4 +78,33 @@
             </div>
         @endif
     </div>
+
+    <style>
+        /* Filter buttons styling */
+        .btn-outline-light {
+            border: 1px solid var(--bs-primary) !important;
+            color: var(--bs-primary) !important;
+        }
+
+        .btn-primary {
+            border: 1px solid var(--bs-primary) !important;
+            color: white !important;
+        }
+
+        /* Rank number styling - visible in both themes */
+        .rank-number {
+            color: var(--bs-primary);
+            opacity: 0.7;
+        }
+
+        [data-bs-theme="dark"] .rank-number {
+            -webkit-text-stroke: 1px rgba(14, 165, 233, 0.5);
+            color: transparent;
+        }
+
+        [data-bs-theme="light"] .rank-number {
+            color: var(--bs-primary);
+            opacity: 0.5;
+        }
+    </style>
 @endsection

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
 
 <head>
     <meta charset="utf-8">
@@ -7,7 +7,7 @@
     <script>
         // Init theme immediately
         (function () {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
         })();
     </script>
@@ -139,9 +139,13 @@
                                 <i class="bi bi-search"></i>
                             </span>
                             <input
-                                class="form-control bg-white bg-opacity-10 border-0 rounded-end-pill py-2 text-white placeholder-muted focus-ring-primary"
-                                type="search" name="q" placeholder="Название, автор, жанр или текст..."
-                                aria-label="Search" value="{{ request('q') }}">
+                                class="form-control bg-white bg-opacity-10 border-0 py-2 text-white placeholder-muted focus-ring-primary"
+                                style="border-top-right-radius: 0; border-bottom-right-radius: 0;" type="search"
+                                name="q" placeholder="Название, автор, жанр или текст..." aria-label="Search"
+                                value="{{ request('q') }}">
+                            <button type="submit" class="btn btn-primary d-lg-none rounded-end-pill px-4">
+                                Найти
+                            </button>
                         </div>
                     </form>
 
@@ -299,6 +303,16 @@
             });
         });
     </script>
+
+    <style>
+        /* On desktop (lg and up), round the search input on the right side */
+        @media (min-width: 992px) {
+            .input-group input[type="search"] {
+                border-top-right-radius: 50rem !important;
+                border-bottom-right-radius: 50rem !important;
+            }
+        }
+    </style>
 </body>
 
 </html>

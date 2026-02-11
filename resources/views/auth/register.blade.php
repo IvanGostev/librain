@@ -108,6 +108,21 @@
                                 </button>
                             </div>
 
+                            <div class="text-center text-white-50 small mb-3">Или зарегистрируйтесь через</div>
+
+                            <div class="d-grid gap-2 mb-4">
+                                <a href="{{ route('social.redirect', 'vkontakte') }}"
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold shadow-sm hover-elevate"
+                                    style="background-color: #0077FF; border-color: #0077FF;">
+                                    <i class="bi bi-vk"></i> VK ID
+                                </a>
+                                <a href="{{ route('social.redirect', 'odnoklassniki') }}"
+                                    class="btn btn-warning d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate"
+                                    style="background-color: #EE8208; border-color: #EE8208;">
+                                    <i class="bi bi-person"></i> Одноклассники
+                                </a>
+                            </div>
+
                             <div class="text-center text-muted small">
                                 Уже есть аккаунт? <a href="{{ route('login') }}"
                                     class="text-white text-decoration-none fw-semibold hover-text-secondary transition-colors">Войти</a>

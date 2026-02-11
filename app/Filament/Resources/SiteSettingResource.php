@@ -26,49 +26,49 @@ class SiteSettingResource extends Resource
     {
         return $form
             ->schema([
-                    Forms\Components\Section::make('Параметр настройки')
-                        ->schema([
-                                Forms\Components\TextInput::make('key')
-                                    ->label('Ключ')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->disabled(fn($record) => $record !== null),
-                                Forms\Components\Textarea::make('value')
-                                    ->label('Значение')
-                                    ->required()
-                                    ->columnSpanFull(),
-                            ]),
-                ]);
+                Forms\Components\Section::make('Параметр настройки')
+                    ->schema([
+                        Forms\Components\TextInput::make('key')
+                            ->label('Ключ')
+                            ->required()
+                            ->maxLength(255)
+                            ->disabled(fn($record) => $record !== null),
+                        Forms\Components\RichEditor::make('value')
+                            ->label('Значение')
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                    Tables\Columns\TextColumn::make('key')
-                        ->label('Ключ')
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('value')
-                        ->label('Значение')
-                        ->limit(50)
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('updated_at')
-                        ->label('Дата обновления')
-                        ->dateTime()
-                        ->sortable(),
-                ])
+                Tables\Columns\TextColumn::make('key')
+                    ->label('Ключ')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('value')
+                    ->label('Значение')
+                    ->limit(50)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Дата обновления')
+                    ->dateTime()
+                    ->sortable(),
+            ])
             ->filters([
 
-                ])
+            ])
             ->actions([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ])
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
             ->bulkActions([
-                    Tables\Actions\BulkActionGroup::make([
-                        Tables\Actions\DeleteBulkAction::make(),
-                    ]),
-                ]);
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getPages(): array

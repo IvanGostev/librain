@@ -20,11 +20,12 @@
                                             style="width: 120px; height: 120px; filter: blur(20px);"></div>
 
                                         <div class="position-relative z-1">
-                                            <h3 class="h4 fw-bold text-white mb-2 group-hover:text-primary transition-colors">
+                                            <h3 class="h4 fw-bold genre-title mb-2 group-hover:text-primary transition-colors">
                                                 {{ $genre->name }}
                                             </h3>
                                             <span
-                                                class="badge bg-white bg-opacity-10 text-white rounded-pill border border-white-10 px-3">
+                                                class="badge bg-white bg-opacity-10 text-white rounded-pill border border-white-10 px-3"
+                                                style="color: white !important;">
                                                 {{ $genre->books_count }}
                                                 {{ trans_choice('книга|книги|книг', $genre->books_count) }}
                                             </span>
@@ -50,6 +51,20 @@
         }
 
         .group:hover .group-hover\:text-primary {
+            color: var(--bs-primary) !important;
+        }
+
+        /* Genre title color - always white */
+        .genre-title {
+            color: white !important;
+        }
+
+        /* Override for light theme to keep it white */
+        [data-bs-theme="light"] .genre-title {
+            color: white !important;
+        }
+
+        [data-bs-theme="light"] .group:hover .group-hover\:text-primary {
             color: var(--bs-primary) !important;
         }
     </style>

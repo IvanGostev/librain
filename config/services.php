@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'vkontakte' => [
+        'client_id' => env('VK_CLIENT_ID', '52900463'),
+        'client_secret' => env('VK_CLIENT_SECRET', 'xxrBjDrsOqUudtbdRKvm'),
+        'redirect' => env('VK_REDIRECT_URI', 'http://localhost:8000/auth/vkontakte/callback'),
+    ],
+
+    'odnoklassniki' => [
+        'client_id' => env('OK_CLIENT_ID', '512003243521'),
+        'client_public' => env('OK_CLIENT_PUBLIC', 'CCAPHGMGDIHBABABA'),
+        'client_secret' => env('OK_CLIENT_SECRET', 'D4E3BF342FEF42DD9A509CDC'),
+        'redirect' => env('OK_REDIRECT_URI', 'http://localhost:8000/auth/odnoklassniki/callback'),
+    ],
+
 ];

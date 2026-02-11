@@ -61,6 +61,11 @@ class Book extends Model
         return $this->hasMany(Chapter::class)->orderBy('order');
     }
 
+    public function dailyViews()
+    {
+        return $this->hasMany(\App\Models\BookDailyView::class);
+    }
+
     public function libraryEntries()
     {
         return $this->hasMany(LibraryEntry::class);
