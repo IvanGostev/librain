@@ -25,27 +25,36 @@ class CatalogController extends Controller
 
         $query = Book::where('is_published', true)->with('author')->withCount('reviews');
 
+        $date = null;
         if ($period) {
             $date = match ($period) {
                 'week' => now()->subWeek(),
                 'month' => now()->subMonth(),
                 default => null
             };
+        }
 
+        if ($sort === 'popular') {
+            if ($date) {
+                $query->withSum([
+                    'dailyViews' => function ($q) use ($date) {
+                        $q->where('date', '>=', $date);
+                    }
+                ], 'views')
+                    ->orderByDesc('daily_views_sum_views');
+            } else {
+                $query->orderByDesc('views');
+            }
+        } else {
             if ($date) {
                 $query->where('created_at', '>=', $date);
             }
-        }
 
-        switch ($sort) {
-            case 'popular':
-                $query->orderByDesc('views');
-                break;
-            case 'commented':
+            if ($sort === 'commented') {
                 $query->orderByDesc('reviews_count');
-                break;
-            default:
+            } else {
                 $query->orderByDesc('created_at');
+            }
         }
 
         $books = $query->paginate(24);
