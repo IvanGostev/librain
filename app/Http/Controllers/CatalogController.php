@@ -18,7 +18,6 @@ class CatalogController extends Controller
         $sort = request('sort', 'new');
         $period = request('period');
 
-        // Set default period to 'week' when sort is 'popular' and no period is specified
         if ($sort === 'popular' && !$period) {
             $period = 'week';
         }
@@ -81,7 +80,6 @@ class CatalogController extends Controller
         $sort = $request->get('sort', 'latest');
         $period = $request->get('period');
 
-        // Set default period to 'week' when sort is 'popular' and no period is specified
         if ($sort === 'popular' && !$period) {
             $period = 'week';
         }
@@ -416,7 +414,6 @@ class CatalogController extends Controller
             };
 
             if ($date) {
-                // Calculate views sum for the period
                 $query->withSum([
                     'dailyViews as period_views' => function ($q) use ($date) {
                         $q->where('date', '>=', $date);
