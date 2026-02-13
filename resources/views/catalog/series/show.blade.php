@@ -52,7 +52,8 @@
                                     </div>
 
                                     <!-- Cover (Small) -->
-                                    <a href="{{ route('books.show', $book->slug) }}" class="me-3 d-none d-sm-block">
+                                    <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
+                                        class="me-3 d-none d-sm-block">
                                         <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                                             alt="{{ $book->title }}" class="rounded shadow-sm"
                                             style="width: 50px; height: 75px; object-fit: cover;">
@@ -61,7 +62,7 @@
                                     <!-- Content -->
                                     <div class="flex-grow-1 min-w-0">
                                         <h5 class="fw-bold text-white mb-1 text-truncate">
-                                            <a href="{{ route('books.show', $book->slug) }}"
+                                            <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                                 class="text-white text-decoration-none hover-text-secondary transition-colors">
                                                 {{ $book->title }}
                                             </a>
@@ -73,7 +74,7 @@
 
                                     <!-- Action -->
                                     <div class="ms-3">
-                                        <a href="{{ route('books.show', $book->slug) }}"
+                                        <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                             class="btn btn-sm btn-outline-secondary rounded-circle" title="Читать">
                                             <i class="bi bi-arrow-right"></i>
                                         </a>

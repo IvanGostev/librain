@@ -122,7 +122,7 @@
                         <div class="card bg-dark-card border-white-10 p-3 mb-3 hover-card-lift">
                             <div class="d-flex gap-3">
                                 <div class="flex-shrink-0">
-                                    <a href="{{ route('books.show', $review->book->slug) }}">
+                                    <a href="{{ route('books.show', ['genre' => $review->book->genre_slug, 'slug' => $review->book->slug]) }}">
                                         <img src="{{ $review->book->cover_image ? asset('storage/' . $review->book->cover_image) : asset('images/no-cover.svg') }}" 
                                             class="rounded border border-white-10" 
                                             style="width: 50px; height: 75px; object-fit: cover;"
@@ -133,7 +133,7 @@
                                     <div class="d-flex justify-content-between align-items-start mb-1">
                                         <div>
                                             <span class="text-white-50 small">Оставил отзыв к книге</span>
-                                            <a href="{{ route('books.show', $review->book->slug) }}" class="text-primary text-decoration-none fw-bold ms-1">
+                                            <a href="{{ route('books.show', ['genre' => $review->book->genre_slug, 'slug' => $review->book->slug]) }}" class="text-primary text-decoration-none fw-bold ms-1">
                                                 {{ $review->book->title }}
                                             </a>
                                         </div>

@@ -21,7 +21,7 @@
         <p>Спасибо, что делитесь своим мнением!</p>
 
         <div style="margin-top: 30px;">
-            <a href="{{ route('books.show', $review->book->slug) }}"
+            <a href="{{ route('books.show', ['genre' => $review->book->genre_slug, 'slug' => $review->book->slug]) }}"
                 style="background-color: #0d6efd; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Перейти
                 к книге</a>
         </div>

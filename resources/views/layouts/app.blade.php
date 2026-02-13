@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
-        // Init theme immediately
+
         (function () {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
@@ -121,11 +121,11 @@
                             @endif
                         </li>
                         <li class="nav-item">
-                            @if(request()->is('top/100'))
+                            @if(request()->routeIs('top100'))
                                 <span class="nav-link active text-primary cursor-default">Топ 100</span>
                             @else
-                                <a class="nav-link {{ request()->is('top/100') ? 'active text-primary' : '' }}"
-                                    href="{{ url('/top/100') }}">Топ 100</a>
+                                <a class="nav-link {{ request()->routeIs('top100') ? 'active text-primary' : '' }}"
+                                    href="{{ route('top100') }}">Топ 100</a>
                             @endif
                         </li>
                     </ul>
@@ -264,11 +264,25 @@
         <footer class="footer mt-auto py-4 border-top border-white-10 bg-darker">
             <div
                 class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 text-muted">
-                <p class="mb-0">&copy; {{ date('Y') }} Librain. Все права защищены.</p>
-                <p class="small mb-0 opacity-75">
-                    Сайт разработан <a href="https://t.me/ivangostevdeveloper" target="_blank"
-                        class="text-decoration-none text-white-50 hover-text-white transition-colors">GOSTEV</a>
-                </p>
+                <div class="d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start">
+                    <p class="mb-0">&copy; {{ date('Y') }} Librain. Все права защищены.</p>
+                    <div class="d-flex gap-3">
+                        <a href="{{ route('pages.show', 'copyright-holders') }}"
+                            class="text-decoration-none text-muted hover-text-white">Правообладателям</a>
+                        <a href="{{ route('pages.show', 'privacy-policy') }}"
+                            class="text-decoration-none text-muted hover-text-white">Политика конфиденциальности</a>
+                    </div>
+                </div>
+
+                <div class="text-center text-md-end">
+                    @php
+                        $contactEmail = \App\Models\SiteSetting::where('key', 'contact_email')->value('value');
+                    @endphp
+                    @if($contactEmail)
+                        <p class="mb-0 small">По всем вопросам: <a href="mailto:{{ $contactEmail }}"
+                                class="text-white-50 hover-text-white">{{ $contactEmail }}</a></p>
+                    @endif
+                </div>
             </div>
         </footer>
     </div>
@@ -279,7 +293,7 @@
             const html = document.documentElement;
             const icon = themeToggle.querySelector('i');
 
-            // Function to update icon
+
             const updateIcon = (theme) => {
                 if (theme === 'dark') {
                     icon.classList.remove('bi-moon-stars-fill');
@@ -290,7 +304,7 @@
                 }
             };
 
-            // Set initial icon
+
             updateIcon(html.getAttribute('data-bs-theme'));
 
             themeToggle.addEventListener('click', () => {

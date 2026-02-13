@@ -75,4 +75,20 @@ class Book extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function getGenreSlugAttribute()
+    {
+        return $this->genres->first()?->slug ?? 'general';
+    }
+
+    public function recalculateRating()
+    {
+        $avg = $this->ratings()->avg('rating');
+        $this->update(['rating' => $avg ?? 0]);
+    }
 }

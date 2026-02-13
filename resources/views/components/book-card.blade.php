@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center">
         <!-- Cover -->
         <div class="flex-shrink-0 me-3 position-relative">
-            <a href="{{ route('books.show', $book->slug) }}">
+            <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}">
                 <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                     alt="{{ $book->title }}" class="rounded shadow-sm"
                     style="width: 80px; height: 120px; object-fit: cover;"
@@ -29,7 +29,7 @@
             <div class="d-flex flex-column h-100">
                 <div class="mb-2">
                     <h5 class="fw-bold text-white mb-1 text-truncate">
-                        <a href="{{ route('books.show', $book->slug) }}"
+                        <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                             class="text-white text-decoration-none hover-text-primary transition-colors">
                             {{ $book->title }}
                         </a>
@@ -60,7 +60,8 @@
 
         <!-- Action Button -->
         <div class="ms-3 d-none d-sm-block">
-            <a href="{{ route('books.show', $book->slug) }}" class="btn btn-outline-primary rounded-pill px-4">
+            <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
+                class="btn btn-outline-primary rounded-pill px-4">
                 Читать
             </a>
         </div>

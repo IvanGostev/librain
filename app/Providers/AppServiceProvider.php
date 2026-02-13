@@ -25,14 +25,21 @@ class AppServiceProvider extends ServiceProvider
         Paginator::defaultView('vendor.pagination.avito');
         Paginator::defaultSimpleView('vendor.pagination.simple-bootstrap-5');
 
-        \Illuminate\Support\Facades\Event::listen(
-            \SocialiteProviders\Manager\SocialiteWasCalled::class,
-            \SocialiteProviders\VKontakte\VKontakteExtendSocialite::class . '@handle'
-        );
+
 
         \Illuminate\Support\Facades\Event::listen(
             \SocialiteProviders\Manager\SocialiteWasCalled::class,
             \SocialiteProviders\Odnoklassniki\OdnoklassnikiExtendSocialite::class . '@handle'
+        );
+
+        \Illuminate\Support\Facades\Event::listen(
+            \SocialiteProviders\Manager\SocialiteWasCalled::class,
+            \SocialiteProviders\Telegram\TelegramExtendSocialite::class . '@handle'
+        );
+
+        \Illuminate\Support\Facades\Event::listen(
+            \SocialiteProviders\Manager\SocialiteWasCalled::class,
+            \SocialiteProviders\VKontakte\VKontakteExtendSocialite::class . '@handle'
         );
     }
 }

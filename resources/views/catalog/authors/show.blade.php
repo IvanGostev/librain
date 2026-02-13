@@ -6,14 +6,14 @@
 
 @section('schema')
     <script type="application/ld+json">
-            {
-              "@@context": "https://schema.org",
-              "@@type": "Person",
-              "name": "{{ $author->name }}",
-              "description": "{{ Str::limit(strip_tags($author->bio), 200) }}",
-              "image": "{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
-            }
-            </script>
+                {
+                  "@@context": "https://schema.org",
+                  "@@type": "Person",
+                  "name": "{{ $author->name }}",
+                  "description": "{{ Str::limit(strip_tags($author->bio), 200) }}",
+                  "image": "{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
+                }
+                </script>
 @endsection
 
 @section('content')
@@ -54,7 +54,7 @@
             <!-- Main Content -->
             <div class="col-md-8 col-lg-9 animate-fade-in-up delay-100">
                 <h2 class="fw-bold text-white mb-4 border-start border-4 border-primary ps-3">Биография</h2>
-                <div class="bg-dark-card p-4 rounded-3 border border-white-10 mb-5 text-light text-opacity-75">
+                <div class="bg-dark-card p-4 rounded-3 border border-white-10 mb-5">
                     @if($author->bio)
                         {!! nl2br(e($author->bio)) !!}
                     @else

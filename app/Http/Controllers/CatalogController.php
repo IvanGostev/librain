@@ -29,6 +29,8 @@ class CatalogController extends Controller
             $date = match ($period) {
                 'week' => now()->subWeek(),
                 'month' => now()->subMonth(),
+                'half_year' => now()->subMonths(6),
+                'year' => now()->subYear(),
                 default => null
             };
         }
@@ -90,6 +92,8 @@ class CatalogController extends Controller
             $date = match ($period) {
                 'week' => now()->subWeek(),
                 'month' => now()->subMonth(),
+                'half_year' => now()->subMonths(6),
+                'year' => now()->subYear(),
                 default => null
             };
 
@@ -285,12 +289,26 @@ class CatalogController extends Controller
         return view('catalog.series.show', compact('series', 'title'));
     }
 
-    public function book(Request $request, $slug)
+    public function bookLegacy(Request $request, $slug)
+    {
+        $book = Book::where('slug', $slug)->with('genres')->firstOrFail();
+        $genreSlug = $book->genres->first()?->slug ?? 'general';
+        return redirect()->route('books.show', ['genre' => $genreSlug, 'slug' => $slug], 301);
+    }
+
+    public function book(Request $request, $genre, $slug)
     {
         $reviewsSort = $request->input('reviews_sort', 'newest');
 
         $book = Book::where('slug', $slug)
-            ->with(['author', 'genres', 'series'])
+            ->with([
+                'author',
+                'genres',
+                'series.books' => function ($q) {
+                    $q->select('books.id', 'books.title', 'books.slug', 'books.cover_image', 'books.rating')
+                        ->orderBy('pivot_order');
+                }
+            ])
             ->with([
                 'chapters' => function ($q) {
                     $q->select('id', 'book_id', 'title', 'order', 'symbols_count')
@@ -322,6 +340,13 @@ class CatalogController extends Controller
             ])
             ->firstOrFail();
 
+
+        $primaryGenre = $book->genres->first();
+        $correctGenreSlug = $primaryGenre ? $primaryGenre->slug : 'general';
+
+        if ($genre !== $correctGenreSlug) {
+            return redirect()->route('books.show', ['genre' => $correctGenreSlug, 'slug' => $slug], 301);
+        }
 
         $book->increment('views');
         \App\Models\BookDailyView::firstOrCreate(

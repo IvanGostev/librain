@@ -2,7 +2,8 @@
 
 <div class="card bg-dark-card border-0 h-100 hover-card-lift transition-transform group rounded-4 overflow-hidden">
     <div class="position-relative">
-        <a href="{{ route('books.show', $book->slug) }}" class="d-block overflow-hidden rounded-4">
+        <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
+            class="d-block overflow-hidden rounded-4">
             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                 alt="{{ $book->title }}"
                 class="w-100 object-fit-cover transition-transform group-hover:scale-105 duration-500"
@@ -33,14 +34,14 @@
 
     <div class="card-body p-3 d-flex flex-column">
         <h5 class="card-title fw-bold text-white fs-6 mb-1 text-truncate-2" style="min-height: 2.5rem;">
-            <a href="{{ route('books.show', $book->slug) }}"
+            <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                 class="text-white text-decoration-none hover-text-primary transition-colors">
                 {{ $book->title }}
             </a>
         </h5>
 
-        <p class="card-text text-muted small mb-2 text-truncate">
-            {{ $book->created_at->format('d.m.Y') }} -
+        <p class="card-text text-muted small mb-2">
+            {{ $book->created_at ? $book->created_at->format('d.m.Y') . ' - ' : '' }}
             @if($book->author)
                 <a href="{{ route('authors.show', $book->author->slug) }}"
                     class="text-muted text-decoration-none hover-text-primary transition-colors">

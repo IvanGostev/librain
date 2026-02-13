@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card bg-dark-card border-white-10 d-flex flex-row p-3 hover-card-lift">
             <div class="position-relative flex-shrink-0">
-                <a href="{{ route('books.show', $entry->book->slug) }}">
+                <a href="{{ route('books.show', ['genre' => $entry->book->genre_slug, 'slug' => $entry->book->slug]) }}">
                     <img src="{{ $entry->book->cover_image ? asset('storage/' . $entry->book->cover_image) : asset('images/no-cover.svg') }}"
                         class="rounded-3 shadow-sm" style="width: 80px; height: 120px; object-fit: cover;"
                         onerror="this.src='{{ asset('images/no-cover.svg') }}'">
@@ -22,7 +22,9 @@
                     </h6>
                     <div class="d-flex gap-1">
                         @if(!$entry->book->is_published)
-                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-0" style="font-size: 0.6rem;">
+                            <span
+                                class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-0"
+                                style="font-size: 0.6rem;">
                                 Скрыто
                             </span>
                         @endif

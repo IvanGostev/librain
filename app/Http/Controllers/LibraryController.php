@@ -43,7 +43,7 @@ class LibraryController extends Controller
         return view('library.index', compact('reading', 'wantToRead', 'completed', 'favorites', 'writing', 'hidden', 'sort', 'activeTab', 'title'));
     }
 
-    public function toggleFavorite(Book $book)
+    public function toggleFavorite(Request $request, Book $book)
     {
         $user = Auth::user();
 
@@ -64,7 +64,7 @@ class LibraryController extends Controller
         return back()->with('success', $message);
     }
 
-    public function togglePlanned(Book $book)
+    public function togglePlanned(Request $request, Book $book)
     {
         $user = Auth::user();
 

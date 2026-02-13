@@ -44,7 +44,7 @@
                                 <!-- Info -->
                                 <div class="flex-grow-1 min-w-0">
                                     <h5 class="fw-bold text-white mb-1 text-truncate">
-                                        <a href="{{ route('books.show', $book->slug) }}"
+                                        <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                             class="text-white text-decoration-none hover-text-primary transition-colors">
                                             {{ $book->title }}
                                         </a>
@@ -62,7 +62,7 @@
 
                                 <!-- Action -->
                                 <div class="ms-3 d-none d-md-block">
-                                    <a href="{{ route('books.show', $book->slug) }}"
+                                    <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                         class="btn btn-outline-primary rounded-pill btn-sm px-4">
                                         Читать
                                     </a>

@@ -52,13 +52,7 @@
             </h6>
             <span class="text-muted small">{{ $review->created_at->diffForHumans() }}</span>
         </div>
-        @if($review->rating && $level == 0)
-            <div class="text-warning small mb-2">
-                @for($i = 1; $i <= 5; $i++)
-                    <i class="bi bi-star{{ $i <= $review->rating ? '-fill' : '' }}"></i>
-                @endfor
-            </div>
-        @endif
+
         <p class="text-white mb-2" style="font-size: 0.95rem; line-height: 1.6;">
             {{ $review->comment }}
         </p>

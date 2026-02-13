@@ -48,4 +48,11 @@ return [
         'redirect' => env('OK_REDIRECT_URI', 'http://localhost:8000/auth/odnoklassniki/callback'),
     ],
 
+    'telegram' => [
+        'bot' => env('TELEGRAM_BOT_NAME'),
+        'client_id' => null,
+        'client_secret' => env('TELEGRAM_TOKEN'),
+        'redirect' => env('TELEGRAM_REDIRECT_URI'),
+    ],
+
 ];

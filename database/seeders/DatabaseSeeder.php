@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         // Seeding Site Settings
         SiteSetting::updateOrCreate(['key' => 'home_bottom_title'], ['value' => 'О библиотеке Librain']);
         SiteSetting::updateOrCreate(['key' => 'home_bottom_text'], ['value' => '<p>Librain - это современная электронная библиотека, где вы найдете тысячи книг различных жанров. Мы стремимся сделать чтение доступным и удобным для каждого. Наша коллекция регулярно пополняется новинками, а удобный поиск поможет вам быстро найти нужную книгу.</p><p>Присоединяйтесь к нашему сообществу читателей, оставляйте отзывы, делитесь впечатлениями и открывайте для себя новые литературные миры вместе с Librain!</p>']);
+        SiteSetting::updateOrCreate(['key' => 'contact_email'], ['value' => 'support@librain.ru']);
 
         // Users
         User::factory()->create([

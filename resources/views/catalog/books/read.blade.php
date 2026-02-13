@@ -147,7 +147,8 @@
     <!-- Toolbar -->
     <div class="reader-toolbar d-flex align-items-center justify-content-between px-3 px-lg-4">
         <div class="d-flex align-items-center">
-            <a href="{{ route('books.show', $book->slug) }}" class="btn btn-icon btn-ghost me-3" title="Back to Book">
+            <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
+                class="btn btn-icon btn-ghost me-3" title="Back to Book">
                 <i class="bi bi-arrow-left fs-5"></i>
             </a>
             <div class="d-none d-md-block">
@@ -245,7 +246,8 @@
                     Следующая <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             @else
-                <a href="{{ route('books.show', $book->slug) }}" class="btn btn-success rounded-pill px-4 hover-elevate">
+                <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
+                    class="btn btn-success rounded-pill px-4 hover-elevate">
                     Завершить <i class="bi bi-check-lg ms-2"></i>
                 </a>
             @endif

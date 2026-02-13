@@ -121,6 +121,11 @@
                                     style="background-color: #EE8208; border-color: #EE8208;">
                                     <i class="bi bi-person"></i> Одноклассники
                                 </a>
+                                <a href="{{ route('social.redirect', 'telegram') }}"
+                                    class="btn btn-info d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate"
+                                    style="background-color: #229ED9; border-color: #229ED9;">
+                                    <i class="bi bi-telegram"></i> Telegram
+                                </a>
                             </div>
 
                             <div class="text-center text-muted small">

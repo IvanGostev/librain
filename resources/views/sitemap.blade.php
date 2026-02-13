@@ -8,7 +8,7 @@
     </url>
 
     <url>
-        <loc>{{ url('/top/100') }}</loc>
+        <loc>{{ route('top100') }}</loc>
         <lastmod>{{ now()->startOfDay()->toAtomString() }}</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
@@ -54,7 +54,7 @@
 @endforeach
 @foreach ($books as $book)
     <url>
-        <loc>{{ route('books.show', $book->slug) }}</loc>
+        <loc>{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}</loc>
         <lastmod>{{ $book->updated_at->toAtomString() }}</lastmod>
         <priority>0.8</priority>
     </url>
