@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::view('/ivangostev', 'developer.ivangostev')->name('developer');
+
 
 
 Auth::routes();
@@ -43,8 +45,8 @@ Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'inde
 Route::get('/p/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('pages.show');
 
 
+Route::get('/{slug}/read/{chapterOrder?}', [App\Http\Controllers\CatalogController::class, 'read'])->name('books.read');
 Route::get('/{genre}/{slug}', [App\Http\Controllers\CatalogController::class, 'book'])->name('books.show');
 Route::get('/{slug}', [App\Http\Controllers\CatalogController::class, 'bookLegacy'])->name('books.show.legacy');
-Route::get('/{slug}/read/{chapterOrder?}', [App\Http\Controllers\CatalogController::class, 'read'])->name('books.read');
 
 

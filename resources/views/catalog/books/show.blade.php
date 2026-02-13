@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-                                                                                            {
-                                                                                              "@@context": "https://schema.org",
-                                                                                              "@@type": "Book",
-                                                                                              "name": "{{ $book->title }}",
-                                                                                              "author": {
-                                                                                                "@@type": "Person",
-                                                                                                "name": "{{ $book->author->name ?? 'Unknown' }}"
-                                                                                              },
-                                                                                              "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-                                                                                              "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-                                                                                              "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-                                                                                              "aggregateRating": {
-                                                                                                "@@type": "AggregateRating",
-                                                                                                "ratingValue": "{{ $book->rating }}",
-                                                                                                "reviewCount": "{{ $book->reviews->count() }}"
-                                                                                              }
-                                                                                            }
-                                                                                            </script>
+                                                                                                    {
+                                                                                                      "@@context": "https://schema.org",
+                                                                                                      "@@type": "Book",
+                                                                                                      "name": "{{ $book->title }}",
+                                                                                                      "author": {
+                                                                                                        "@@type": "Person",
+                                                                                                        "name": "{{ $book->author->name ?? 'Unknown' }}"
+                                                                                                      },
+                                                                                                      "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                                                                                                      "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                                                                                                      "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                                                                                                      "aggregateRating": {
+                                                                                                        "@@type": "AggregateRating",
+                                                                                                        "ratingValue": "{{ $book->rating }}",
+                                                                                                        "reviewCount": "{{ $book->reviews->count() }}"
+                                                                                                      }
+                                                                                                    }
+                                                                                                    </script>
 @endsection
 
 @section('content')
@@ -76,7 +76,7 @@
 
                             <div class="position-absolute top-0 end-0 p-3">
                                 <span class="badge bg-dark bg-opacity-75 backdrop-blur-sm fs-6"
-                                    style="color: #fff !important;">
+                                    style="color: #fff !important;" id="cover-rating-display">
                                     <i class="bi bi-star-fill text-warning me-1"></i> {{ number_format($book->rating, 1) }}
                                 </span>
                             </div>
@@ -245,9 +245,6 @@
                     <div class="d-flex flex-wrap gap-2 justify-content-start" id="user-rating-stars"
                         data-current-rating="{{ $userRating ?? 0 }}" onmouseleave="resetStars()">
                         @auth
-                            @php
-                                $userRating = \App\Models\Rating::where('user_id', auth()->id())->where('book_id', $book->id)->value('rating');
-                            @endphp
                             @for($i = 1; $i <= 10; $i++)
                                 <i class="bi bi-star{{ $userRating && $i <= $userRating ? '-fill text-warning' : ' text-white-50' }} fs-5 cursor-pointer hover-text-warning transition-colors user-rating-star"
                                     data-rating="{{ $i }}" title="Оценка: {{ $i }}" onmouseenter="highlightStars({{ $i }})"
@@ -495,6 +492,28 @@
         .bi-heart-fill {
             color: white !important;
         }
+
+        /* Firework Effect */
+        .firework-particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            animation: firework-pop 0.8s ease-out forwards;
+        }
+
+        @keyframes firework-pop {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
     </style>
 
     <!-- Download Timer Overlay -->
@@ -564,8 +583,41 @@
 
 
         function updateAverageRatingDisplay(newAvg) {
+            const formattedAvg = parseFloat(newAvg).toFixed(1);
+            
             const avgEl = document.getElementById('average-rating-display');
-            if (avgEl) avgEl.textContent = newAvg;
+            if (avgEl) avgEl.textContent = formattedAvg;
+
+            const coverEl = document.getElementById('cover-rating-display');
+            if (coverEl) coverEl.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i> ${formattedAvg}`;
+        }
+
+        function createFirework(x, y) {
+            const colors = ['#ffc107', '#ff5722', '#4caf50', '#2196f3', '#ffffff'];
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('firework-particle');
+                
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 50 + Math.random() * 100;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--ty', `${ty}px`);
+                
+                document.body.appendChild(particle);
+                
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
         }
 
         function rateBook(bookId, rating) {
@@ -576,10 +628,17 @@
             container.dataset.currentRating = rating;
             highlightStars(rating);
 
+            const star = document.querySelector(`.user-rating-star[data-rating="${rating}"]`);
+            if (star) {
+                const rect = star.getBoundingClientRect();
+                createFirework(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            }
+
             fetch(`/books/${bookId}/rate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({ rating: rating })

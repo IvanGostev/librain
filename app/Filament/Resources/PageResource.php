@@ -19,6 +19,21 @@ class PageResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return 'Страница';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Страницы';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Страницы';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -26,21 +41,25 @@ class PageResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\TextInput::make('title')
+                            ->label('Заголовок')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn(string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
 
                         Forms\Components\TextInput::make('slug')
+                            ->label('URL (slug)')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
 
                         Forms\Components\RichEditor::make('content')
+                            ->label('Контент')
                             ->required()
                             ->columnSpanFull(),
 
                         Forms\Components\Toggle::make('is_active')
+                            ->label('Активна')
                             ->required()
                             ->default(true),
                     ])
@@ -52,16 +71,21 @@ class PageResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Заголовок')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
+                    ->label('URL')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
+                    ->label('Активна')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Создано')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Обновлено')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

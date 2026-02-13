@@ -33,7 +33,7 @@ class SiteSettingResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->disabled(fn($record) => $record !== null),
-                        Forms\Components\RichEditor::make('value')
+                        Forms\Components\Textarea::make('value')
                             ->label('Значение')
                             ->required()
                             ->columnSpanFull(),

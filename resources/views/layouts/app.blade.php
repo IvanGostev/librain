@@ -267,7 +267,7 @@
                 <div class="d-flex flex-column flex-md-row align-items-center gap-3 text-center text-md-start">
                     <p class="mb-0">&copy; {{ date('Y') }} Librain. Все права защищены.</p>
                     <div class="d-flex gap-3">
-                        <a href="{{ route('pages.show', 'copyright-holders') }}"
+                        <a href="{{ route('pages.show', 'copyright') }}"
                             class="text-decoration-none text-muted hover-text-white">Правообладателям</a>
                         <a href="{{ route('pages.show', 'privacy-policy') }}"
                             class="text-decoration-none text-muted hover-text-white">Политика конфиденциальности</a>

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Page;
-use App\Models\SiteSetting;
 use Illuminate\Database\Seeder;
 
 class PageSeeder extends Seeder
@@ -13,27 +12,24 @@ class PageSeeder extends Seeder
      */
     public function run(): void
     {
-        Page::firstOrCreate(
-            ['slug' => 'copyright-holders'],
-            [
-                'title' => 'Правообладателям',
-                'content' => '<h1>Информация для правообладателей</h1><p>Если вы являетесь правообладателем...</p>',
-                'is_active' => true,
-            ]
-        );
-
-        Page::firstOrCreate(
+        // Privacy Policy
+        Page::updateOrCreate(
             ['slug' => 'privacy-policy'],
             [
                 'title' => 'Политика конфиденциальности',
-                'content' => '<h1>Политика конфиденциальности</h1><p>Наша политика обработки персональных данных...</p>',
+                'content' => '<h1>Политика конфиденциальности</h1><p>Здесь должен быть текст вашей политики конфиденциальности.</p>',
                 'is_active' => true,
             ]
         );
 
-        SiteSetting::firstOrCreate(
-            ['key' => 'contact_email'],
-            ['value' => 'support@librain.com']
+        // Copyright (Rights Holders)
+        Page::updateOrCreate(
+            ['slug' => 'copyright'],
+            [
+                'title' => 'Правообладателям',
+                'content' => '<h1>Правообладателям</h1><p>Здесь должна быть информация для правообладателей.</p>',
+                'is_active' => true,
+            ]
         );
     }
 }

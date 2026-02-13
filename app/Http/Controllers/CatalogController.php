@@ -355,6 +355,8 @@ class CatalogController extends Controller
 
         $isFavorite = false;
         $isPlanned = false;
+        $userRating = 0;
+
         if (Auth::check()) {
             $entry = Auth::user()->libraryEntries()
                 ->where('book_id', $book->id)
@@ -364,13 +366,17 @@ class CatalogController extends Controller
                 $isFavorite = $entry->is_favorite;
                 $isPlanned = $entry->status === 'planned';
             }
+
+            $userRating = \App\Models\Rating::where('user_id', Auth::id())
+                ->where('book_id', $book->id)
+                ->value('rating') ?? 0;
         }
 
         $title = $book->seo_title ?? $book->title . ' - ' . $book->author->name . ' | Librain';
         $description = $book->seo_description ?? Str::limit(strip_tags($book->description), 160);
         $keywords = $book->seo_keywords ?? $book->title . ', ' . $book->author->name . ', читать онлайн';
 
-        return view('catalog.books.show', compact('book', 'isFavorite', 'isPlanned', 'title', 'description', 'keywords'));
+        return view('catalog.books.show', compact('book', 'isFavorite', 'isPlanned', 'userRating', 'title', 'description', 'keywords'));
     }
 
     public function read($slug, $chapterOrder = 1)
