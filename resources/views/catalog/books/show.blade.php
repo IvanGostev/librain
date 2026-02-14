@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-                                                                                                        {
-                                                                                                          "@@context": "https://schema.org",
-                                                                                                          "@@type": "Book",
-                                                                                                          "name": "{{ $book->title }}",
-                                                                                                          "author": {
-                                                                                                            "@@type": "Person",
-                                                                                                            "name": "{{ $book->author->name ?? 'Unknown' }}"
-                                                                                                          },
-                                                                                                          "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-                                                                                                          "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-                                                                                                          "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-                                                                                                          "aggregateRating": {
-                                                                                                            "@@type": "AggregateRating",
-                                                                                                            "ratingValue": "{{ $book->rating }}",
-                                                                                                            "reviewCount": "{{ $book->reviews->count() }}"
-                                                                                                          }
-                                                                                                        }
-                                                                                                        </script>
+                                                                                                                    {
+                                                                                                                      "@@context": "https://schema.org",
+                                                                                                                      "@@type": "Book",
+                                                                                                                      "name": "{{ $book->title }}",
+                                                                                                                      "author": {
+                                                                                                                        "@@type": "Person",
+                                                                                                                        "name": "{{ $book->author->name ?? 'Unknown' }}"
+                                                                                                                      },
+                                                                                                                      "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                                                                                                                      "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                                                                                                                      "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                                                                                                                      "aggregateRating": {
+                                                                                                                        "@@type": "AggregateRating",
+                                                                                                                        "ratingValue": "{{ $book->rating }}",
+                                                                                                                        "reviewCount": "{{ $book->reviews->count() }}"
+                                                                                                                      }
+                                                                                                                    }
+                                                                                                                    </script>
 @endsection
 
 @section('content')
@@ -34,18 +34,7 @@
     @endphp
     <div class="container py-5">
         <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mb-4 animate-fade-in-up">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('catalog.index') }}"
-                        class="text-decoration-none text-muted hover-text-primary">Каталог</a></li>
-                @if($book->genres->isNotEmpty())
-                    <li class="breadcrumb-item"><a href="{{ route('genres.show', $book->genres->first()->slug) }}"
-                            class="text-decoration-none text-muted hover-text-primary">{{ $book->genres->first()->name }}</a>
-                    </li>
-                @endif
-                <li class="breadcrumb-item active text-white" aria-current="page">{{ $book->title }}</li>
-            </ol>
-        </nav>
+
 
         <div class="row g-5 position-relative">
             <!-- ... (Sidebar omitted, changes are further down) ... -->
@@ -68,7 +57,8 @@
                     <div class="card bg-transparent border-0 mb-4">
 
 
-                        <div class="position-relative rounded-3 overflow-hidden shadow-lg card-cover">
+                        <div class="position-relative rounded-3 overflow-hidden shadow-lg card-cover"
+                            style="max-width: 300px; margin: 0 auto;">
                             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                                 class="w-100 object-fit-cover mx-auto d-block" alt="{{ $book->title }}"
                                 style="width: 100%; aspect-ratio: 2/3;"
@@ -244,18 +234,11 @@
                 <div class="mb-5">
                     <div class="d-flex flex-wrap gap-2 justify-content-start" id="user-rating-stars"
                         data-current-rating="{{ $userRating ?? 0 }}" onmouseleave="resetStars()">
-                        @auth
-                            @for($i = 1; $i <= 10; $i++)
-                                <i class="bi bi-star{{ $userRating && $i <= $userRating ? '-fill text-warning' : ' text-white-50' }} fs-5 cursor-pointer hover-text-warning transition-colors user-rating-star"
-                                    data-rating="{{ $i }}" title="Оценка: {{ $i }}" onmouseenter="highlightStars({{ $i }})"
-                                    onclick="rateBook({{ $book->id }}, {{ $i }})"></i>
-                            @endfor
-                        @else
-                            <span class="text-white-50">
-                                <a href="{{ route('login') }}" class="text-primary text-decoration-none">Войдите</a>, чтобы
-                                оценить книгу.
-                            </span>
-                        @endauth
+                        @for($i = 1; $i <= 10; $i++)
+                            <i class="bi bi-star{{ $userRating && $i <= $userRating ? '-fill text-warning' : ' text-white-50' }} fs-5 cursor-pointer hover-text-warning transition-colors user-rating-star"
+                                data-rating="{{ $i }}" title="Оценка: {{ $i }}" onmouseenter="highlightStars({{ $i }})"
+                                onclick="rateBook({{ $book->id }}, {{ $i }})"></i>
+                        @endfor
                     </div>
                 </div>
 
@@ -306,6 +289,50 @@
                 </div>
 
 
+
+                @if($book->file_txt || $book->file_fb2 || $book->file_epub)
+                    @php
+                        $formatSize = function ($path) {
+                            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path))
+                                return '';
+                            $bytes = \Illuminate\Support\Facades\Storage::disk('public')->size($path);
+                            if ($bytes >= 1048576)
+                                return number_format($bytes / 1048576, 2) . ' МБ';
+                            if ($bytes >= 1024)
+                                return number_format($bytes / 1024, 0) . ' КБ';
+                            return $bytes . ' Б';
+                        };
+                    @endphp
+                    <div class="mb-5" id="downloads">
+                        <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">Скачать книгу</h5>
+                        <div class="d-flex flex-wrap gap-3">
+                            @if($book->file_txt)
+                                <a class="btn btn-outline-primary rounded-pill download-link"
+                                    href="{{ asset('storage/' . $book->file_txt) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
+                                    download>
+                                    <i class="bi bi-file-text fs-5 me-2"></i> Скачать TXT <span
+                                        class="ms-1 opacity-75 small">{{ $formatSize($book->file_txt) }}</span>
+                                </a>
+                            @endif
+                            @if($book->file_fb2)
+                                <a class="btn btn-outline-info rounded-pill download-link"
+                                    href="{{ asset('storage/' . $book->file_fb2) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
+                                    download>
+                                    <i class="bi bi-book fs-5 me-2"></i> Скачать FB2 <span
+                                        class="ms-1 opacity-75 small">{{ $formatSize($book->file_fb2) }}</span>
+                                </a>
+                            @endif
+                            @if($book->file_epub)
+                                <a class="btn btn-outline-success rounded-pill download-link"
+                                    href="{{ asset('storage/' . $book->file_epub) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
+                                    download>
+                                    <i class="bi bi-journal-richtext fs-5 me-2"></i> Скачать EPUB <span
+                                        class="ms-1 opacity-75 small">{{ $formatSize($book->file_epub) }}</span>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @endif
 
                 <div class="mb-5 border-top border-white-10 pt-5">
                     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -370,49 +397,7 @@
 
                 </div>
 
-                @if($book->file_txt || $book->file_fb2 || $book->file_epub)
-                    @php
-                        $formatSize = function ($path) {
-                            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path))
-                                return '';
-                            $bytes = \Illuminate\Support\Facades\Storage::disk('public')->size($path);
-                            if ($bytes >= 1048576)
-                                return number_format($bytes / 1048576, 2) . ' МБ';
-                            if ($bytes >= 1024)
-                                return number_format($bytes / 1024, 0) . ' КБ';
-                            return $bytes . ' Б';
-                        };
-                    @endphp
-                    <div class="mb-5" id="downloads">
-                        <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">Скачать книгу</h5>
-                        <div class="d-flex flex-wrap gap-3">
-                            @if($book->file_txt)
-                                <a class="btn btn-outline-primary rounded-pill download-link"
-                                    href="{{ asset('storage/' . $book->file_txt) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
-                                    download>
-                                    <i class="bi bi-file-text fs-5 me-2"></i> Скачать TXT <span
-                                        class="ms-1 opacity-75 small">{{ $formatSize($book->file_txt) }}</span>
-                                </a>
-                            @endif
-                            @if($book->file_fb2)
-                                <a class="btn btn-outline-info rounded-pill download-link"
-                                    href="{{ asset('storage/' . $book->file_fb2) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
-                                    download>
-                                    <i class="bi bi-book fs-5 me-2"></i> Скачать FB2 <span
-                                        class="ms-1 opacity-75 small">{{ $formatSize($book->file_fb2) }}</span>
-                                </a>
-                            @endif
-                            @if($book->file_epub)
-                                <a class="btn btn-outline-success rounded-pill download-link"
-                                    href="{{ asset('storage/' . $book->file_epub) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
-                                    download>
-                                    <i class="bi bi-journal-richtext fs-5 me-2"></i> Скачать EPUB <span
-                                        class="ms-1 opacity-75 small">{{ $formatSize($book->file_epub) }}</span>
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                @endif
+
 
                 @if($book->series->isNotEmpty())
                     @foreach($book->series as $series)
@@ -437,7 +422,8 @@
                                             </span>
                                         </div>
                                         @if($sBook->id === $book->id)
-                                            <i class="bi bi-circle-fill text-primary ms-3" style="font-size: 0.5rem;" title="Текущая книга"></i>
+                                            <i class="bi bi-circle-fill text-primary ms-3" style="font-size: 0.5rem;"
+                                                title="Текущая книга"></i>
                                         @endif
                                     </a>
                                 @endforeach
@@ -461,16 +447,16 @@
 
             <!-- Sub-filters for Popular -->
             <div class="d-flex flex-wrap gap-2 mb-4 d-none animate-fade-in-up" id="popular-sub-filters">
-                <button class="btn btn-primary rounded-pill px-3 btn-sm popular-period-filter active"
-                    data-period="week">За неделю</button>
-                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
-                    data-period="month">За месяц</button>
+                <button class="btn btn-primary rounded-pill px-3 btn-sm popular-period-filter active" data-period="week">За
+                    неделю</button>
+                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter" data-period="month">За
+                    месяц</button>
                 <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
                     data-period="half_year">За полгода</button>
-                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
-                    data-period="year">За год</button>
-                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
-                    data-period="all">За все время</button>
+                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter" data-period="year">За
+                    год</button>
+                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter" data-period="all">За
+                    все время</button>
             </div>
 
             <div class="position-relative">
@@ -521,7 +507,7 @@
         }
 
         // Related Books Logic
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             let currentRelatedPage = 1;
             let currentRelatedFilter = 'new';
             let currentRelatedPeriod = 'week';
@@ -551,10 +537,10 @@
                 }
 
                 fetch(url, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (append) {
@@ -587,7 +573,7 @@
 
             // Filter click handler
             filters.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     if (this.classList.contains('active')) return;
 
                     filters.forEach(b => {
@@ -615,7 +601,7 @@
 
             // Sub-filter click handler
             subFilters.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     if (this.classList.contains('active')) return;
 
                     subFilters.forEach(b => {
@@ -633,7 +619,7 @@
             });
 
             // Load more click handler
-            loadMoreBtn.addEventListener('click', function() {
+            loadMoreBtn.addEventListener('click', function () {
                 currentRelatedPage++;
                 loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage, true);
             });

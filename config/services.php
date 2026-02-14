@@ -50,7 +50,7 @@ return [
 
     'telegram' => [
         'bot' => env('TELEGRAM_BOT_NAME'),
-        'client_id' => null,
+        'client_id' => env('TELEGRAM_BOT_NAME'),
         'client_secret' => env('TELEGRAM_TOKEN'),
         'redirect' => env('TELEGRAM_REDIRECT_URI'),
     ],

@@ -15,10 +15,20 @@ class RatingController extends Controller
             'rating' => 'required|integer|min:1|max:10',
         ]);
 
-        $rating = Rating::updateOrCreate(
-            ['user_id' => Auth::id(), 'book_id' => $book->id],
-            ['rating' => $request->rating]
-        );
+        $userId = Auth::id();
+        $ip = $request->ip();
+
+        if ($userId) {
+            $rating = Rating::updateOrCreate(
+                ['user_id' => $userId, 'book_id' => $book->id],
+                ['rating' => $request->rating, 'ip_address' => $ip]
+            );
+        } else {
+            $rating = Rating::updateOrCreate(
+                ['ip_address' => $ip, 'book_id' => $book->id, 'user_id' => null],
+                ['rating' => $request->rating]
+            );
+        }
 
         $book->recalculateRating();
 

@@ -38,7 +38,7 @@ Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update']
 
 Route::post('/books/{book}/favorite', [App\Http\Controllers\LibraryController::class, 'toggleFavorite'])->middleware('auth')->name('books.favorite');
 Route::post('/books/{book}/planned', [App\Http\Controllers\LibraryController::class, 'togglePlanned'])->middleware('auth')->name('books.planned');
-Route::post('/books/{book}/rate', [App\Http\Controllers\RatingController::class, 'store'])->middleware('auth')->name('books.rate');
+Route::post('/books/{book}/rate', [App\Http\Controllers\RatingController::class, 'store'])->name('books.rate');
 Route::post('/books/{book}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
 Route::get('/books/{id}/related', [App\Http\Controllers\CatalogController::class, 'related'])->name('books.related');
 

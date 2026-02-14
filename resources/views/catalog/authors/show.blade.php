@@ -6,14 +6,14 @@
 
 @section('schema')
     <script type="application/ld+json">
-                {
-                  "@@context": "https://schema.org",
-                  "@@type": "Person",
-                  "name": "{{ $author->name }}",
-                  "description": "{{ Str::limit(strip_tags($author->bio), 200) }}",
-                  "image": "{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
-                }
-                </script>
+                        {
+                          "@@context": "https://schema.org",
+                          "@@type": "Person",
+                          "name": "{{ $author->name }}",
+                          "description": "{{ Str::limit(strip_tags($author->bio), 200) }}",
+                          "image": "{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
+                        }
+                        </script>
 @endsection
 
 @section('content')
@@ -62,22 +62,85 @@
                     @endif
                 </div>
 
-                <h2 class="fw-bold text-white mb-4 border-start border-4 border-secondary ps-3">Книги автора</h2>
+                <div
+                    class="d-flex justify-content-center justify-content-md-start gap-3 mb-4 flex-wrap animate-fade-in-up delay-100">
+                    @if($filter === 'new')
+                        <span class="btn btn-primary rounded-pill px-4 cursor-default">Новые</span>
+                    @else
+                        <a href="{{ route('authors.show', ['slug' => $author->slug, 'filter' => 'new']) }}"
+                            class="btn btn-outline-light rounded-pill px-4">Новые</a>
+                    @endif
 
-                @if($author->books->count() > 0)
-                    <div class="row row-cols-1 g-3">
-                        @foreach($author->books as $book)
-                            <div class="col">
-                                <x-book-card :book="$book" />
-                            </div>
+                    @if($filter === 'popular')
+                        <span class="btn btn-primary rounded-pill px-4 cursor-default">Популярные</span>
+                    @else
+                        <a href="{{ route('authors.show', ['slug' => $author->slug, 'filter' => 'popular']) }}"
+                            class="btn btn-outline-light rounded-pill px-4">Популярные</a>
+                    @endif
+
+                    @if($filter === 'discussed')
+                        <span class="btn btn-primary rounded-pill px-4 cursor-default">Обсуждаемое</span>
+                    @else
+                        <a href="{{ route('authors.show', ['slug' => $author->slug, 'filter' => 'discussed']) }}"
+                            class="btn btn-outline-light rounded-pill px-4">Обсуждаемое</a>
+                    @endif
+                </div>
+
+                @if($filter === 'popular')
+                    <div
+                        class="d-flex justify-content-center justify-content-md-start gap-2 mb-4 animate-fade-in-up delay-150 flex-wrap">
+                        @foreach(['week' => 'За неделю', 'month' => 'За месяц', 'half_year' => 'За полгода', 'year' => 'За год', 'all' => 'За все время'] as $key => $label)
+                            @if($period === $key)
+                                <span class="btn btn-primary px-3 rounded-pill btn-sm cursor-default">{{ $label }}</span>
+                            @else
+                                <a href="{{ route('authors.show', ['slug' => $author->slug, 'filter' => 'popular', 'period' => $key]) }}"
+                                    class="btn btn-outline-light px-3 rounded-pill btn-sm">{{ $label }}</a>
+                            @endif
                         @endforeach
                     </div>
-                @else
-                    <div class="text-center py-5 text-muted border border-dashed border-white-10 rounded-3">
-                        <p class="mb-0">У автора пока нет опубликованных книг.</p>
-                    </div>
                 @endif
+
+                <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+                    @if($books->count() > 0)
+                        @foreach($books as $book)
+                            <div class="col animate-fade-in-up">
+                                <x-book-card-vertical :book="$book" />
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="col-12">
+                            <div class="text-center py-5 text-muted border border-dashed border-white-10 rounded-3">
+                                <p class="mb-0">Книг не найдено.</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="mt-5 d-flex justify-content-center">
+                    {{ $books->appends(['filter' => $filter, 'period' => $period])->links() }}
+                </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .btn-outline-light {
+            border: 1px solid var(--bs-primary) !important;
+            color: var(--bs-primary) !important;
+        }
+
+        .btn-outline-light:hover {
+            background-color: var(--bs-primary) !important;
+            color: white !important;
+        }
+
+        .btn-primary {
+            border: 1px solid var(--bs-primary) !important;
+            color: white !important;
+        }
+
+        .cursor-default {
+            cursor: default !important;
+        }
+    </style>
 @endsection

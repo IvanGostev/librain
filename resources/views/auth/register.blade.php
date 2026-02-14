@@ -122,11 +122,21 @@
                                     style="background-color: #EE8208; border-color: #EE8208; color: #ffffff !important;">
                                     <i class="bi bi-person text-white" style="color: #ffffff !important;"></i> Одноклассники
                                 </a>
-                                <a href="{{ route('social.redirect', 'telegram') }}"
-                                    class="btn btn-info d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate"
-                                    style="background-color: #229ED9; border-color: #229ED9; color: #ffffff !important;">
-                                    <i class="bi bi-telegram text-white" style="color: #ffffff !important;"></i> Telegram
-                                </a>
+                                <div class="position-relative overflow-hidden rounded-pill">
+                                    <a href="{{ route('social.redirect', 'telegram') }}"
+                                        class="btn btn-info d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate w-100"
+                                        style="background-color: #229ED9; border-color: #229ED9; color: #ffffff !important;">
+                                        <i class="bi bi-telegram text-white" style="color: #ffffff !important;"></i>
+                                        Telegram
+                                    </a>
+                                    <div class="position-absolute top-50 start-50 translate-middle"
+                                        style="z-index: 999; opacity: 0.001; transform: scale(5);">
+                                        <script async src="https://telegram.org/js/telegram-widget.js?22"
+                                            data-telegram-login="{{ config('services.telegram.bot') }}" data-size="large"
+                                            data-radius="20" data-auth-url="{{ route('social.callback', 'telegram') }}"
+                                            data-request-access="write"></script>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="text-center text-muted small">

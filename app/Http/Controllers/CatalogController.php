@@ -189,21 +189,62 @@ class CatalogController extends Controller
         return view('catalog.authors.index', compact('authors', 'title', 'sort', 'letters', 'currentLetter'));
     }
 
-    public function author($slug)
+    public function author(Request $request, $slug)
     {
-        $author = Author::where('slug', $slug)
-            ->withCount('books')
-            ->with('books')
-            ->firstOrFail();
+        $author = Author::where('slug', $slug)->firstOrFail();
+
+        // Stats
+        $booksCount = $author->books()->count(); // Efficient count
+        $viewsCount = $author->books()->sum('views');
+
+        // Pass counts to view (or set on author object if view expects it)
+        $author->books_count = $booksCount;
+        $author->views_count = $viewsCount;
+
+        // Filtering
+        $filter = $request->input('filter', 'new');
+        $period = $request->input('period');
+
+        if ($filter === 'popular' && !$period) {
+            $period = 'week';
+        }
+
+        $query = $author->books()->where('is_published', true);
+
+        if ($filter === 'popular') {
+            $date = match ($period) {
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                'half_year' => now()->subMonths(6),
+                'year' => now()->subYear(),
+                default => null
+            };
+
+            if ($date) {
+                $query->withSum([
+                    'dailyViews' => function ($q) use ($date) {
+                        $q->where('date', '>=', $date);
+                    }
+                ], 'views')
+                    ->orderByDesc('daily_views_sum_views');
+            } else {
+                $query->orderByDesc('views');
+            }
+        } elseif ($filter === 'discussed') {
+            $query->withCount('reviews')->orderByDesc('reviews_count');
+        } else { // new
+            $query->latest();
+        }
+
+        $books = $query->paginate(12)->withQueryString();
 
 
-        $author->views_count = $author->books->sum('views');
 
         $title = $author->seo_title ?? $author->name . ' - Все книги автора | Librain';
         $description = $author->seo_description ?? 'Автор ' . $author->name . '. Читайте лучшие книги автора онлайн на Librain.';
         $keywords = $author->seo_keywords ?? $author->name . ', книги, читать онлайн, автор';
 
-        return view('catalog.authors.show', compact('author', 'title', 'description', 'keywords'));
+        return view('catalog.authors.show', compact('author', 'books', 'title', 'description', 'keywords', 'filter', 'period'));
     }
 
     public function series()
@@ -278,15 +319,62 @@ class CatalogController extends Controller
         return view('catalog.series.index', compact('series', 'title', 'sort', 'letters', 'currentLetter'));
     }
 
-    public function seriesShow($slug)
+    public function seriesShow(Request $request, $slug)
     {
-        $series = Series::where('slug', $slug)->with([
-            'books' => function ($q) {
-                $q->orderBy('pivot_order');
+        $series = Series::where('slug', $slug)->firstOrFail();
+
+        // Stats
+        $booksCount = $series->books()->count();
+        $viewsCount = $series->books()->sum('views'); // Assuming Series doesn't have views, summing books
+
+        // Pass counts if needed, but view calculates count from relation usually.
+        // Actually view used $series->books->count(). 
+        // We will paginate, so we need total count passed or use $books->total().
+
+        // Filtering
+        $filter = $request->input('filter', 'order'); // Default to order for series
+        $period = $request->input('period');
+
+        if ($filter === 'popular' && !$period) {
+            $period = 'week';
+        }
+
+        $query = $series->books()->where('is_published', true);
+
+        if ($filter === 'order') {
+            // Default relation has orderBy('pivot_order'), but explicit is fine.
+            // We don't reorder() here because we WANT pivot_order.
+            // Actually, the relation already applies it.
+        } elseif ($filter === 'new') {
+            $query->reorder()->latest();
+        } elseif ($filter === 'popular') {
+            $query->reorder();
+            $date = match ($period) {
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                'half_year' => now()->subMonths(6),
+                'year' => now()->subYear(),
+                default => null
+            };
+
+            if ($date) {
+                $query->withSum([
+                    'dailyViews' => function ($q) use ($date) {
+                        $q->where('date', '>=', $date);
+                    }
+                ], 'views')
+                    ->orderByDesc('daily_views_sum_views');
+            } else {
+                $query->orderByDesc('views');
             }
-        ])->firstOrFail();
+        } elseif ($filter === 'discussed') {
+            $query->reorder()->withCount('reviews')->orderByDesc('reviews_count');
+        }
+
+        $books = $query->paginate(12)->withQueryString();
+
         $title = 'Серия книг "' . $series->name . '" - Librain';
-        return view('catalog.series.show', compact('series', 'title'));
+        return view('catalog.series.show', compact('series', 'books', 'title', 'filter', 'period'));
     }
 
     public function bookLegacy(Request $request, $slug)
@@ -369,6 +457,14 @@ class CatalogController extends Controller
 
             $userRating = \App\Models\Rating::where('user_id', Auth::id())
                 ->where('book_id', $book->id)
+                ->value('rating') ?? 0;
+        } else {
+            $userRating = \App\Models\Rating::where('ip_address', request()->ip())
+                ->where('book_id', $book->id)
+                // We should check user_id is null to avoid picking up a logged-out user's rating?
+                // But IP might change.
+                // Assuming ratings created as guest have user_id=null.
+                ->whereNull('user_id')
                 ->value('rating') ?? 0;
         }
 
