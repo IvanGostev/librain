@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-                                                                                                    {
-                                                                                                      "@@context": "https://schema.org",
-                                                                                                      "@@type": "Book",
-                                                                                                      "name": "{{ $book->title }}",
-                                                                                                      "author": {
-                                                                                                        "@@type": "Person",
-                                                                                                        "name": "{{ $book->author->name ?? 'Unknown' }}"
-                                                                                                      },
-                                                                                                      "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-                                                                                                      "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-                                                                                                      "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-                                                                                                      "aggregateRating": {
-                                                                                                        "@@type": "AggregateRating",
-                                                                                                        "ratingValue": "{{ $book->rating }}",
-                                                                                                        "reviewCount": "{{ $book->reviews->count() }}"
-                                                                                                      }
-                                                                                                    }
-                                                                                                    </script>
+                                                                                                        {
+                                                                                                          "@@context": "https://schema.org",
+                                                                                                          "@@type": "Book",
+                                                                                                          "name": "{{ $book->title }}",
+                                                                                                          "author": {
+                                                                                                            "@@type": "Person",
+                                                                                                            "name": "{{ $book->author->name ?? 'Unknown' }}"
+                                                                                                          },
+                                                                                                          "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                                                                                                          "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                                                                                                          "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                                                                                                          "aggregateRating": {
+                                                                                                            "@@type": "AggregateRating",
+                                                                                                            "ratingValue": "{{ $book->rating }}",
+                                                                                                            "reviewCount": "{{ $book->reviews->count() }}"
+                                                                                                          }
+                                                                                                        }
+                                                                                                        </script>
 @endsection
 
 @section('content')
@@ -437,7 +437,7 @@
                                             </span>
                                         </div>
                                         @if($sBook->id === $book->id)
-                                            <i class="bi bi-geo-alt-fill text-primary ms-3" title="Текущая книга"></i>
+                                            <i class="bi bi-circle-fill text-primary ms-3" style="font-size: 0.5rem;" title="Текущая книга"></i>
                                         @endif
                                     </a>
                                 @endforeach
@@ -445,6 +445,50 @@
                         </div>
                     @endforeach
                 @endif
+            </div>
+        </div>
+        <!-- Related Books Section -->
+        <div class="mt-5 pt-5 border-top border-white-10" id="related-books-section">
+            <h2 class="h3 fw-bold text-white mb-4 text-uppercase tracking-wider">Что еще можно почитать</h2>
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <button class="btn btn-primary rounded-pill px-4 related-filter active" data-filter="new">Новые</button>
+                <button class="btn btn-outline-light rounded-pill px-4 related-filter"
+                    data-filter="popular">Популярные</button>
+                <button class="btn btn-outline-light rounded-pill px-4 related-filter"
+                    data-filter="discussed">Обсуждаемые</button>
+            </div>
+
+            <!-- Sub-filters for Popular -->
+            <div class="d-flex flex-wrap gap-2 mb-4 d-none animate-fade-in-up" id="popular-sub-filters">
+                <button class="btn btn-primary rounded-pill px-3 btn-sm popular-period-filter active"
+                    data-period="week">За неделю</button>
+                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
+                    data-period="month">За месяц</button>
+                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
+                    data-period="half_year">За полгода</button>
+                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
+                    data-period="year">За год</button>
+                <button class="btn btn-outline-light rounded-pill px-3 btn-sm popular-period-filter"
+                    data-period="all">За все время</button>
+            </div>
+
+            <div class="position-relative">
+                <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3" id="related-books-grid">
+                    <!-- Content loaded via AJAX -->
+                </div>
+
+                <div class="text-center py-5 d-none" id="related-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 d-none" id="related-load-more-container">
+                <button class="btn btn-outline-primary rounded-pill px-5 py-2 fw-bold" id="related-load-more">
+                    Загрузить еще
+                </button>
             </div>
         </div>
     </div>
@@ -475,6 +519,125 @@
         function hideReplyForm(reviewId) {
             document.getElementById('reply-form-' + reviewId).classList.add('d-none');
         }
+
+        // Related Books Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentRelatedPage = 1;
+            let currentRelatedFilter = 'new';
+            let currentRelatedPeriod = 'week';
+
+            const bookId = {{ $book->id }};
+            const grid = document.getElementById('related-books-grid');
+            const loadMoreBtn = document.getElementById('related-load-more');
+            const loadMoreContainer = document.getElementById('related-load-more-container');
+            const loadingSpinner = document.getElementById('related-loading');
+            const filters = document.querySelectorAll('.related-filter');
+            const subFiltersContainer = document.getElementById('popular-sub-filters');
+            const subFilters = document.querySelectorAll('.popular-period-filter');
+
+            function loadRelatedBooks(filter, period, page, append = false) {
+                if (!append) {
+                    grid.innerHTML = '';
+                    loadingSpinner.classList.remove('d-none');
+                    loadMoreContainer.classList.add('d-none');
+                } else {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загрузка...';
+                }
+
+                let url = `/books/${bookId}/related?filter=${filter}&page=${page}`;
+                if (filter === 'popular') {
+                    url += `&period=${period}`;
+                }
+
+                fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (append) {
+                            grid.insertAdjacentHTML('beforeend', data.html);
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.innerHTML = 'Загрузить еще';
+                        } else {
+                            grid.innerHTML = data.html;
+                            loadingSpinner.classList.add('d-none');
+                        }
+
+                        if (data.hasMore) {
+                            loadMoreContainer.classList.remove('d-none');
+                        } else {
+                            loadMoreContainer.classList.add('d-none');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading related books:', error);
+                        loadingSpinner.classList.add('d-none');
+                        if (append) {
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.innerHTML = 'Загрузить еще';
+                        }
+                    });
+            }
+
+            // Initial load
+            loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
+
+            // Filter click handler
+            filters.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.classList.contains('active')) return;
+
+                    filters.forEach(b => {
+                        b.classList.remove('btn-primary', 'active');
+                        b.classList.add('btn-outline-light');
+                    });
+                    this.classList.remove('btn-outline-light');
+                    this.classList.add('btn-primary', 'active');
+
+                    currentRelatedFilter = this.getAttribute('data-filter');
+                    currentRelatedPage = 1;
+
+                    // Show/Hide Sub-filters
+                    if (currentRelatedFilter === 'popular') {
+                        subFiltersContainer.classList.remove('d-none');
+                        subFiltersContainer.classList.add('d-flex');
+                    } else {
+                        subFiltersContainer.classList.add('d-none');
+                        subFiltersContainer.classList.remove('d-flex');
+                    }
+
+                    loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
+                });
+            });
+
+            // Sub-filter click handler
+            subFilters.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.classList.contains('active')) return;
+
+                    subFilters.forEach(b => {
+                        b.classList.remove('btn-primary', 'active');
+                        b.classList.add('btn-outline-light');
+                    });
+                    this.classList.remove('btn-outline-light');
+                    this.classList.add('btn-primary', 'active');
+
+                    currentRelatedPeriod = this.getAttribute('data-period');
+                    currentRelatedPage = 1;
+
+                    loadRelatedBooks('popular', currentRelatedPeriod, currentRelatedPage);
+                });
+            });
+
+            // Load more click handler
+            loadMoreBtn.addEventListener('click', function() {
+                currentRelatedPage++;
+                loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage, true);
+            });
+        });
     </script>
     <style>
         /* Filter buttons styling */
@@ -509,6 +672,7 @@
                 transform: translate(0, 0) scale(1);
                 opacity: 1;
             }
+
             100% {
                 transform: translate(var(--tx), var(--ty)) scale(0);
                 opacity: 0;
@@ -584,7 +748,7 @@
 
         function updateAverageRatingDisplay(newAvg) {
             const formattedAvg = parseFloat(newAvg).toFixed(1);
-            
+
             const avgEl = document.getElementById('average-rating-display');
             if (avgEl) avgEl.textContent = formattedAvg;
 
@@ -595,25 +759,25 @@
         function createFirework(x, y) {
             const colors = ['#ffc107', '#ff5722', '#4caf50', '#2196f3', '#ffffff'];
             const particleCount = 30;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('firework-particle');
-                
+
                 particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 particle.style.left = x + 'px';
                 particle.style.top = y + 'px';
-                
+
                 const angle = Math.random() * Math.PI * 2;
                 const velocity = 50 + Math.random() * 100;
                 const tx = Math.cos(angle) * velocity;
                 const ty = Math.sin(angle) * velocity;
-                
+
                 particle.style.setProperty('--tx', `${tx}px`);
                 particle.style.setProperty('--ty', `${ty}px`);
-                
+
                 document.body.appendChild(particle);
-                
+
                 particle.addEventListener('animationend', () => {
                     particle.remove();
                 });

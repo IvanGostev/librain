@@ -103,7 +103,8 @@
 
                             <div class="d-grid mb-4">
                                 <button type="submit"
-                                    class="btn btn-secondary rounded-pill py-2 fw-bold shadow-lg hover-elevate text-white">
+                                    class="btn btn-secondary rounded-pill py-2 fw-bold shadow-lg hover-elevate text-white"
+                                    style="color: #ffffff !important;">
                                     {{ __('Зарегистрироваться') }}
                                 </button>
                             </div>
@@ -112,19 +113,19 @@
 
                             <div class="d-grid gap-2 mb-4">
                                 <a href="{{ route('social.redirect', 'vkontakte') }}"
-                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold shadow-sm hover-elevate"
-                                    style="background-color: #0077FF; border-color: #0077FF;">
-                                    <i class="bi bi-vk"></i> VK ID
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold shadow-sm hover-elevate text-white"
+                                    style="background-color: #0077FF; border-color: #0077FF; color: #ffffff !important;">
+                                    <i class="bi bi-vk text-white" style="color: #ffffff !important;"></i> VK ID
                                 </a>
                                 <a href="{{ route('social.redirect', 'odnoklassniki') }}"
                                     class="btn btn-warning d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate"
-                                    style="background-color: #EE8208; border-color: #EE8208;">
-                                    <i class="bi bi-person"></i> Одноклассники
+                                    style="background-color: #EE8208; border-color: #EE8208; color: #ffffff !important;">
+                                    <i class="bi bi-person text-white" style="color: #ffffff !important;"></i> Одноклассники
                                 </a>
                                 <a href="{{ route('social.redirect', 'telegram') }}"
                                     class="btn btn-info d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate"
-                                    style="background-color: #229ED9; border-color: #229ED9;">
-                                    <i class="bi bi-telegram"></i> Telegram
+                                    style="background-color: #229ED9; border-color: #229ED9; color: #ffffff !important;">
+                                    <i class="bi bi-telegram text-white" style="color: #ffffff !important;"></i> Telegram
                                 </a>
                             </div>
 

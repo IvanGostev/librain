@@ -60,7 +60,7 @@
 
                             <div class="mb-4">
                                 <div class="form-check custom-checkbox">
-                                    <input class="form-check-input bg-dark border-white-10" type="checkbox" name="remember"
+                                    <input class="form-check-input border-white-10" type="checkbox" name="remember"
                                         id="remember" {{ old('remember') ? 'checked' : '' }}>
                                     <label class="form-check-label text-muted small" for="remember">
                                         {{ __('Запомнить меня') }}
@@ -70,7 +70,8 @@
 
                             <div class="d-grid mb-4">
                                 <button type="submit"
-                                    class="btn btn-primary rounded-pill py-2 fw-bold shadow-lg hover-elevate">
+                                    class="btn btn-primary rounded-pill py-2 fw-bold shadow-lg hover-elevate text-white"
+                                    style="color: #ffffff !important;">
                                     {{ __('Войти') }}
                                 </button>
                             </div>
@@ -79,19 +80,19 @@
 
                             <div class="d-grid gap-2 mb-4">
                                 <a href="{{ route('social.redirect', 'vkontakte') }}"
-                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold shadow-sm hover-elevate"
-                                    style="background-color: #0077FF; border-color: #0077FF;">
-                                    <i class="bi bi-vk"></i> VK ID
+                                    class="btn btn-primary d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold shadow-sm hover-elevate text-white"
+                                    style="background-color: #0077FF; border-color: #0077FF; color: #ffffff !important;">
+                                    <i class="bi bi-vk text-white" style="color: #ffffff !important;"></i> VK ID
                                 </a>
                                 <a href="{{ route('social.redirect', 'odnoklassniki') }}"
                                     class="btn btn-warning d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate"
-                                    style="background-color: #EE8208; border-color: #EE8208;">
-                                    <i class="bi bi-person"></i> Одноклассники
+                                    style="background-color: #EE8208; border-color: #EE8208; color: #ffffff !important;">
+                                    <i class="bi bi-person text-white" style="color: #ffffff !important;"></i> Одноклассники
                                 </a>
                                 <a href="{{ route('social.redirect', 'telegram') }}"
                                     class="btn btn-info d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold text-white shadow-sm hover-elevate"
-                                    style="background-color: #229ED9; border-color: #229ED9;">
-                                    <i class="bi bi-telegram"></i> Telegram
+                                    style="background-color: #229ED9; border-color: #229ED9; color: #ffffff !important;">
+                                    <i class="bi bi-telegram text-white" style="color: #ffffff !important;"></i> Telegram
                                 </a>
                             </div>
 
@@ -104,9 +105,26 @@
                 </div>
 
                 <div class="text-center mt-4 text-white-50 animate-fade-in-up delay-200 small">
-                    &copy; {{ date('Y') }} Librain. Библиотека нового поколения.
+                    &copy; {{ date('Y') }} Librain.
                 </div>
             </div>
         </div>
     </div>
+    </div>
+    <style>
+        [data-bs-theme="dark"] .form-check-input {
+            background-color: #212529;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-bs-theme="light"] .form-check-input {
+            background-color: #ffffff;
+            border-color: #dee2e6;
+        }
+
+        .form-check-input:checked {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+        }
+    </style>
 @endsection

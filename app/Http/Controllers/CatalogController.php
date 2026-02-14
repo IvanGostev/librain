@@ -501,4 +501,66 @@ class CatalogController extends Controller
 
         return view('search.index', compact('books', 'title'));
     }
+
+    public function related(Request $request, $id)
+    {
+        $book = Book::findOrFail($id);
+        $filter = $request->input('filter', 'new');
+        $period = $request->input('period', 'all');
+        $page = $request->input('page', 1);
+
+        $query = Book::where('is_published', true)
+            ->where('id', '!=', $book->id)
+            ->with('author');
+
+        // Genre filtering
+        if ($book->genres->isNotEmpty()) {
+            $query->whereHas('genres', function ($q) use ($book) {
+                $q->whereIn('genres.id', $book->genres->pluck('id'));
+            });
+        } else {
+            $query->doesntHave('genres');
+        }
+
+        // Apply sorting
+        if ($filter === 'popular') {
+            $date = match ($period) {
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                'half_year' => now()->subMonths(6),
+                'year' => now()->subYear(),
+                default => null
+            };
+
+            if ($date) {
+                $query->withSum([
+                    'dailyViews' => function ($q) use ($date) {
+                        $q->where('date', '>=', $date);
+                    }
+                ], 'views')
+                    ->orderByDesc('daily_views_sum_views');
+            } else {
+                $query->orderByDesc('views');
+            }
+        } elseif ($filter === 'discussed') {
+            $query->withCount('reviews')->orderByDesc('reviews_count');
+        } else { // new
+            $query->latest();
+        }
+
+        $relatedBooks = $query->paginate(12, ['*'], 'page', $page);
+
+        if ($request->ajax()) {
+            $html = '';
+            foreach ($relatedBooks as $relatedBook) {
+                $html .= '<div class="col animate-fade-in-up">' . view('components.book-card-vertical', ['book' => $relatedBook])->render() . '</div>';
+            }
+            return response()->json([
+                'html' => $html,
+                'hasMore' => $relatedBooks->hasMorePages()
+            ]);
+        }
+
+        return abort(404);
+    }
 }
