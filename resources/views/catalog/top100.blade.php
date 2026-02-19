@@ -5,21 +5,38 @@
         <h1 class="h2 fw-bold text-white mb-4">Топ-100 лучших книг</h1>
 
         <div class="d-flex gap-2 mb-4 flex-wrap animate-fade-in-up delay-100">
-            <a href="{{ route('top100') }}"
-                class="btn {{ !request('period') ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За все
-                время</a>
-            <a href="{{ route('top100', ['period' => 'week']) }}"
-                class="btn {{ request('period') === 'week' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
-                неделю</a>
-            <a href="{{ route('top100', ['period' => 'month']) }}"
-                class="btn {{ request('period') === 'month' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
-                месяц</a>
-            <a href="{{ route('top100', ['period' => 'half_year']) }}"
-                class="btn {{ request('period') === 'half_year' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
-                полгода</a>
-            <a href="{{ route('top100', ['period' => 'year']) }}"
-                class="btn {{ request('period') === 'year' ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4">За
-                год</a>
+            @if(!request('period'))
+                <span class="btn btn-primary rounded-pill px-4 cursor-default">За все время</span>
+            @else
+                <a href="{{ route('top100') }}" class="btn btn-outline-light rounded-pill px-4">За все время</a>
+            @endif
+
+            @if(request('period') === 'week')
+                <span class="btn btn-primary rounded-pill px-4 cursor-default">За неделю</span>
+            @else
+                <a href="{{ route('top100', ['period' => 'week']) }}" class="btn btn-outline-light rounded-pill px-4">За
+                    неделю</a>
+            @endif
+
+            @if(request('period') === 'month')
+                <span class="btn btn-primary rounded-pill px-4 cursor-default">За месяц</span>
+            @else
+                <a href="{{ route('top100', ['period' => 'month']) }}" class="btn btn-outline-light rounded-pill px-4">За
+                    месяц</a>
+            @endif
+
+            @if(request('period') === 'half_year')
+                <span class="btn btn-primary rounded-pill px-4 cursor-default">За полгода</span>
+            @else
+                <a href="{{ route('top100', ['period' => 'half_year']) }}" class="btn btn-outline-light rounded-pill px-4">За
+                    полгода</a>
+            @endif
+
+            @if(request('period') === 'year')
+                <span class="btn btn-primary rounded-pill px-4 cursor-default">За год</span>
+            @else
+                <a href="{{ route('top100', ['period' => 'year']) }}" class="btn btn-outline-light rounded-pill px-4">За год</a>
+            @endif
         </div>
         @if($books->count() > 0)
             <div class="row g-4 animate-fade-in-up delay-200">

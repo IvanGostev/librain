@@ -112,7 +112,7 @@ class SocialController extends Controller
                 'provider' => $provider,
                 'provider_id' => $providerId,
                 'password' => null,
-                'avatar' => $avatar,
+                'avatar' => $avatar ?? null,
                 'email_verified_at' => now(),
             ]);
         }

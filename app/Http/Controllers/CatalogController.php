@@ -118,6 +118,27 @@ class CatalogController extends Controller
         if ($sort === 'latest') {
             $query->latest();
         } elseif ($sort === 'commented') {
+            // For commented sort, we need to fetch reviews instead of books directly if we want to show review cards
+            // However, the current view structure for genres expects $books.
+            // If the user wants to see reviews like on the main page, we need to pass $reviews.
+
+            $reviews = Review::with(['user', 'book'])
+                ->whereHas('book', function ($q) use ($genre) {
+                    $q->where('is_published', true)
+                        ->whereHas('genres', function ($g) use ($genre) {
+                            $g->where('genres.id', $genre->id);
+                        });
+                })
+                ->where('is_approved', true)
+                ->latest()
+                ->paginate(20);
+
+            // We still need $books variable for other sorts or if reviews are empty/not used in the same way
+            // But if sort is commented, the view might expect reviews. 
+            // Let's keep $books query for structure but maybe not use it if we switch to reviews view.
+            // Actually, looking at the main page, it uses $reviews for 'commented' sort.
+
+            // Let's modify the query for books just in case, but we will primarily use $reviews in the view.
             $query->withCount('reviews')->orderByDesc('reviews_count');
         } else {
             $query->orderByDesc('views');
@@ -129,7 +150,10 @@ class CatalogController extends Controller
         $description = $genre->seo_description ?? 'Книги в жанре ' . $genre->name . '. Читайте лучшие произведения онлайн на Librain.';
         $keywords = $genre->seo_keywords ?? $genre->name . ', книги, читать онлайн';
 
-        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'description', 'keywords'));
+        // Pass reviews if it exists, otherwise null
+        $reviews = isset($reviews) ? $reviews : null;
+
+        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'description', 'keywords', 'reviews'));
     }
 
     public function authors()
@@ -375,13 +399,26 @@ class CatalogController extends Controller
                 $query->orderByDesc('views');
             }
         } elseif ($filter === 'discussed') {
+            $reviews = Review::with(['user', 'book'])
+                ->whereHas('book', function ($q) use ($series) {
+                    $q->where('is_published', true)
+                        ->whereHas('series', function ($s) use ($series) {
+                            $s->where('series.id', $series->id);
+                        });
+                })
+                ->where('is_approved', true)
+                ->latest()
+                ->paginate(20);
+
             $query->reorder()->withCount('reviews')->orderByDesc('reviews_count');
         }
 
         $books = $query->paginate(12)->withQueryString();
 
+        $reviews = isset($reviews) ? $reviews : null;
+
         $title = 'Серия книг "' . $series->name . '" - Librain';
-        return view('catalog.series.show', compact('series', 'books', 'title', 'filter', 'period'));
+        return view('catalog.series.show', compact('series', 'books', 'title', 'filter', 'period', 'reviews'));
     }
 
     public function bookLegacy(Request $request, $slug)

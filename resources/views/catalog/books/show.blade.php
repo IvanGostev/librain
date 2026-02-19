@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-                                                                                                                                                        {
-                                                                                                                                                          "@@context": "https://schema.org",
-                                                                                                                                                          "@@type": "Book",
-                                                                                                                                                          "name": "{{ $book->title }}",
-                                                                                                                                                          "author": {
-                                                                                                                                                            "@@type": "Person",
-                                                                                                                                                            "name": "{{ $book->author->name ?? 'Unknown' }}"
-                                                                                                                                                          },
-                                                                                                                                                          "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-                                                                                                                                                          "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-                                                                                                                                                          "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-                                                                                                                                                          "aggregateRating": {
-                                                                                                                                                            "@@type": "AggregateRating",
-                                                                                                                                                            "ratingValue": "{{ $book->rating }}",
-                                                                                                                                                            "reviewCount": "{{ $book->reviews->count() }}"
-                                                                                                                                                          }
-                                                                                                                                                        }
-                                                                                                                                                        </script>
+                                                                                                                                                                {
+                                                                                                                                                                  "@@context": "https://schema.org",
+                                                                                                                                                                  "@@type": "Book",
+                                                                                                                                                                  "name": "{{ $book->title }}",
+                                                                                                                                                                  "author": {
+                                                                                                                                                                    "@@type": "Person",
+                                                                                                                                                                    "name": "{{ $book->author->name ?? 'Unknown' }}"
+                                                                                                                                                                  },
+                                                                                                                                                                  "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                                                                                                                                                                  "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                                                                                                                                                                  "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                                                                                                                                                                  "aggregateRating": {
+                                                                                                                                                                    "@@type": "AggregateRating",
+                                                                                                                                                                    "ratingValue": "{{ $book->rating }}",
+                                                                                                                                                                    "reviewCount": "{{ $book->reviews->count() }}"
+                                                                                                                                                                  }
+                                                                                                                                                                }
+                                                                                                                                                                </script>
 @endsection
 
 @section('content')
@@ -52,7 +52,7 @@
             @endif
 
             <!-- Sidebar: Cover & Actions -->
-            <div class="col-lg-4 col-md-5 animate-fade-in-up delay-100">
+            <div class="col-lg-4 col-md-5 animate-fade-in-up delay-100 position-relative" style="z-index: 10;">
                 <div class="position-sticky" style="top: 100px;">
                     <div class="card bg-transparent border-0 mb-4">
 
@@ -162,7 +162,7 @@
                             <i class="bi bi-share-fill me-2"></i> Поделиться
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-dark-card border-white-10 shadow-lg p-2 mt-2"
-                            style="min-width: 200px;">
+                            style="min-width: 200px; z-index: 9999;">
                             <li>
                                 <a class="dropdown-item rounded-2 d-flex align-items-center gap-3 py-2 text-white-50 hover-text-white hover-bg-white-10 transition-colors"
                                     href="https://vk.com/share.php?url={{ urlencode(url()->current()) }}" target="_blank">
