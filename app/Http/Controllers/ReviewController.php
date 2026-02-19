@@ -28,7 +28,7 @@ class ReviewController extends Controller
             'guest_name' => Auth::check() ? null : $validated['guest_name'],
             'book_id' => $book->id,
             'comment' => $validated['comment'],
-            'rating' => $validated['rating'] ?? null, // FIXED: removed extra 'rating' key if duplicated
+            'rating' => $validated['rating'] ?? null,
             'parent_id' => $validated['parent_id'] ?? null,
             'is_approved' => false,
         ]);
@@ -53,11 +53,11 @@ class ReviewController extends Controller
 
         if ($vote) {
             if ($vote->type === $type) {
-                // Toggle off
+
                 $vote->delete();
                 $action = 'removed';
             } else {
-                // Change vote
+
                 $vote->update(['type' => $type]);
                 $action = 'updated';
             }
@@ -71,7 +71,7 @@ class ReviewController extends Controller
             $action = 'created';
         }
 
-        // Get updated counts
+
         $likes = \App\Models\ReviewVote::where('review_id', $review->id)->where('type', 'like')->count();
         $dislikes = \App\Models\ReviewVote::where('review_id', $review->id)->where('type', 'dislike')->count();
 

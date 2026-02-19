@@ -29,7 +29,7 @@ class CatalogController extends Controller
                     $q->where('is_published', true);
                 })
                 ->where('is_approved', true)
-                ->latest() // Order by created_at desc
+                ->latest()
                 ->paginate(20);
 
             $reviews->appends(request()->query());
@@ -206,15 +206,13 @@ class CatalogController extends Controller
     {
         $author = Author::where('slug', $slug)->firstOrFail();
 
-        // Stats
-        $booksCount = $author->books()->count(); // Efficient count
+        $booksCount = $author->books()->count();
         $viewsCount = $author->books()->sum('views');
 
-        // Pass counts to view (or set on author object if view expects it)
         $author->books_count = $booksCount;
         $author->views_count = $viewsCount;
 
-        // Filtering
+
         $filter = $request->input('filter', 'new');
         $period = $request->input('period');
 
@@ -245,7 +243,7 @@ class CatalogController extends Controller
             }
         } elseif ($filter === 'discussed') {
             $query->withCount('reviews')->orderByDesc('reviews_count');
-        } else { // new
+        } else {
             $query->latest();
         }
 
@@ -336,16 +334,14 @@ class CatalogController extends Controller
     {
         $series = Series::where('slug', $slug)->firstOrFail();
 
-        // Stats
         $booksCount = $series->books()->count();
-        $viewsCount = $series->books()->sum('views'); // Assuming Series doesn't have views, summing books
+        $viewsCount = $series->books()->sum('views');
 
-        // Pass counts if needed, but view calculates count from relation usually.
-        // Actually view used $series->books->count(). 
-        // We will paginate, so we need total count passed or use $books->total().
 
-        // Filtering
-        $filter = $request->input('filter', 'order'); // Default to order for series
+
+
+
+        $filter = $request->input('filter', 'order');
         $period = $request->input('period');
 
         if ($filter === 'popular' && !$period) {
@@ -355,9 +351,7 @@ class CatalogController extends Controller
         $query = $series->books()->where('is_published', true);
 
         if ($filter === 'order') {
-            // Default relation has orderBy('pivot_order'), but explicit is fine.
-            // We don't reorder() here because we WANT pivot_order.
-            // Actually, the relation already applies it.
+
         } elseif ($filter === 'new') {
             $query->reorder()->latest();
         } elseif ($filter === 'popular') {
@@ -479,9 +473,6 @@ class CatalogController extends Controller
         } else {
             $userRating = \App\Models\Rating::where('ip_address', request()->ip())
                 ->where('book_id', $book->id)
-                // We should check user_id is null to avoid picking up a logged-out user's rating?
-                // But IP might change.
-                // Assuming ratings created as guest have user_id=null.
                 ->whereNull('user_id')
                 ->value('rating') ?? 0;
         }
@@ -627,7 +618,7 @@ class CatalogController extends Controller
             ->where('id', '!=', $book->id)
             ->with('author');
 
-        // Genre filtering
+
         if ($book->genres->isNotEmpty()) {
             $query->whereHas('genres', function ($q) use ($book) {
                 $q->whereIn('genres.id', $book->genres->pluck('id'));
@@ -636,7 +627,7 @@ class CatalogController extends Controller
             $query->doesntHave('genres');
         }
 
-        // Apply sorting
+
         if ($filter === 'popular') {
             $date = match ($period) {
                 'week' => now()->subWeek(),
@@ -658,7 +649,7 @@ class CatalogController extends Controller
             }
         } elseif ($filter === 'discussed') {
             $query->withCount('reviews')->orderByDesc('reviews_count');
-        } else { // new
+        } else {
             $query->latest();
         }
 
@@ -688,17 +679,17 @@ class CatalogController extends Controller
         $filePath = $book->$field;
 
         if (!$filePath) {
-            abort(404); // File not available
+            abort(404);
         }
 
         if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($filePath)) {
-            abort(404); // File not on disk
+            abort(404);
         }
 
         $fileUrl = asset('storage/' . $filePath);
         $fileSize = \Illuminate\Support\Facades\Storage::disk('public')->size($filePath);
 
-        // Format size
+
         if ($fileSize >= 1048576) {
             $formattedSize = number_format($fileSize / 1048576, 2) . ' МБ';
         } elseif ($fileSize >= 1024) {

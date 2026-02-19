@@ -8,7 +8,7 @@
             @php
                 $currentSort = request('sort');
 
-                // Count filter logic
+
                 $countNext = 'count_desc';
                 $countClass = 'btn-outline-light';
                 $countIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
@@ -22,7 +22,7 @@
                     $countIcon = '<i class="bi bi-sort-numeric-up-alt ms-1"></i>';
                 }
 
-                // Views filter logic
+
                 $viewsNext = 'views_desc';
                 $viewsClass = 'btn-outline-light';
                 $viewsIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
@@ -36,7 +36,7 @@
                     $viewsIcon = '<i class="bi bi-sort-numeric-up-alt ms-1"></i>';
                 }
 
-                // Name filter logic
+
                 $nameNext = 'name_asc';
                 $nameClass = 'btn-outline-light';
                 $nameIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
@@ -50,7 +50,7 @@
                     $nameIcon = '<i class="bi bi-sort-alpha-up-alt ms-1"></i>';
                 }
 
-                // Alphabet filter logic
+
                 $alphabetNext = 'alphabet_asc';
                 $alphabetClass = 'btn-outline-light';
                 $alphabetIcon = '<i class="bi bi-arrow-down-up ms-1"></i>';
@@ -107,7 +107,7 @@
                                             </div>
                                             <div class="flex-grow-1 min-w-0">
                                                 <div class="mb-2">
-                                                        <div class="d-flex flex-wrap gap-2 mb-2">
+                                                    <div class="d-flex flex-wrap gap-2 mb-2">
                                                         <span
                                                             class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 ms-0">
                                                             {{ $author->books_count }}
@@ -133,7 +133,7 @@
                                                         class="h5 fw-bold text-white mb-2 text-truncate group-hover:text-primary transition-colors">
                                                         {{ $author->name }}
                                                     </h3>
-                                                
+
                                                 </div>
                                                 <p class="text-white-50 small mb-0 text-truncate d-none d-md-block">
                                                     @if($author->bio)

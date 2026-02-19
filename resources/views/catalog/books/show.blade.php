@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-                                                                                                                                                {
-                                                                                                                                                  "@@context": "https://schema.org",
-                                                                                                                                                  "@@type": "Book",
-                                                                                                                                                  "name": "{{ $book->title }}",
-                                                                                                                                                  "author": {
-                                                                                                                                                    "@@type": "Person",
-                                                                                                                                                    "name": "{{ $book->author->name ?? 'Unknown' }}"
-                                                                                                                                                  },
-                                                                                                                                                  "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-                                                                                                                                                  "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-                                                                                                                                                  "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-                                                                                                                                                  "aggregateRating": {
-                                                                                                                                                    "@@type": "AggregateRating",
-                                                                                                                                                    "ratingValue": "{{ $book->rating }}",
-                                                                                                                                                    "reviewCount": "{{ $book->reviews->count() }}"
-                                                                                                                                                  }
-                                                                                                                                                }
-                                                                                                                                                </script>
+                                                                                                                                                    {
+                                                                                                                                                      "@@context": "https://schema.org",
+                                                                                                                                                      "@@type": "Book",
+                                                                                                                                                      "name": "{{ $book->title }}",
+                                                                                                                                                      "author": {
+                                                                                                                                                        "@@type": "Person",
+                                                                                                                                                        "name": "{{ $book->author->name ?? 'Unknown' }}"
+                                                                                                                                                      },
+                                                                                                                                                      "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                                                                                                                                                      "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                                                                                                                                                      "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                                                                                                                                                      "aggregateRating": {
+                                                                                                                                                        "@@type": "AggregateRating",
+                                                                                                                                                        "ratingValue": "{{ $book->rating }}",
+                                                                                                                                                        "reviewCount": "{{ $book->reviews->count() }}"
+                                                                                                                                                      }
+                                                                                                                                                    }
+                                                                                                                                                    </script>
 @endsection
 
 @section('content')
@@ -534,40 +534,193 @@
         </div>
     </div>
 
-    <script>     function setRating(rating) { document.getElementById('rating-input').value = rating; const stars = document.querySelectorAll('.rating-star'); stars.forEach(star => { const sRating = parseInt(star.getAttribute('data-rating')); if (sRating <= rating) { star.classList.replace('bi-star', 'bi-star-fill'); } else { star.classList.replace('bi-star-fill', 'bi-star'); } }); }
-        function showReplyForm(reviewId) {
-            const form = document.getElementById(`reply-form-${reviewId}`); form.classList.remove('d-none');         // Hide other forms if needed, or leave multiple open     }
-            function hideReplyForm(reviewId) { const form = document.getElementById(`reply-form-${reviewId}`); form.classList.add('d-none'); }
-            function voteReview(reviewId, type, btn) {
-                const url = `/reviews/${reviewId}/vote`; const container = btn.closest('.d-flex'); const likeBtn = container.querySelectorAll('button')[0]; const dislikeBtn = container.querySelectorAll('button')[1];
-                fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }, body: JSON.stringify({ type: type }) }).then(response => response.json()).then(data => {
-                    if (data.success) {                     // Update counts                     likeBtn.querySelector('.vote-count').textContent = data.likes;                     dislikeBtn.querySelector('.vote-count').textContent = data.dislikes;
-                        // Reset classes                     likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-success';                     likeBtn.querySelector('i').className = 'bi bi-hand-thumbs-up';
-                        dislikeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-danger'; dislikeBtn.querySelector('i').className = 'bi bi-hand-thumbs-down';
-                        // Apply active state                     if (data.action !== 'removed') {                         if (type === 'like') {                             likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-success';                             likeBtn.querySelector('i').className = 'bi bi-hand-thumbs-up-fill';                         } else {                             dislikeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-danger';                             dislikeBtn.querySelector('i').className = 'bi bi-hand-thumbs-down-fill';                         }                     }                 }             })             .catch(error => console.error('Error:', error));     }     // Related Books Logic     document.addEventListener('DOMContentLoaded', function () {         let currentRelatedPage = 1;         let currentRelatedFilter = 'new';         let currentRelatedPeriod = 'week';
-                        const bookId = {{ $book->id }}; const grid = document.getElementById('related-books-grid'); const loadMoreBtn = document.getElementById('related-load-more'); const loadMoreContainer = document.getElementById('related-load-more-container'); const loadingSpinner = document.getElementById('related-loading'); const filters = document.querySelectorAll('.related-filter'); const subFiltersContainer = document.getElementById('popular-sub-filters'); const subFilters = document.querySelectorAll('.popular-period-filter');
-                        function loadRelatedBooks(filter, period, page, append = false) {
-                            if (!append) { grid.innerHTML = ''; loadingSpinner.classList.remove('d-none'); loadMoreContainer.classList.add('d-none'); } else { loadMoreBtn.disabled = true; loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загрузка...'; }
-                            let url = `/books/${bookId}/related?filter=${filter}&page=${page}`; if (filter === 'popular') { url += `&period=${period}`; }
-                            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(response => response.json()).then(data => {
-                                if (append) { grid.insertAdjacentHTML('beforeend', data.html); loadMoreBtn.disabled = false; loadMoreBtn.innerHTML = 'Загрузить еще'; } else { grid.innerHTML = data.html; loadingSpinner.classList.add('d-none'); }
-                                if (data.hasMore) { loadMoreContainer.classList.remove('d-none'); } else { loadMoreContainer.classList.add('d-none'); }
-                            }).catch(error => { console.error('Error loading related books:', error); loadingSpinner.classList.add('d-none'); if (append) { loadMoreBtn.disabled = false; loadMoreBtn.innerHTML = 'Загрузить еще'; } });
-                        }
-                        // Initial load         loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
-                        // Filter click handler         filters.forEach(btn => {             btn.addEventListener('click', function () {                 if (this.classList.contains('active')) return;
-                        filters.forEach(b => { b.classList.remove('btn-primary', 'active'); b.classList.add('btn-outline-light'); }); this.classList.remove('btn-outline-light'); this.classList.add('btn-primary', 'active');
-                        currentRelatedFilter = this.getAttribute('data-filter'); currentRelatedPage = 1;
-                        // Show/Hide Sub-filters                 if (currentRelatedFilter === 'popular') {                     subFiltersContainer.classList.remove('d-none');                     subFiltersContainer.classList.add('d-flex');                 } else {                     subFiltersContainer.classList.add('d-none');                     subFiltersContainer.classList.remove('d-flex');                 }
-                        loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
-                    });
+    <script>
+        function setRating(rating) {
+            document.getElementById('rating-input').value = rating;
+            const stars = document.querySelectorAll('.rating-star');
+            stars.forEach(star => {
+                const sRating = parseInt(star.getAttribute('data-rating'));
+                if (sRating <= rating) {
+                    star.classList.replace('bi-star', 'bi-star-fill');
+                } else {
+                    star.classList.replace('bi-star-fill', 'bi-star');
+                }
             });
-            // Sub-filter click handler         subFilters.forEach(btn => {             btn.addEventListener('click', function () {                 if (this.classList.contains('active')) return;
-            subFilters.forEach(b => { b.classList.remove('btn-primary', 'active'); b.classList.add('btn-outline-light'); }); this.classList.remove('btn-outline-light'); this.classList.add('btn-primary', 'active');
-            currentRelatedPeriod = this.getAttribute('data-period'); currentRelatedPage = 1;
-            loadRelatedBooks('popular', currentRelatedPeriod, currentRelatedPage);
-        });         });
-        // Load more click handler         loadMoreBtn.addEventListener('click', function () {             currentRelatedPage++;             loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage, true);         });     });
+        }
+
+        function showReplyForm(reviewId) {
+            const form = document.getElementById(`reply-form-${reviewId}`);
+            form.classList.remove('d-none');
+        }
+
+        function hideReplyForm(reviewId) {
+            const form = document.getElementById(`reply-form-${reviewId}`);
+            form.classList.add('d-none');
+        }
+
+        function voteReview(reviewId, type, btn) {
+            const url = `/reviews/${reviewId}/vote`;
+            const container = btn.closest('.d-flex');
+            const likeBtn = container.querySelectorAll('button')[0];
+            const dislikeBtn = container.querySelectorAll('button')[1];
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    type: type
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+
+                        likeBtn.querySelector('.vote-count').textContent = data.likes;
+                        dislikeBtn.querySelector('.vote-count').textContent = data.dislikes;
+
+
+                        likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-success';
+                        likeBtn.querySelector('i').className = 'bi bi-hand-thumbs-up';
+
+                        dislikeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-danger';
+                        dislikeBtn.querySelector('i').className = 'bi bi-hand-thumbs-down';
+
+
+                        if (data.action !== 'removed') {
+                            if (type === 'like') {
+                                likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-success';
+                                likeBtn.querySelector('i').className = 'bi bi-hand-thumbs-up-fill';
+                            } else {
+                                dislikeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-danger';
+                                dislikeBtn.querySelector('i').className = 'bi bi-hand-thumbs-down-fill';
+                            }
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentRelatedPage = 1;
+            let currentRelatedFilter = 'new';
+            let currentRelatedPeriod = 'week';
+
+            const bookId = {{ $book->id }};
+            const grid = document.getElementById('related-books-grid');
+            const loadMoreBtn = document.getElementById('related-load-more');
+            const loadMoreContainer = document.getElementById('related-load-more-container');
+            const loadingSpinner = document.getElementById('related-loading');
+            const filters = document.querySelectorAll('.related-filter');
+            const subFiltersContainer = document.getElementById('popular-sub-filters');
+            const subFilters = document.querySelectorAll('.popular-period-filter');
+
+            function loadRelatedBooks(filter, period, page, append = false) {
+                if (!append) {
+                    grid.innerHTML = '';
+                    loadingSpinner.classList.remove('d-none');
+                    loadMoreContainer.classList.add('d-none');
+                } else {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загрузка...';
+                }
+
+                let url = `/books/${bookId}/related?filter=${filter}&page=${page}`;
+                if (filter === 'popular') {
+                    url += `&period=${period}`;
+                }
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (append) {
+                            grid.insertAdjacentHTML('beforeend', data.html);
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.innerHTML = 'Загрузить еще';
+                        } else {
+                            grid.innerHTML = data.html;
+                            loadingSpinner.classList.add('d-none');
+                        }
+
+                        if (data.hasMore) {
+                            loadMoreContainer.classList.remove('d-none');
+                        } else {
+                            loadMoreContainer.classList.add('d-none');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading related books:', error);
+                        loadingSpinner.classList.add('d-none');
+                        if (append) {
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.innerHTML = 'Загрузить еще';
+                        }
+                    });
+            }
+
+
+            loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
+
+
+            filters.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (this.classList.contains('active')) return;
+
+                    filters.forEach(b => {
+                        b.classList.remove('btn-primary', 'active');
+                        b.classList.add('btn-outline-light');
+                    });
+                    this.classList.remove('btn-outline-light');
+                    this.classList.add('btn-primary', 'active');
+
+                    currentRelatedFilter = this.getAttribute('data-filter');
+                    currentRelatedPage = 1;
+
+
+                    if (currentRelatedFilter === 'popular') {
+                        subFiltersContainer.classList.remove('d-none');
+                        subFiltersContainer.classList.add('d-flex');
+                    } else {
+                        subFiltersContainer.classList.add('d-none');
+                        subFiltersContainer.classList.remove('d-flex');
+                    }
+
+                    loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
+                });
+            });
+
+
+            subFilters.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (this.classList.contains('active')) return;
+
+                    subFilters.forEach(b => {
+                        b.classList.remove('btn-primary', 'active');
+                        b.classList.add('btn-outline-light');
+                    });
+                    this.classList.remove('btn-outline-light');
+                    this.classList.add('btn-primary', 'active');
+
+                    currentRelatedPeriod = this.getAttribute('data-period');
+                    currentRelatedPage = 1;
+
+                    loadRelatedBooks('popular', currentRelatedPeriod, currentRelatedPage);
+                });
+            });
+
+
+            loadMoreBtn.addEventListener('click', function () {
+                currentRelatedPage++;
+                loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage, true);
+            });
+        });
     </script>
     <style>
         /* Filter buttons styling */

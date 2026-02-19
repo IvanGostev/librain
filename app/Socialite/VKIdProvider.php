@@ -23,7 +23,6 @@ class VKIdProvider extends Provider
 
     protected function usesPKCE(): bool
     {
-        // VK ID recommends PKCE
         return true;
     }
 }

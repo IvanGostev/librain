@@ -35,7 +35,7 @@ class RatingController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'rating' => $book->rating, // new average
+                'rating' => $book->rating,
                 'user_rating' => $rating->rating
             ]);
         }

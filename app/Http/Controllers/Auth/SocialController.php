@@ -97,14 +97,12 @@ class SocialController extends Controller
         $user = User::where('email', $email)->first();
 
         if ($user) {
-            // Link account
             $user->update([
                 'provider' => $provider,
                 'provider_id' => $providerId,
                 'avatar' => $user->avatar ?: $avatar,
             ]);
         } else {
-            // Create new user
             $username = $this->generateUsername($nickname ?? $name);
 
             $user = User::create([
@@ -113,7 +111,7 @@ class SocialController extends Controller
                 'username' => $username,
                 'provider' => $provider,
                 'provider_id' => $providerId,
-                'password' => null, // Password is null for social users
+                'password' => null,
                 'avatar' => $avatar,
                 'email_verified_at' => now(),
             ]);
@@ -131,12 +129,12 @@ class SocialController extends Controller
             $slug = 'user-' . Str::random(6);
         }
 
-        // Check availability
+
         if (User::where('username', $slug)->exists()) {
             $slug .= '-' . Str::random(4);
         }
 
-        // Loop just in case
+
         while (User::where('username', $slug)->exists()) {
             $slug = Str::slug($name ?? 'user') . '-' . Str::random(4);
         }

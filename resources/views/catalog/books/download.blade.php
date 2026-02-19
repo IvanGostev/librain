@@ -59,29 +59,29 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let timeLeft = 10;
-        const timerElement = document.getElementById('timer');
-        const timerContainer = document.getElementById('timer-container');
-        const step2 = document.getElementById('download-step-2');
+        document.addEventListener('DOMContentLoaded', function () {
+            let timeLeft = 10;
+            const timerElement = document.getElementById('timer');
+            const timerContainer = document.getElementById('timer-container');
+            const step2 = document.getElementById('download-step-2');
 
-        const countdown = setInterval(() => {
-            timeLeft--;
-            if(timeLeft >= 0) {
-                timerElement.textContent = timeLeft;
-            }
+            const countdown = setInterval(() => {
+                timeLeft--;
+                if (timeLeft >= 0) {
+                    timerElement.textContent = timeLeft;
+                }
 
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                
-                // Hide spinner and timer text container
-                timerContainer.classList.add('d-none');
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
 
-                // Show download button area
-                step2.classList.remove('d-none');
-                step2.classList.add('animate-fade-in-up');
-            }
-        }, 1000);
-    });
-</script>
+
+                    timerContainer.classList.add('d-none');
+
+
+                    step2.classList.remove('d-none');
+                    step2.classList.add('animate-fade-in-up');
+                }
+            }, 1000);
+        });
+    </script>
 @endsection
