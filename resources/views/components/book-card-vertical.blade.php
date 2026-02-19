@@ -11,16 +11,63 @@
         </a>
 
         @auth
-            @php $isFavorite = auth()->user()->isBookFavorite($book->id); @endphp
-            <form action="{{ route('books.favorite', $book->id) }}" method="POST"
-                class="position-absolute top-0 end-0 m-2 z-2">
-                @csrf
-                <button type="submit"
-                    class="btn btn-sm btn-dark bg-opacity-75 p-2 rounded-circle border-0 lh-1 shadow-sm hover-scale-110 transition-transform"
-                    title="{{ $isFavorite ? 'Удалить из избранного' : 'Добавить в избранное' }}">
+            @php 
+                $entry = auth()->user()->libraryEntries()->where('book_id', $book->id)->first();
+                $status = $entry ? $entry->status : null;
+                $isFavorite = $entry ? $entry->is_favorite : false;
+            @endphp
+            <div class="dropdown position-absolute top-0 end-0 m-2 z-2">
+                <button class="btn btn-sm btn-dark bg-opacity-75 p-2 rounded-circle border-0 lh-1 shadow-sm hover-scale-110 transition-transform" type="button" data-bs-toggle="dropdown">
                     <i class="bi bi-heart{{ $isFavorite ? '-fill text-danger' : '' }}"></i>
                 </button>
-            </form>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-dark-card border-white-10 shadow-lg p-1" style="min-width: 170px; font-size: 0.85rem;">
+                    <li>
+                        <form action="{{ route('books.favorite', $book->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="dropdown-item rounded-2 d-flex align-items-center gap-2 py-2 {{ $isFavorite ? 'text-danger' : 'text-white-50 hover-text-white' }}">
+                                <i class="bi bi-heart{{ $isFavorite ? '-fill' : '' }}"></i>
+                                {{ $isFavorite ? 'В избранном' : 'В избранное' }}
+                            </button>
+                        </form>
+                    </li>
+                    <li><hr class="dropdown-divider border-white-10 my-1"></li>
+                    <li>
+                        <form action="{{ route('books.status', $book->id) }}" method="POST">
+                            @csrf <input type="hidden" name="status" value="planned">
+                            <button type="submit" class="dropdown-item rounded-2 d-flex align-items-center gap-2 py-2 {{ $status === 'planned' ? 'active bg-primary text-white' : 'text-white-50 hover-text-white' }}">
+                                <i class="bi bi-calendar-plus"></i> В планах
+                            </button>
+                        </form>
+                    </li>
+                    <li>
+                        <form action="{{ route('books.status', $book->id) }}" method="POST">
+                            @csrf <input type="hidden" name="status" value="reading">
+                            <button type="submit" class="dropdown-item rounded-2 d-flex align-items-center gap-2 py-2 {{ $status === 'reading' ? 'active bg-primary text-white' : 'text-white-50 hover-text-white' }}">
+                                <i class="bi bi-book"></i> Читаю
+                            </button>
+                        </form>
+                    </li>
+                    <li>
+                        <form action="{{ route('books.status', $book->id) }}" method="POST">
+                            @csrf <input type="hidden" name="status" value="finished">
+                            <button type="submit" class="dropdown-item rounded-2 d-flex align-items-center gap-2 py-2 {{ $status === 'finished' ? 'active bg-primary text-white' : 'text-white-50 hover-text-white' }}">
+                                <i class="bi bi-check-circle"></i> Прочитано
+                            </button>
+                        </form>
+                    </li>
+                    @if($status)
+                        <li><hr class="dropdown-divider border-white-10 my-1"></li>
+                        <li>
+                            <form action="{{ route('books.status', $book->id) }}" method="POST">
+                                @csrf <input type="hidden" name="status" value="none">
+                                <button type="submit" class="dropdown-item rounded-2 d-flex align-items-center gap-2 py-2 text-danger hover-bg-danger bg-opacity-10">
+                                    <i class="bi bi-trash"></i> Убрать
+                                </button>
+                            </form>
+                        </li>
+                    @endif
+                </ul>
+            </div>
         @endauth
 
         <div class="position-absolute bottom-0 start-0 w-100 p-2 bg-gradient-to-t from-black-80 to-transparent">

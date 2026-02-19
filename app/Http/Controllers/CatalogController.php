@@ -11,6 +11,8 @@ use App\Models\LibraryEntry;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+use App\Models\Review;
+
 class CatalogController extends Controller
 {
     public function index()
@@ -18,55 +20,66 @@ class CatalogController extends Controller
         $sort = request('sort', 'new');
         $period = request('period');
 
-        if ($sort === 'popular' && !$period) {
-            $period = 'week';
-        }
+        $books = null;
+        $reviews = null;
 
-        $query = Book::where('is_published', true)->with('author')->withCount('reviews');
+        if ($sort === 'commented') {
+            $reviews = Review::with(['user', 'book'])
+                ->whereHas('book', function ($q) {
+                    $q->where('is_published', true);
+                })
+                ->where('is_approved', true)
+                ->latest() // Order by created_at desc
+                ->paginate(20);
 
-        $date = null;
-        if ($period) {
-            $date = match ($period) {
-                'week' => now()->subWeek(),
-                'month' => now()->subMonth(),
-                'half_year' => now()->subMonths(6),
-                'year' => now()->subYear(),
-                default => null
-            };
-        }
-
-        if ($sort === 'popular') {
-            if ($date) {
-                $query->withSum([
-                    'dailyViews' => function ($q) use ($date) {
-                        $q->where('date', '>=', $date);
-                    }
-                ], 'views')
-                    ->orderByDesc('daily_views_sum_views');
-            } else {
-                $query->orderByDesc('views');
-            }
+            $reviews->appends(request()->query());
         } else {
-            if ($date) {
-                $query->where('created_at', '>=', $date);
+            if ($sort === 'popular' && !$period) {
+                $period = 'week';
             }
 
-            if ($sort === 'commented') {
-                $query->orderByDesc('reviews_count');
+            $query = Book::where('is_published', true)->with('author')->withCount('reviews');
+
+            $date = null;
+            if ($period) {
+                $date = match ($period) {
+                    'week' => now()->subWeek(),
+                    'month' => now()->subMonth(),
+                    'half_year' => now()->subMonths(6),
+                    'year' => now()->subYear(),
+                    default => null
+                };
+            }
+
+            if ($sort === 'popular') {
+                if ($date) {
+                    $query->withSum([
+                        'dailyViews' => function ($q) use ($date) {
+                            $q->where('date', '>=', $date);
+                        }
+                    ], 'views')
+                        ->orderByDesc('daily_views_sum_views');
+                } else {
+                    $query->orderByDesc('views');
+                }
             } else {
+                if ($date) {
+                    $query->where('created_at', '>=', $date);
+                }
+
                 $query->orderByDesc('created_at');
             }
-        }
 
-        $books = $query->paginate(24);
-        $books->appends(request()->query());
+            $books = $query->paginate(24);
+            $books->appends(request()->query());
+        }
 
         $title = 'Каталог книг - Читать онлайн на Librain';
 
         $bottomTitle = \App\Models\SiteSetting::where('key', 'home_bottom_title')->value('value');
         $bottomText = \App\Models\SiteSetting::where('key', 'home_bottom_text')->value('value');
 
-        return view('catalog.index', compact('books', 'title', 'sort', 'period', 'bottomTitle', 'bottomText'));
+        return view('catalog.index', compact('books', 'reviews', 'title', 'sort', 'period', 'bottomTitle', 'bottomText'));
     }
 
     public function genres()
@@ -409,11 +422,13 @@ class CatalogController extends Controller
                         ->where('is_approved', true)
                         ->with([
                             'user',
+                            'votes',
                             'children' => function ($q) {
                                 $q->where('is_approved', true)->with([
                                     'user',
+                                    'votes',
                                     'children' => function ($q) {
-                                        $q->where('is_approved', true)->with('user');
+                                        $q->where('is_approved', true)->with(['user', 'votes']);
                                     }
                                 ]);
                             }
@@ -445,6 +460,8 @@ class CatalogController extends Controller
         $isPlanned = false;
         $userRating = 0;
 
+        $userStatus = null;
+
         if (Auth::check()) {
             $entry = Auth::user()->libraryEntries()
                 ->where('book_id', $book->id)
@@ -453,6 +470,7 @@ class CatalogController extends Controller
             if ($entry) {
                 $isFavorite = $entry->is_favorite;
                 $isPlanned = $entry->status === 'planned';
+                $userStatus = $entry->status;
             }
 
             $userRating = \App\Models\Rating::where('user_id', Auth::id())
@@ -472,7 +490,7 @@ class CatalogController extends Controller
         $description = $book->seo_description ?? Str::limit(strip_tags($book->description), 160);
         $keywords = $book->seo_keywords ?? $book->title . ', ' . $book->author->name . ', читать онлайн';
 
-        return view('catalog.books.show', compact('book', 'isFavorite', 'isPlanned', 'userRating', 'title', 'description', 'keywords'));
+        return view('catalog.books.show', compact('book', 'isFavorite', 'isPlanned', 'userStatus', 'userRating', 'title', 'description', 'keywords'));
     }
 
     public function read($slug, $chapterOrder = 1)
@@ -658,5 +676,39 @@ class CatalogController extends Controller
         }
 
         return abort(404);
+    }
+
+    public function downloadPage(Book $book, $format)
+    {
+        if (!in_array($format, ['txt', 'fb2', 'epub'])) {
+            abort(404);
+        }
+
+        $field = 'file_' . $format;
+        $filePath = $book->$field;
+
+        if (!$filePath) {
+            abort(404); // File not available
+        }
+
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($filePath)) {
+            abort(404); // File not on disk
+        }
+
+        $fileUrl = asset('storage/' . $filePath);
+        $fileSize = \Illuminate\Support\Facades\Storage::disk('public')->size($filePath);
+
+        // Format size
+        if ($fileSize >= 1048576) {
+            $formattedSize = number_format($fileSize / 1048576, 2) . ' МБ';
+        } elseif ($fileSize >= 1024) {
+            $formattedSize = number_format($fileSize / 1024, 0) . ' КБ';
+        } else {
+            $formattedSize = $fileSize . ' Б';
+        }
+
+        $title = 'Скачивание ' . $book->title . ' (' . strtoupper($format) . ') - Librain';
+
+        return view('catalog.books.download', compact('book', 'format', 'fileUrl', 'formattedSize', 'title'));
     }
 }

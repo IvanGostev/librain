@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-                                                                                                                    {
-                                                                                                                      "@@context": "https://schema.org",
-                                                                                                                      "@@type": "Book",
-                                                                                                                      "name": "{{ $book->title }}",
-                                                                                                                      "author": {
-                                                                                                                        "@@type": "Person",
-                                                                                                                        "name": "{{ $book->author->name ?? 'Unknown' }}"
-                                                                                                                      },
-                                                                                                                      "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-                                                                                                                      "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-                                                                                                                      "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-                                                                                                                      "aggregateRating": {
-                                                                                                                        "@@type": "AggregateRating",
-                                                                                                                        "ratingValue": "{{ $book->rating }}",
-                                                                                                                        "reviewCount": "{{ $book->reviews->count() }}"
-                                                                                                                      }
-                                                                                                                    }
-                                                                                                                    </script>
+                                                                                                                                                {
+                                                                                                                                                  "@@context": "https://schema.org",
+                                                                                                                                                  "@@type": "Book",
+                                                                                                                                                  "name": "{{ $book->title }}",
+                                                                                                                                                  "author": {
+                                                                                                                                                    "@@type": "Person",
+                                                                                                                                                    "name": "{{ $book->author->name ?? 'Unknown' }}"
+                                                                                                                                                  },
+                                                                                                                                                  "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                                                                                                                                                  "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                                                                                                                                                  "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                                                                                                                                                  "aggregateRating": {
+                                                                                                                                                    "@@type": "AggregateRating",
+                                                                                                                                                    "ratingValue": "{{ $book->rating }}",
+                                                                                                                                                    "reviewCount": "{{ $book->reviews->count() }}"
+                                                                                                                                                  }
+                                                                                                                                                }
+                                                                                                                                                </script>
 @endsection
 
 @section('content')
@@ -75,14 +75,62 @@
 
                     <div class="d-flex gap-2 mb-4">
                         @auth
-                            <form action="{{ route('books.planned', $book->id) }}" method="POST" class="flex-grow-1">
-                                @csrf
-                                <button type="submit"
-                                    class="btn btn-{{ $isPlanned ? 'primary' : 'dark-glass border-white-10' }} w-100 rounded-pill py-2 fw-bold transition-all d-flex align-items-center justify-content-center gap-2">
-                                    <i class="bi bi-calendar-plus{{ $isPlanned ? '-fill' : '' }}"></i>
-                                    <span>{{ $isPlanned ? 'В планах' : 'Хочу прочитать' }}</span>
+                            <div class="flex-grow-1 dropdown">
+                                <button
+                                    class="btn btn-{{ $userStatus ? 'primary' : 'dark-glass border-white-10' }} w-100 rounded-pill py-2 fw-bold transition-all d-flex align-items-center justify-content-center gap-2 dropdown-toggle"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-calendar-plus{{ $userStatus ? '-fill' : '' }}"></i>
+                                    <span>
+                                        @if($userStatus === 'planned') Хочу прочитать
+                                        @elseif($userStatus === 'reading') Читаю
+                                        @elseif($userStatus === 'finished') Прочитано
+                                        @elseif($userStatus === 'dropped') Брошено
+                                        @else Хочу прочитать
+                                        @endif
+                                    </span>
                                 </button>
-                            </form>
+                                <ul class="dropdown-menu dropdown-menu-dark bg-dark-card border-white-10 shadow-lg w-100">
+                                    <li>
+                                        <form action="{{ route('books.status', $book->id) }}" method="POST">
+                                            @csrf <input type="hidden" name="status" value="planned">
+                                            <button class="dropdown-item d-flex align-items-center gap-2" type="submit">
+                                                <i class="bi bi-calendar-plus"></i> Хочу прочитать
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{{ route('books.status', $book->id) }}" method="POST">
+                                            @csrf <input type="hidden" name="status" value="reading">
+                                            <button class="dropdown-item d-flex align-items-center gap-2" type="submit">
+                                                <i class="bi bi-book"></i> Читаю
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{{ route('books.status', $book->id) }}" method="POST">
+                                            @csrf <input type="hidden" name="status" value="finished">
+                                            <button class="dropdown-item d-flex align-items-center gap-2" type="submit">
+                                                <i class="bi bi-check-circle"></i> Прочитано
+                                            </button>
+                                        </form>
+                                    </li>
+                                    {{-- Dropped removed --}}
+                                    @if($userStatus)
+                                        <li>
+                                            <hr class="dropdown-divider border-white-10 my-1">
+                                        </li>
+                                        <li>
+                                            <form action="{{ route('books.status', $book->id) }}" method="POST">
+                                                @csrf <input type="hidden" name="status" value="none">
+                                                <button class="dropdown-item text-danger d-flex align-items-center gap-2"
+                                                    type="submit">
+                                                    <i class="bi bi-trash"></i> Убрать из списка
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </div>
 
                             <form action="{{ route('books.favorite', $book->id) }}" method="POST">
                                 @csrf
@@ -106,7 +154,7 @@
                         @endauth
                     </div>
 
-                    <!-- Share Button -->
+                    <!-- Share Button (unchanged) -->
                     <div class="dropdown">
                         <button
                             class="btn btn-dark-glass btn-lg rounded-pill fw-semibold border-white-10 hover-elevate w-100"
@@ -243,7 +291,7 @@
                 </div>
 
                 <div class="mb-5">
-                    <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">Жанры</h5>
+                    <h4 class="text-white text-uppercase tracking-wider fw-bold mb-3 h5">Жанры</h4>
                     <div class="d-flex flex-wrap gap-2">
                         @foreach($book->genres as $genre)
                             <a href="{{ route('genres.show', $genre->slug) }}"
@@ -282,7 +330,7 @@
                 </div>
 
                 <div class="mb-5">
-                    <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">О книге</h5>
+                    <h2 class="text-white text-uppercase tracking-wider fw-bold mb-3 h5">О книге</h2>
                     <div class="text-white lead" style="font-size: 1.1rem; line-height: 1.8;">
                         {!! nl2br(e($book->description)) !!}
                     </div>
@@ -304,28 +352,25 @@
                         };
                     @endphp
                     <div class="mb-5" id="downloads">
-                        <h5 class="text-white text-uppercase tracking-wider fw-bold mb-3">Скачать книгу</h5>
+                        <h2 class="text-white text-uppercase tracking-wider fw-bold mb-3 h5">Скачать книгу</h2>
                         <div class="d-flex flex-wrap gap-3">
                             @if($book->file_txt)
                                 <a class="btn btn-outline-primary rounded-pill download-link"
-                                    href="{{ asset('storage/' . $book->file_txt) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
-                                    download>
+                                    href="{{ route('books.download.page', ['book' => $book->id, 'format' => 'txt']) }}">
                                     <i class="bi bi-file-text fs-5 me-2"></i> Скачать TXT <span
                                         class="ms-1 opacity-75 small">{{ $formatSize($book->file_txt) }}</span>
                                 </a>
                             @endif
                             @if($book->file_fb2)
                                 <a class="btn btn-outline-info rounded-pill download-link"
-                                    href="{{ asset('storage/' . $book->file_fb2) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
-                                    download>
+                                    href="{{ route('books.download.page', ['book' => $book->id, 'format' => 'fb2']) }}">
                                     <i class="bi bi-book fs-5 me-2"></i> Скачать FB2 <span
                                         class="ms-1 opacity-75 small">{{ $formatSize($book->file_fb2) }}</span>
                                 </a>
                             @endif
                             @if($book->file_epub)
                                 <a class="btn btn-outline-success rounded-pill download-link"
-                                    href="{{ asset('storage/' . $book->file_epub) }}" data-auth="{{ auth()->check() ? '1' : '0' }}"
-                                    download>
+                                    href="{{ route('books.download.page', ['book' => $book->id, 'format' => 'epub']) }}">
                                     <i class="bi bi-journal-richtext fs-5 me-2"></i> Скачать EPUB <span
                                         class="ms-1 opacity-75 small">{{ $formatSize($book->file_epub) }}</span>
                                 </a>
@@ -336,10 +381,10 @@
 
                 <div class="mb-5 border-top border-white-10 pt-5">
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h5 class="text-white text-uppercase tracking-wider fw-bold mb-0">Отзывы
+                        <h4 class="text-white text-uppercase tracking-wider fw-bold mb-0 h5">Отзывы
                             @if($book->reviews->isNotEmpty()) <span
                             class="text-muted ms-2">{{ $book->reviews->count() }}</span> @endif
-                        </h5>
+                        </h4>
 
                         <div class="dropdown">
                             <button class="btn btn-sm btn-outline-light dropdown-toggle rounded-pill" type="button"
@@ -403,29 +448,39 @@
                     @foreach($book->series as $series)
                         <div class="mb-5">
                             <div class="d-flex align-items-center mb-3">
-                                <h5 class="text-white text-uppercase tracking-wider fw-bold mb-0">
+                                <h4 class="text-white text-uppercase tracking-wider fw-bold mb-0 h5">
                                     Все книги из цикла «<a href="{{ route('series.show', $series->slug) }}"
                                         class="text-white text-decoration-none hover-text-primary">{{ $series->name }}</a>»
-                                </h5>
+                                </h4>
                                 <span class="text-muted fw-bold ms-3 fs-5">({{ $series->books->count() }})</span>
                             </div>
 
                             <div class="bg-dark-card rounded-3 overflow-hidden border border-white-10">
                                 @foreach($series->books as $sBook)
-                                    <a href="{{ route('books.show', ['genre' => $sBook->genre_slug, 'slug' => $sBook->slug]) }}"
-                                        class="d-flex align-items-center py-3 px-4 text-decoration-none border-bottom border-white-10 hover-bg-white-5 transition-colors group {{ $sBook->id === $book->id ? 'bg-white-5' : '' }}">
-                                        <i
-                                            class="bi bi-journal-text fs-5 me-3 text-white-50 group-hover:text-primary transition-colors"></i>
-                                        <div class="flex-grow-1">
-                                            <span class="text-white fw-medium group-hover:text-primary transition-colors">
-                                                {{ $loop->iteration }}. {{ $sBook->title }}
-                                            </span>
-                                        </div>
-                                        @if($sBook->id === $book->id)
+                                    @if($sBook->id === $book->id)
+                                        <div
+                                            class="d-flex align-items-center py-3 px-4 text-decoration-none border-bottom border-white-10 bg-white-5">
+                                            <i class="bi bi-journal-text fs-5 me-3 text-white-50"></i>
+                                            <div class="flex-grow-1">
+                                                <span class="text-white fw-medium">
+                                                    {{ $loop->iteration }}. {{ $sBook->title }}
+                                                </span>
+                                            </div>
                                             <i class="bi bi-circle-fill text-primary ms-3" style="font-size: 0.5rem;"
                                                 title="Текущая книга"></i>
-                                        @endif
-                                    </a>
+                                        </div>
+                                    @else
+                                        <a href="{{ route('books.show', ['genre' => $sBook->genre_slug, 'slug' => $sBook->slug]) }}"
+                                            class="d-flex align-items-center py-3 px-4 text-decoration-none border-bottom border-white-10 hover-bg-white-5 transition-colors group">
+                                            <i
+                                                class="bi bi-journal-text fs-5 me-3 text-white-50 group-hover:text-primary transition-colors"></i>
+                                            <div class="flex-grow-1">
+                                                <span class="text-white fw-medium group-hover:text-primary transition-colors">
+                                                    {{ $loop->iteration }}. {{ $sBook->title }}
+                                                </span>
+                                            </div>
+                                        </a>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
@@ -435,7 +490,7 @@
         </div>
         <!-- Related Books Section -->
         <div class="mt-5 pt-5 border-top border-white-10" id="related-books-section">
-            <h2 class="h3 fw-bold text-white mb-4 text-uppercase tracking-wider">Что еще можно почитать</h2>
+            <h4 class="h3 fw-bold text-white mb-4 text-uppercase tracking-wider">Что еще можно почитать</h4>
 
             <div class="d-flex flex-wrap gap-2 mb-4">
                 <button class="btn btn-primary rounded-pill px-4 related-filter active" data-filter="new">Новые</button>
@@ -479,151 +534,40 @@
         </div>
     </div>
 
-    <script>
-        function setRating(rating) {
-            document.getElementById('rating-input').value = rating;
-            const stars = document.querySelectorAll('.rating-star');
-            stars.forEach(star => {
-                const sRating = parseInt(star.getAttribute('data-rating'));
-                if (sRating <= rating) {
-                    star.classList.replace('bi-star', 'bi-star-fill');
-                } else {
-                    star.classList.replace('bi-star-fill', 'bi-star');
-                }
-            });
-        }
-
+    <script>     function setRating(rating) { document.getElementById('rating-input').value = rating; const stars = document.querySelectorAll('.rating-star'); stars.forEach(star => { const sRating = parseInt(star.getAttribute('data-rating')); if (sRating <= rating) { star.classList.replace('bi-star', 'bi-star-fill'); } else { star.classList.replace('bi-star-fill', 'bi-star'); } }); }
         function showReplyForm(reviewId) {
-
-            const forms = document.querySelectorAll('[id^="reply-form-"]');
-            forms.forEach(f => f.classList.add('d-none'));
-
-            document.getElementById('reply-form-' + reviewId).classList.remove('d-none');
-            document.getElementById('reply-form-' + reviewId).querySelector('textarea').focus();
-        }
-
-        function hideReplyForm(reviewId) {
-            document.getElementById('reply-form-' + reviewId).classList.add('d-none');
-        }
-
-        // Related Books Logic
-        document.addEventListener('DOMContentLoaded', function () {
-            let currentRelatedPage = 1;
-            let currentRelatedFilter = 'new';
-            let currentRelatedPeriod = 'week';
-
-            const bookId = {{ $book->id }};
-            const grid = document.getElementById('related-books-grid');
-            const loadMoreBtn = document.getElementById('related-load-more');
-            const loadMoreContainer = document.getElementById('related-load-more-container');
-            const loadingSpinner = document.getElementById('related-loading');
-            const filters = document.querySelectorAll('.related-filter');
-            const subFiltersContainer = document.getElementById('popular-sub-filters');
-            const subFilters = document.querySelectorAll('.popular-period-filter');
-
-            function loadRelatedBooks(filter, period, page, append = false) {
-                if (!append) {
-                    grid.innerHTML = '';
-                    loadingSpinner.classList.remove('d-none');
-                    loadMoreContainer.classList.add('d-none');
-                } else {
-                    loadMoreBtn.disabled = true;
-                    loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загрузка...';
-                }
-
-                let url = `/books/${bookId}/related?filter=${filter}&page=${page}`;
-                if (filter === 'popular') {
-                    url += `&period=${period}`;
-                }
-
-                fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (append) {
-                            grid.insertAdjacentHTML('beforeend', data.html);
-                            loadMoreBtn.disabled = false;
-                            loadMoreBtn.innerHTML = 'Загрузить еще';
-                        } else {
-                            grid.innerHTML = data.html;
-                            loadingSpinner.classList.add('d-none');
+            const form = document.getElementById(`reply-form-${reviewId}`); form.classList.remove('d-none');         // Hide other forms if needed, or leave multiple open     }
+            function hideReplyForm(reviewId) { const form = document.getElementById(`reply-form-${reviewId}`); form.classList.add('d-none'); }
+            function voteReview(reviewId, type, btn) {
+                const url = `/reviews/${reviewId}/vote`; const container = btn.closest('.d-flex'); const likeBtn = container.querySelectorAll('button')[0]; const dislikeBtn = container.querySelectorAll('button')[1];
+                fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }, body: JSON.stringify({ type: type }) }).then(response => response.json()).then(data => {
+                    if (data.success) {                     // Update counts                     likeBtn.querySelector('.vote-count').textContent = data.likes;                     dislikeBtn.querySelector('.vote-count').textContent = data.dislikes;
+                        // Reset classes                     likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-success';                     likeBtn.querySelector('i').className = 'bi bi-hand-thumbs-up';
+                        dislikeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-danger'; dislikeBtn.querySelector('i').className = 'bi bi-hand-thumbs-down';
+                        // Apply active state                     if (data.action !== 'removed') {                         if (type === 'like') {                             likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-success';                             likeBtn.querySelector('i').className = 'bi bi-hand-thumbs-up-fill';                         } else {                             dislikeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-danger';                             dislikeBtn.querySelector('i').className = 'bi bi-hand-thumbs-down-fill';                         }                     }                 }             })             .catch(error => console.error('Error:', error));     }     // Related Books Logic     document.addEventListener('DOMContentLoaded', function () {         let currentRelatedPage = 1;         let currentRelatedFilter = 'new';         let currentRelatedPeriod = 'week';
+                        const bookId = {{ $book->id }}; const grid = document.getElementById('related-books-grid'); const loadMoreBtn = document.getElementById('related-load-more'); const loadMoreContainer = document.getElementById('related-load-more-container'); const loadingSpinner = document.getElementById('related-loading'); const filters = document.querySelectorAll('.related-filter'); const subFiltersContainer = document.getElementById('popular-sub-filters'); const subFilters = document.querySelectorAll('.popular-period-filter');
+                        function loadRelatedBooks(filter, period, page, append = false) {
+                            if (!append) { grid.innerHTML = ''; loadingSpinner.classList.remove('d-none'); loadMoreContainer.classList.add('d-none'); } else { loadMoreBtn.disabled = true; loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загрузка...'; }
+                            let url = `/books/${bookId}/related?filter=${filter}&page=${page}`; if (filter === 'popular') { url += `&period=${period}`; }
+                            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(response => response.json()).then(data => {
+                                if (append) { grid.insertAdjacentHTML('beforeend', data.html); loadMoreBtn.disabled = false; loadMoreBtn.innerHTML = 'Загрузить еще'; } else { grid.innerHTML = data.html; loadingSpinner.classList.add('d-none'); }
+                                if (data.hasMore) { loadMoreContainer.classList.remove('d-none'); } else { loadMoreContainer.classList.add('d-none'); }
+                            }).catch(error => { console.error('Error loading related books:', error); loadingSpinner.classList.add('d-none'); if (append) { loadMoreBtn.disabled = false; loadMoreBtn.innerHTML = 'Загрузить еще'; } });
                         }
-
-                        if (data.hasMore) {
-                            loadMoreContainer.classList.remove('d-none');
-                        } else {
-                            loadMoreContainer.classList.add('d-none');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading related books:', error);
-                        loadingSpinner.classList.add('d-none');
-                        if (append) {
-                            loadMoreBtn.disabled = false;
-                            loadMoreBtn.innerHTML = 'Загрузить еще';
-                        }
+                        // Initial load         loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
+                        // Filter click handler         filters.forEach(btn => {             btn.addEventListener('click', function () {                 if (this.classList.contains('active')) return;
+                        filters.forEach(b => { b.classList.remove('btn-primary', 'active'); b.classList.add('btn-outline-light'); }); this.classList.remove('btn-outline-light'); this.classList.add('btn-primary', 'active');
+                        currentRelatedFilter = this.getAttribute('data-filter'); currentRelatedPage = 1;
+                        // Show/Hide Sub-filters                 if (currentRelatedFilter === 'popular') {                     subFiltersContainer.classList.remove('d-none');                     subFiltersContainer.classList.add('d-flex');                 } else {                     subFiltersContainer.classList.add('d-none');                     subFiltersContainer.classList.remove('d-flex');                 }
+                        loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
                     });
-            }
-
-            // Initial load
-            loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
-
-            // Filter click handler
-            filters.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    if (this.classList.contains('active')) return;
-
-                    filters.forEach(b => {
-                        b.classList.remove('btn-primary', 'active');
-                        b.classList.add('btn-outline-light');
-                    });
-                    this.classList.remove('btn-outline-light');
-                    this.classList.add('btn-primary', 'active');
-
-                    currentRelatedFilter = this.getAttribute('data-filter');
-                    currentRelatedPage = 1;
-
-                    // Show/Hide Sub-filters
-                    if (currentRelatedFilter === 'popular') {
-                        subFiltersContainer.classList.remove('d-none');
-                        subFiltersContainer.classList.add('d-flex');
-                    } else {
-                        subFiltersContainer.classList.add('d-none');
-                        subFiltersContainer.classList.remove('d-flex');
-                    }
-
-                    loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
-                });
             });
-
-            // Sub-filter click handler
-            subFilters.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    if (this.classList.contains('active')) return;
-
-                    subFilters.forEach(b => {
-                        b.classList.remove('btn-primary', 'active');
-                        b.classList.add('btn-outline-light');
-                    });
-                    this.classList.remove('btn-outline-light');
-                    this.classList.add('btn-primary', 'active');
-
-                    currentRelatedPeriod = this.getAttribute('data-period');
-                    currentRelatedPage = 1;
-
-                    loadRelatedBooks('popular', currentRelatedPeriod, currentRelatedPage);
-                });
-            });
-
-            // Load more click handler
-            loadMoreBtn.addEventListener('click', function () {
-                currentRelatedPage++;
-                loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage, true);
-            });
-        });
+            // Sub-filter click handler         subFilters.forEach(btn => {             btn.addEventListener('click', function () {                 if (this.classList.contains('active')) return;
+            subFilters.forEach(b => { b.classList.remove('btn-primary', 'active'); b.classList.add('btn-outline-light'); }); this.classList.remove('btn-outline-light'); this.classList.add('btn-primary', 'active');
+            currentRelatedPeriod = this.getAttribute('data-period'); currentRelatedPage = 1;
+            loadRelatedBooks('popular', currentRelatedPeriod, currentRelatedPage);
+        });         });
+        // Load more click handler         loadMoreBtn.addEventListener('click', function () {             currentRelatedPage++;             loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage, true);         });     });
     </script>
     <style>
         /* Filter buttons styling */
@@ -676,143 +620,51 @@
         <p class="mt-4" style="color: rgba(255, 255, 255, 0.5) !important;">Пожалуйста, подождите</p>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    <script>     document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.download-link').forEach(link => {
                 link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const isAuth = this.dataset.auth === '1';
-
-                    if (!isAuth) {
-                        alert('Сначала авторизируйтесь для скачивания книг.');
-                        window.location.href = "{{ route('login') }}";
-                        return;
-                    }
-
-                    const url = this.href;
-                    const overlay = document.getElementById('download-timer-overlay');
-                    const timerEl = document.getElementById('download-timer');
-                    let timeLeft = 15;
-
-                    overlay.classList.remove('d-none');
-                    timerEl.textContent = timeLeft;
-
-                    const interval = setInterval(() => {
-                        timeLeft--;
-                        timerEl.textContent = timeLeft;
-                        if (timeLeft <= 0) {
-                            clearInterval(interval);
-                            window.location.href = url;
-                            setTimeout(() => {
-                                overlay.classList.add('d-none');
-                            }, 2000);
-                        }
-                    }, 1000);
+                    e.preventDefault(); const isAuth = this.dataset.auth === '1';
+                    if (!isAuth) { alert('Сначала авторизируйтесь для скачивания книг.'); window.location.href = "{{ route('login') }}"; return; }
+                    const url = this.href; const overlay = document.getElementById('download-timer-overlay'); const timerEl = document.getElementById('download-timer'); let timeLeft = 15;
+                    overlay.classList.remove('d-none'); timerEl.textContent = timeLeft;
+                    const interval = setInterval(() => { timeLeft--; timerEl.textContent = timeLeft; if (timeLeft <= 0) { clearInterval(interval); window.location.href = url; setTimeout(() => { overlay.classList.add('d-none'); }, 2000); } }, 1000);
                 });
             });
         });
-
-        function highlightStars(rating) {
-            document.querySelectorAll('.user-rating-star').forEach(star => {
-                const r = parseInt(star.dataset.rating);
-                if (r <= rating) {
-                    star.classList.remove('bi-star', 'text-white-50');
-                    star.classList.add('bi-star-fill', 'text-warning');
-                } else {
-                    star.classList.remove('bi-star-fill', 'text-warning');
-                    star.classList.add('bi-star', 'text-white-50');
-                }
-            });
-        }
-
-        function resetStars() {
-            const container = document.getElementById('user-rating-stars');
-            const currentRating = parseInt(container.dataset.currentRating);
-            highlightStars(currentRating);
-        }
-
+        function highlightStars(rating) { document.querySelectorAll('.user-rating-star').forEach(star => { const r = parseInt(star.dataset.rating); if (r <= rating) { star.classList.remove('bi-star', 'text-white-50'); star.classList.add('bi-star-fill', 'text-warning'); } else { star.classList.remove('bi-star-fill', 'text-warning'); star.classList.add('bi-star', 'text-white-50'); } }); }
+        function resetStars() { const container = document.getElementById('user-rating-stars'); const currentRating = parseInt(container.dataset.currentRating); highlightStars(currentRating); }
 
         function updateAverageRatingDisplay(newAvg) {
             const formattedAvg = parseFloat(newAvg).toFixed(1);
-
-            const avgEl = document.getElementById('average-rating-display');
-            if (avgEl) avgEl.textContent = formattedAvg;
-
-            const coverEl = document.getElementById('cover-rating-display');
-            if (coverEl) coverEl.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i> ${formattedAvg}`;
+            const avgEl = document.getElementById('average-rating-display'); if (avgEl) avgEl.textContent = formattedAvg;
+            const coverEl = document.getElementById('cover-rating-display'); if (coverEl) coverEl.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i> ${formattedAvg}`;
         }
-
         function createFirework(x, y) {
-            const colors = ['#ffc107', '#ff5722', '#4caf50', '#2196f3', '#ffffff'];
-            const particleCount = 30;
-
+            const colors = ['#ffc107', '#ff5722', '#4caf50', '#2196f3', '#ffffff']; const particleCount = 30;
             for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('firework-particle');
-
-                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-
-                const angle = Math.random() * Math.PI * 2;
-                const velocity = 50 + Math.random() * 100;
-                const tx = Math.cos(angle) * velocity;
-                const ty = Math.sin(angle) * velocity;
-
-                particle.style.setProperty('--tx', `${tx}px`);
-                particle.style.setProperty('--ty', `${ty}px`);
-
+                const particle = document.createElement('div'); particle.classList.add('firework-particle');
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; particle.style.left = x + 'px'; particle.style.top = y + 'px';
+                const angle = Math.random() * Math.PI * 2; const velocity = 50 + Math.random() * 100; const tx = Math.cos(angle) * velocity; const ty = Math.sin(angle) * velocity;
+                particle.style.setProperty('--tx', `${tx}px`); particle.style.setProperty('--ty', `${ty}px`);
                 document.body.appendChild(particle);
-
-                particle.addEventListener('animationend', () => {
-                    particle.remove();
-                });
+                particle.addEventListener('animationend', () => { particle.remove(); });
             }
         }
-
         function rateBook(bookId, rating) {
-            const container = document.getElementById('user-rating-stars');
-            const previousRating = parseInt(container.dataset.currentRating);
+            const container = document.getElementById('user-rating-stars'); const previousRating = parseInt(container.dataset.currentRating);
 
-
-            container.dataset.currentRating = rating;
-            highlightStars(rating);
-
-            const star = document.querySelector(`.user-rating-star[data-rating="${rating}"]`);
-            if (star) {
-                const rect = star.getBoundingClientRect();
-                createFirework(rect.left + rect.width / 2, rect.top + rect.height / 2);
-            }
-
-            fetch(`/books/${bookId}/rate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ rating: rating })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-
-                        container.dataset.currentRating = previousRating;
-                        highlightStars(previousRating);
-                        console.error('Rating failed:', data);
-                    } else {
-
-                        if (data.rating !== undefined) {
-                            updateAverageRatingDisplay(data.rating);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-
-                    container.dataset.currentRating = previousRating;
-                    highlightStars(previousRating);
-                });
+            container.dataset.currentRating = rating; highlightStars(rating);
+            const star = document.querySelector(`.user-rating-star[data-rating="${rating}"]`); if (star) { const rect = star.getBoundingClientRect(); createFirework(rect.left + rect.width / 2, rect.top + rect.height / 2); }
+            fetch(`/books/${bookId}/rate`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }, body: JSON.stringify({ rating: rating }) }).then(response => response.json()).then(data => {
+                if (!data.success) {
+                    container.dataset.currentRating = previousRating; highlightStars(previousRating); console.error('Rating failed:', data);
+                } else {
+                    if (data.rating !== undefined) { updateAverageRatingDisplay(data.rating); }
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                container.dataset.currentRating = previousRating; highlightStars(previousRating);
+            });
         }
     </script>
 @endsection

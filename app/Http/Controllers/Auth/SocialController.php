@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Http\Request;
 
 class SocialController extends Controller
 {
@@ -31,35 +32,91 @@ class SocialController extends Controller
             ->where('provider_id', $socialUser->getId())
             ->first();
 
-        if (!$user) {
-            // Check if user with same email exists
-            if ($socialUser->getEmail()) {
-                $user = User::where('email', $socialUser->getEmail())->first();
-            }
+        if ($user) {
+            Auth::login($user, true);
+            return redirect()->intended('/');
+        }
 
-            if ($user) {
-                // Link account
-                $user->update([
+        if (!$socialUser->getEmail()) {
+            session([
+                'social_user' => [
                     'provider' => $provider,
-                    'provider_id' => $socialUser->getId(),
-                    // If avatar is missing, use social
-                    'avatar' => $user->avatar ?: $socialUser->getAvatar(),
-                ]);
-            } else {
-                // Create new user
-                $username = $this->generateUsername($socialUser->getNickname() ?? $socialUser->getName());
-
-                $user = User::create([
-                    'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
-                    'email' => $socialUser->getEmail(),
-                    'username' => $username,
-                    'provider' => $provider,
-                    'provider_id' => $socialUser->getId(),
-                    'password' => null, // Password is null for social users
+                    'id' => $socialUser->getId(),
+                    'name' => $socialUser->getName(),
+                    'nickname' => $socialUser->getNickname(),
                     'avatar' => $socialUser->getAvatar(),
-                    'email_verified_at' => now(),
-                ]);
-            }
+                ]
+            ]);
+            return redirect()->route('social.email');
+        }
+
+        return $this->registerOrLogin(
+            $socialUser->getEmail(),
+            $provider,
+            $socialUser->getId(),
+            $socialUser->getName(),
+            $socialUser->getNickname(),
+            $socialUser->getAvatar()
+        );
+    }
+
+    public function showEmailForm()
+    {
+        if (!session()->has('social_user')) {
+            return redirect()->route('login');
+        }
+        return view('auth.social_email');
+    }
+
+    public function storeEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        if (!session()->has('social_user')) {
+            return redirect()->route('login');
+        }
+
+        $socialData = session('social_user');
+
+        $response = $this->registerOrLogin(
+            $request->email,
+            $socialData['provider'],
+            $socialData['id'],
+            $socialData['name'],
+            $socialData['nickname'],
+            $socialData['avatar']
+        );
+
+        session()->forget('social_user');
+
+        return $response;
+    }
+
+    protected function registerOrLogin($email, $provider, $providerId, $name, $nickname, $avatar)
+    {
+        $user = User::where('email', $email)->first();
+
+        if ($user) {
+            // Link account
+            $user->update([
+                'provider' => $provider,
+                'provider_id' => $providerId,
+                'avatar' => $user->avatar ?: $avatar,
+            ]);
+        } else {
+            // Create new user
+            $username = $this->generateUsername($nickname ?? $name);
+
+            $user = User::create([
+                'name' => $name ?? $nickname ?? 'User',
+                'email' => $email,
+                'username' => $username,
+                'provider' => $provider,
+                'provider_id' => $providerId,
+                'password' => null, // Password is null for social users
+                'avatar' => $avatar,
+                'email_verified_at' => now(),
+            ]);
         }
 
         Auth::login($user, true);

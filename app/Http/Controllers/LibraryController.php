@@ -36,7 +36,7 @@ class LibraryController extends Controller
         $completed = $query($user->libraryEntries()->where('library_entries.status', 'finished'))->get();
         $favorites = $query($user->libraryEntries()->where('library_entries.is_favorite', true))->get();
         $writing = $query($user->libraryEntries()->where('books.status', 'writing'))->get();
-        $hidden = $query($user->libraryEntries()->where('books.is_published', false))->get();
+        $hidden = $query($user->libraryEntries()->where('library_entries.status', 'blacklist'))->get();
 
         $title = 'Моя библиотека - Librain';
 
@@ -88,5 +88,45 @@ class LibraryController extends Controller
         }
 
         return back()->with('success', $message);
+    }
+
+    public function updateStatus(Request $request, Book $book)
+    {
+        $status = $request->input('status');
+
+        if (!in_array($status, ['planned', 'reading', 'finished', 'dropped', 'none', 'blacklist'])) {
+            return back()->with('error', 'Некорректный статус');
+        }
+
+        $user = Auth::user();
+
+        $entry = LibraryEntry::firstOrCreate(
+            ['user_id' => $user->id, 'book_id' => $book->id],
+            ['progress_percent' => 0]
+        );
+
+        if ($status === 'none') {
+            $entry->status = null;
+            if (!$entry->is_favorite) {
+                $entry->delete();
+            } else {
+                $entry->save();
+            }
+            return back()->with('success', 'Книга удалена из библиотеки');
+        } else {
+            $entry->status = $status;
+            $entry->save();
+
+            $statusName = match ($status) {
+                'planned' => 'Хочу прочитать',
+                'reading' => 'Читаю',
+                'finished' => 'Прочитано',
+                'dropped' => 'Брошено',
+                'blacklist' => 'В черном списке',
+                default => ''
+            };
+
+            return back()->with('success', 'Статус обновлен: ' . $statusName);
+        }
     }
 }

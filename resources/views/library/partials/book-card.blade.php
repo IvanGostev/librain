@@ -7,14 +7,49 @@
                         class="rounded-3 shadow-sm" style="width: 80px; height: 120px; object-fit: cover;"
                         onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                 </a>
-                <form action="{{ route('books.favorite', $entry->book->id) }}" method="POST"
-                    class="position-absolute top-0 start-0 m-1">
-                    @csrf
-                    <button type="submit" class="btn btn-sm btn-dark bg-opacity-75 p-1 rounded-circle border-0 lh-1">
-                        <i class="bi bi-heart{{ $entry->is_favorite ? '-fill text-danger' : ' text-white' }}"
-                            style="font-size: 0.8rem;"></i>
+                <div class="dropdown position-absolute top-0 start-0 m-1">
+                    <button class="btn btn-sm btn-light shadow p-0 rounded-circle border-0 lh-1 d-flex align-items-center justify-content-center" 
+                        type="button"
+                        data-bs-toggle="dropdown" 
+                        style="width: 28px; height: 28px;">
+                        <i class="bi bi-three-dots-vertical text-dark fs-6"></i>
                     </button>
-                </form>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-dark-card border-white-10 shadow-lg fs-7"
+                        style="min-width: 150px;">
+                        <li>
+                            <form action="{{ route('books.favorite', $entry->book->id) }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                    class="dropdown-item d-flex align-items-center gap-2 {{ $entry->is_favorite ? 'text-danger' : '' }}">
+                                    <i class="bi bi-heart{{ $entry->is_favorite ? '-fill' : '' }}"></i>
+                                    {{ $entry->is_favorite ? 'Убрать из избранного' : 'В избранное' }}
+                                </button>
+                            </form>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider border-white-10 my-1">
+                        </li>
+                        @if($entry->status === 'blacklist')
+                            <li>
+                                <form action="{{ route('books.status', $entry->book->id) }}" method="POST">
+                                    @csrf <input type="hidden" name="status" value="none">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Вернуть из ЧС
+                                    </button>
+                                </form>
+                            </li>
+                        @else
+                            <li>
+                                <form action="{{ route('books.status', $entry->book->id) }}" method="POST">
+                                    @csrf <input type="hidden" name="status" value="blacklist">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
+                                        <i class="bi bi-eye-slash"></i> В черный список
+                                    </button>
+                                </form>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
             </div>
             <div class="flex-grow-1 ms-3 d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-start mb-1">

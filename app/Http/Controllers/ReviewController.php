@@ -35,4 +35,51 @@ class ReviewController extends Controller
 
         return back()->with('success', 'Ваш отзыв отправлен на модерацию. Он появится после проверки.');
     }
+    public function vote(Request $request, Review $review)
+    {
+        $type = $request->input('type');
+
+        if (!in_array($type, ['like', 'dislike'])) {
+            return response()->json(['error' => 'Invalid vote type'], 400);
+        }
+
+        $userId = Auth::id();
+        $ip = $request->ip();
+
+        $vote = \App\Models\ReviewVote::where('review_id', $review->id)
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->when(!$userId, fn($q) => $q->where('ip_address', $ip))
+            ->first();
+
+        if ($vote) {
+            if ($vote->type === $type) {
+                // Toggle off
+                $vote->delete();
+                $action = 'removed';
+            } else {
+                // Change vote
+                $vote->update(['type' => $type]);
+                $action = 'updated';
+            }
+        } else {
+            \App\Models\ReviewVote::create([
+                'review_id' => $review->id,
+                'user_id' => $userId,
+                'ip_address' => $ip,
+                'type' => $type,
+            ]);
+            $action = 'created';
+        }
+
+        // Get updated counts
+        $likes = \App\Models\ReviewVote::where('review_id', $review->id)->where('type', 'like')->count();
+        $dislikes = \App\Models\ReviewVote::where('review_id', $review->id)->where('type', 'dislike')->count();
+
+        return response()->json([
+            'success' => true,
+            'action' => $action,
+            'likes' => $likes,
+            'dislikes' => $dislikes,
+        ]);
+    }
 }

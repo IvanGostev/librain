@@ -57,26 +57,61 @@
             {{ $review->comment }}
         </p>
 
-        @auth
+        <div class="d-flex align-items-center gap-3">
             <button class="btn btn-link btn-sm text-primary text-decoration-none p-0 fw-semibold"
                 onclick="showReplyForm({{ $review->id }})">
                 Ответить
             </button>
 
-            <div id="reply-form-{{ $review->id }}" class="mt-3 d-none">
-                <form action="{{ route('reviews.store', $book->id) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="parent_id" value="{{ $review->id }}">
-                    <textarea name="comment" class="form-control form-control-dark mb-2" rows="2"
-                        placeholder="Ваш ответ..."></textarea>
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Отправить</button>
-                        <button type="button" class="btn btn-ghost btn-sm rounded-pill px-3"
-                            onclick="hideReplyForm({{ $review->id }})">Отмена</button>
-                    </div>
-                </form>
+            @php
+                $likes = $review->votes->where('type', 'like')->count();
+                $dislikes = $review->votes->where('type', 'dislike')->count();
+                $userVote = null;
+                if (auth()->check()) {
+                    $userVote = $review->votes->where('user_id', auth()->id())->first();
+                } else {
+                    $userVote = $review->votes->where('ip_address', request()->ip())->first();
+                }
+                $userVoteType = $userVote ? $userVote->type : null;
+            @endphp
+
+            <div class="d-flex align-items-center gap-2">
+                <button
+                    class="btn btn-sm btn-link text-decoration-none p-0 {{ $userVoteType === 'like' ? 'text-success' : 'text-muted hover-text-success' }}"
+                    onclick="voteReview({{ $review->id }}, 'like', this)">
+                    <i class="bi bi-hand-thumbs-up{{ $userVoteType === 'like' ? '-fill' : '' }}"></i> <span
+                        class="vote-count">{{ $likes }}</span>
+                </button>
+                <button
+                    class="btn btn-sm btn-link text-decoration-none p-0 {{ $userVoteType === 'dislike' ? 'text-danger' : 'text-muted hover-text-danger' }}"
+                    onclick="voteReview({{ $review->id }}, 'dislike', this)">
+                    <i class="bi bi-hand-thumbs-down{{ $userVoteType === 'dislike' ? '-fill' : '' }}"></i> <span
+                        class="vote-count">{{ $dislikes }}</span>
+                </button>
             </div>
-        @endauth
+        </div>
+
+        <div id="reply-form-{{ $review->id }}" class="mt-3 d-none">
+            <form action="{{ route('reviews.store', $book->id) }}" method="POST">
+                @csrf
+                <input type="hidden" name="parent_id" value="{{ $review->id }}">
+
+                @guest
+                    <div class="mb-2">
+                        <input type="text" name="guest_name" class="form-control form-control-dark form-control-sm" required
+                            placeholder="Ваше имя">
+                    </div>
+                @endguest
+
+                <textarea name="comment" class="form-control form-control-dark mb-2" rows="2"
+                    placeholder="Ваш ответ..."></textarea>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Отправить</button>
+                    <button type="button" class="btn btn-ghost btn-sm rounded-pill px-3"
+                        onclick="hideReplyForm({{ $review->id }})">Отмена</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

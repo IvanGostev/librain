@@ -76,8 +76,8 @@
 
 <body class="bg-body-tertiary">
     <div id="app" class="d-flex flex-column min-vh-100">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark-card border-bottom border-white-10 py-3"
-            style="backdrop-filter: blur(20px);">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark-card border-bottom border-white-10 py-3 sticky-top"
+            style="backdrop-filter: blur(20px); z-index: 1050;">
             <div class="container-fluid px-4 px-xl-5">
                 <!-- Logo -->
                 <a class="navbar-brand fw-bolder text-uppercase tracking-wider fs-4 me-5" href="{{ url('/') }}">

@@ -61,4 +61,19 @@ class Review extends Model
     {
         return $this->hasMany(Review::class, 'parent_id');
     }
+
+    public function votes()
+    {
+        return $this->hasMany(ReviewVote::class);
+    }
+
+    public function likes()
+    {
+        return $this->votes()->where('type', 'like');
+    }
+
+    public function dislikes()
+    {
+        return $this->votes()->where('type', 'dislike');
+    }
 }

@@ -51,24 +51,105 @@
             </div>
         @endif
 
-        @if($books->count() > 0)
-            <div
-                class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-200">
-                @foreach($books as $book)
-                    <div class="col">
-                        <x-book-card-vertical :book="$book" />
-                    </div>
-                @endforeach
-            </div>
+        @if(request('sort') === 'commented')
+            @if(isset($reviews) && $reviews->count() > 0)
+                <div class="d-flex flex-column gap-4 animate-fade-in-up delay-200" style="max-width: 800px; margin: 0 auto;">
+                    @foreach($reviews as $review)
+                        <div class="card bg-dark-card border-white-10 p-4 rounded-4 hover-elevate transition-transform">
+                            <div class="mb-3 border-bottom border-white-10 pb-3 d-flex align-items-center gap-3">
+                                <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}" class="flex-shrink-0">
+                                    <img src="{{ $review->book->cover_image ? asset('storage/' . $review->book->cover_image) : asset('images/no-cover.svg') }}" 
+                                         alt="{{ $review->book->title }}" 
+                                         class="rounded shadow-sm object-fit-cover"
+                                         style="width: 50px; height: 75px;"
+                                         onerror="this.src='{{ asset('images/no-cover.svg') }}'">
+                                </a>
+                                <div>
+                                    <h5 class="mb-1 fw-bold">
+                                        <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}"
+                                            class="text-white text-decoration-none hover-text-primary transition-colors">
+                                            {{ $review->book->title }}
+                                        </a>
+                                    </h5>
+                                    <div class="small text-muted">
+                                        Автор: <a href="{{ route('authors.show', $review->book->author->slug) }}"
+                                            class="text-muted text-decoration-none hover-text-white">{{ $review->book->author->name }}</a>
+                                    </div>
+                                </div>
+                            </div>
 
-            <div class="mt-5 d-flex justify-content-center">
-                {{ $books->links() }}
-            </div>
+                            <div class="d-flex align-items-start gap-3 mb-3">
+                                <div class="flex-shrink-0">
+                                    @php
+                                        $authorName = $review->user ? $review->user->name : ($review->guest_name ?? 'Гость');
+                                        $authorAvatar = $review->user ? $review->user->avatar : null;
+                                        $authorInitial = mb_substr($authorName, 0, 1);
+                                    @endphp
+
+                                    @if($authorAvatar)
+                                        <img src="{{ asset('storage/' . $authorAvatar) }}" class="rounded-circle border border-white-10"
+                                            style="width: 48px; height: 48px; object-fit: cover;"
+                                            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none'); this.nextElementSibling.classList.add('d-flex');">
+                                        <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle d-none align-items-center justify-content-center fw-bold"
+                                            style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                            {{ $authorInitial }}
+                                        </div>
+                                    @else
+                                        <div class="avatar bg-{{ $review->user ? 'primary' : 'secondary' }} bg-opacity-10 text-{{ $review->user ? 'primary' : 'white' }} rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                            style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                            {{ $authorInitial }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="mb-0 fw-bold text-white">{{ $authorName }}</h6>
+                                        <span class="text-muted small">{{ $review->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <div class="text-warning small mb-2">
+                                        @if($review->rating)
+                                            @for($i = 0; $i < $review->rating; $i++) <i class="bi bi-star-fill"></i> @endfor
+                                            @for($i = $review->rating; $i < 5; $i++) <i class="bi bi-star"></i> @endfor
+                                        @endif
+                                    </div>
+                                    <div class="text-white-75" style="line-height: 1.6;">
+                                        {{ $review->comment }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-5 d-flex justify-content-center">
+                    {{ $reviews->links() }}
+                </div>
+            @else
+                <div class="text-center py-5 text-muted animate-fade-in-up">
+                    <i class="bi bi-chat-square-text fs-1 mb-3 d-block opacity-50"></i>
+                    <p class="mb-0">Комментариев пока нет. Будьте первым!</p>
+                </div>
+            @endif
         @else
-            <div class="text-center py-5 text-muted animate-fade-in-up">
-                <i class="bi bi-book fs-1 mb-3 d-block opacity-50"></i>
-                <p class="mb-0">Книги не найдены. Загляните позже!</p>
-            </div>
+            @if(isset($books) && $books->count() > 0)
+                <div
+                    class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-200">
+                    @foreach($books as $book)
+                        <div class="col">
+                            <x-book-card-vertical :book="$book" />
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-5 d-flex justify-content-center">
+                    {{ $books->links() }}
+                </div>
+            @else
+                <div class="text-center py-5 text-muted animate-fade-in-up">
+                    <i class="bi bi-book fs-1 mb-3 d-block opacity-50"></i>
+                    <p class="mb-0">Книги не найдены. Загляните позже!</p>
+                </div>
+            @endif
         @endif
     </div>
 

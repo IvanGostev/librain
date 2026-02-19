@@ -11,6 +11,8 @@ Auth::routes();
 
 Route::get('auth/{provider}/redirect', [App\Http\Controllers\Auth\SocialController::class, 'redirect'])->name('social.redirect');
 Route::get('auth/{provider}/callback', [App\Http\Controllers\Auth\SocialController::class, 'callback'])->name('social.callback');
+Route::get('auth/social/email', [App\Http\Controllers\Auth\SocialController::class, 'showEmailForm'])->name('social.email');
+Route::post('auth/social/email', [App\Http\Controllers\Auth\SocialController::class, 'storeEmail'])->name('social.email.store');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -40,13 +42,16 @@ Route::post('/books/{book}/favorite', [App\Http\Controllers\LibraryController::c
 Route::post('/books/{book}/planned', [App\Http\Controllers\LibraryController::class, 'togglePlanned'])->middleware('auth')->name('books.planned');
 Route::post('/books/{book}/rate', [App\Http\Controllers\RatingController::class, 'store'])->name('books.rate');
 Route::post('/books/{book}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+Route::post('/books/{book}/status', [App\Http\Controllers\LibraryController::class, 'updateStatus'])->middleware('auth')->name('books.status');
+Route::post('/reviews/{review}/vote', [App\Http\Controllers\ReviewController::class, 'vote'])->name('reviews.vote');
 Route::get('/books/{id}/related', [App\Http\Controllers\CatalogController::class, 'related'])->name('books.related');
+Route::get('/books/{book}/download/{format}', [App\Http\Controllers\CatalogController::class, 'downloadPage'])->name('books.download.page');
 
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/p/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('pages.show');
 
 
-Route::get('/{slug}/read/{chapterOrder?}', [App\Http\Controllers\CatalogController::class, 'read'])->name('books.read');
+Route::get('/read/{slug}/{chapterOrder?}', [App\Http\Controllers\CatalogController::class, 'read'])->name('books.read');
 Route::get('/{genre}/{slug}', [App\Http\Controllers\CatalogController::class, 'book'])->name('books.show');
 Route::get('/{slug}', [App\Http\Controllers\CatalogController::class, 'bookLegacy'])->name('books.show.legacy');
 
