@@ -7,24 +7,24 @@
 
 @section('schema')
     <script type="application/ld+json">
-                                                                                                                                                    {
-                                                                                                                                                      "@@context": "https://schema.org",
-                                                                                                                                                      "@@type": "Book",
-                                                                                                                                                      "name": "{{ $book->title }}",
-                                                                                                                                                      "author": {
-                                                                                                                                                        "@@type": "Person",
-                                                                                                                                                        "name": "{{ $book->author->name ?? 'Unknown' }}"
-                                                                                                                                                      },
-                                                                                                                                                      "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
-                                                                                                                                                      "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
-                                                                                                                                                      "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
-                                                                                                                                                      "aggregateRating": {
-                                                                                                                                                        "@@type": "AggregateRating",
-                                                                                                                                                        "ratingValue": "{{ $book->rating }}",
-                                                                                                                                                        "reviewCount": "{{ $book->reviews->count() }}"
-                                                                                                                                                      }
-                                                                                                                                                    }
-                                                                                                                                                    </script>
+                                                                                                                                                        {
+                                                                                                                                                          "@@context": "https://schema.org",
+                                                                                                                                                          "@@type": "Book",
+                                                                                                                                                          "name": "{{ $book->title }}",
+                                                                                                                                                          "author": {
+                                                                                                                                                            "@@type": "Person",
+                                                                                                                                                            "name": "{{ $book->author->name ?? 'Unknown' }}"
+                                                                                                                                                          },
+                                                                                                                                                          "description": "{{ Str::limit(strip_tags($book->description), 200) }}",
+                                                                                                                                                          "image": "{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}",
+                                                                                                                                                          "genre": "{{ $book->genres->pluck('name')->implode(', ') }}",
+                                                                                                                                                          "aggregateRating": {
+                                                                                                                                                            "@@type": "AggregateRating",
+                                                                                                                                                            "ratingValue": "{{ $book->rating }}",
+                                                                                                                                                            "reviewCount": "{{ $book->reviews->count() }}"
+                                                                                                                                                          }
+                                                                                                                                                        }
+                                                                                                                                                        </script>
 @endsection
 
 @section('content')
@@ -763,26 +763,9 @@
         }
     </style>
 
-    <!-- Download Timer Overlay -->
-    <div id="download-timer-overlay"
-        class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark z-3 d-flex flex-column justify-content-center align-items-center"
-        style="z-index: 9999 !important; background-color: #0f172a !important;">
-        <h2 class="mb-4" style="color: #ffffff !important;">Подготовка ссылки...</h2>
-        <div class="display-1 text-primary fw-bold mb-4" id="download-timer">15</div>
-        <div class="spinner-border text-primary" role="status"></div>
-        <p class="mt-4" style="color: rgba(255, 255, 255, 0.5) !important;">Пожалуйста, подождите</p>
-    </div>
-
-    <script>     document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.download-link').forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault(); const isAuth = this.dataset.auth === '1';
-                    if (!isAuth) { alert('Сначала авторизируйтесь для скачивания книг.'); window.location.href = "{{ route('login') }}"; return; }
-                    const url = this.href; const overlay = document.getElementById('download-timer-overlay'); const timerEl = document.getElementById('download-timer'); let timeLeft = 15;
-                    overlay.classList.remove('d-none'); timerEl.textContent = timeLeft;
-                    const interval = setInterval(() => { timeLeft--; timerEl.textContent = timeLeft; if (timeLeft <= 0) { clearInterval(interval); window.location.href = url; setTimeout(() => { overlay.classList.add('d-none'); }, 2000); } }, 1000);
-                });
-            });
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Download logic removed to allow direct access to download page without auth check or double timer
         });
         function highlightStars(rating) { document.querySelectorAll('.user-rating-star').forEach(star => { const r = parseInt(star.dataset.rating); if (r <= rating) { star.classList.remove('bi-star', 'text-white-50'); star.classList.add('bi-star-fill', 'text-warning'); } else { star.classList.remove('bi-star-fill', 'text-warning'); star.classList.add('bi-star', 'text-white-50'); } }); }
         function resetStars() { const container = document.getElementById('user-rating-stars'); const currentRating = parseInt(container.dataset.currentRating); highlightStars(currentRating); }

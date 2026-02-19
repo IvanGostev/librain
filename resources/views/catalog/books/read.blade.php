@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
 
 <head>
     <meta charset="utf-8">
@@ -19,8 +19,8 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #12151c;
-            color: #e2e8f0;
+            background-color: #f8fafc;
+            color: #1e293b;
             transition: background-color 0.3s, color 0.3s;
         }
 
@@ -30,6 +30,11 @@
             color: #1e293b;
         }
 
+        body.theme-dark {
+            background-color: #12151c;
+            color: #e2e8f0;
+        }
+
         body.theme-sepia {
             background-color: #f5f0e1;
             color: #433422;
@@ -37,11 +42,11 @@
 
         /* Chapter Title Colors */
         .chapter-title {
-            color: #fff;
+            color: #1e293b;
         }
 
-        body.theme-light .chapter-title {
-            color: #1e293b;
+        body.theme-dark .chapter-title {
+            color: #fff;
         }
 
         body.theme-sepia .chapter-title {
@@ -74,41 +79,42 @@
         }
 
         .reader-toolbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            position: relative;
             height: 60px;
-            background: rgba(18, 21, 28, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 1000;
             transition: transform 0.3s ease;
-        }
-
-        body.theme-light .reader-toolbar {
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        body.theme-light h2 {
-            color: #1e293b !important;
-        }
-
-        body.theme-light .reader-toolbar {
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             color: #1a202c;
         }
 
-        body.theme-light .reader-toolbar .btn,
-        body.theme-light .reader-toolbar h6,
-        body.theme-light .reader-toolbar i {
-            color: #1a202c !important;
+        /* Dark Toolbar (Override) */
+        body.theme-dark .reader-toolbar {
+            background: rgba(18, 21, 28, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
         }
 
-        body.theme-light .reader-toolbar small {
-            color: #4a5568 !important;
+        body.theme-dark .reader-toolbar .btn,
+        body.theme-dark .reader-toolbar h6,
+        body.theme-dark .reader-toolbar i {
+            color: #e2e8f0 !important;
+        }
+
+        body.theme-dark .reader-toolbar small {
+            color: #94a3b8 !important;
+        }
+
+        /* Light Toolbar Tweaks (Default) */
+        .reader-toolbar .btn,
+        .reader-toolbar h6,
+        .reader-toolbar i {
+            color: #1a202c;
+        }
+
+        .reader-toolbar small {
+            color: #4a5568;
         }
 
         body.theme-sepia .reader-toolbar {
@@ -125,14 +131,22 @@
             top: 60px;
             right: 0;
             width: 300px;
-            background: #1e293b;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: #ffffff;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             padding: 1.5rem;
             transform: translateX(100%);
             transition: transform 0.3s ease;
             z-index: 999;
             box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.2);
+            color: #1a202c;
+        }
+
+        body.theme-dark .reader-settings-drawer {
+            background: #1e293b;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
         }
 
         .reader-settings-drawer.open {
@@ -186,9 +200,8 @@
         <div class="mb-4">
             <label class="d-block mb-2 text-muted small">Тема</label>
             <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-outline-secondary w-100" onclick="setTheme('dark')">Темная</button>
                 <button type="button" class="btn btn-outline-secondary w-100 active"
-                    onclick="setTheme('dark')">Темная</button>
-                <button type="button" class="btn btn-outline-secondary w-100"
                     onclick="setTheme('light')">Светлая</button>
                 <button type="button" class="btn btn-outline-secondary w-100" onclick="setTheme('sepia')">Сепия</button>
             </div>
@@ -255,40 +268,52 @@
     </div>
 
     <script>
-
+        // Init state
         let currentFontSize = 18;
-        let currentTheme = 'dark';
+        let currentTheme = 'light';
         let currentFont = 'font-sans';
 
-
+        // DOM elements
         const settingsDrawer = document.getElementById('settingsDrawer');
         const readerContent = document.getElementById('readerContent');
         const body = document.body;
         const fontSizeDisplay = document.getElementById('fontSizeDisplay');
 
-
+        // Toggle Settings
         document.getElementById('toggleSettings').addEventListener('click', () => {
             settingsDrawer.classList.toggle('open');
         });
 
-
+        // Close when clicking outside
         document.addEventListener('click', (e) => {
             if (!settingsDrawer.contains(e.target) && !e.target.closest('#toggleSettings')) {
                 settingsDrawer.classList.remove('open');
             }
         });
 
-
+        // Theme function
         function setTheme(theme) {
             body.classList.remove('theme-dark', 'theme-light', 'theme-sepia');
-            body.classList.add(`theme-${theme}`);
+            if (theme !== 'light') {
+                body.classList.add(`theme-${theme}`);
+            }
             currentTheme = theme;
             localStorage.setItem('reader_theme', theme);
 
-
+            // Update buttons state
+            const buttons = document.querySelectorAll('.btn-group button');
+            buttons.forEach(btn => {
+                const btnText = btn.textContent.trim().toLowerCase();
+                const themeName = theme === 'dark' ? 'темная' : (theme === 'light' ? 'светлая' : 'сепия');
+                if (btnText === themeName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
         }
 
-
+        // Font Size
         function changeFontSize(delta) {
             currentFontSize = Math.max(14, Math.min(32, currentFontSize + delta));
             readerContent.style.fontSize = `${currentFontSize}px`;
@@ -296,16 +321,16 @@
             localStorage.setItem('reader_fontSize', currentFontSize);
         }
 
-
+        // Font Family
         function setFontFamily(font) {
             readerContent.classList.remove('font-sans', 'font-serif', 'font-lora');
             readerContent.classList.add(font);
             localStorage.setItem('reader_fontFamily', font);
         }
 
-
+        // Initialize from LocalStorage
         function initSettings() {
-            const savedTheme = localStorage.getItem('reader_theme') || 'dark';
+            const savedTheme = localStorage.getItem('reader_theme') || 'light';
             const savedSize = parseInt(localStorage.getItem('reader_fontSize')) || 18;
             const savedFont = localStorage.getItem('reader_fontFamily') || 'font-sans';
 
@@ -316,7 +341,8 @@
             fontSizeDisplay.textContent = `${currentFontSize}px`;
 
             setFontFamily(savedFont);
-            document.getElementById('fontFamilySelect').value = savedFont;
+            const fontSelect = document.getElementById('fontFamilySelect');
+            if (fontSelect) fontSelect.value = savedFont;
         }
 
         initSettings();

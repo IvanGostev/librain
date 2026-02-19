@@ -12,7 +12,6 @@
                             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                                 alt="{{ $book->title }}" class="rounded shadow-lg mb-4"
                                 style="width: 120px; height: 180px; object-fit: cover;">
-
                             <h1 class="h3 fw-bold text-white mb-2">{{ $book->title }}</h1>
                             <p class="text-white-50 mb-0">Автор: {{ $book->author->name }}</p>
                         </div>
@@ -23,7 +22,7 @@
                             </div>
                             <h4 class="text-white mb-2">Подготовка файла...</h4>
                             <p class="text-muted">Пожалуйста, подождите <span id="timer"
-                                    class="text-primary fw-bold">10</span> сек.</p>
+                                    class="text-primary fw-bold">15</span> сек.</p>
                         </div>
                     </div>
 
@@ -60,26 +59,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            let timeLeft = 10;
-            const timerElement = document.getElementById('timer');
-            const timerContainer = document.getElementById('timer-container');
+            let timeLeft = 15;
+            const timerEl = document.getElementById('timer');
+            const step1 = document.getElementById('download-step-1');
             const step2 = document.getElementById('download-step-2');
 
             const countdown = setInterval(() => {
                 timeLeft--;
-                if (timeLeft >= 0) {
-                    timerElement.textContent = timeLeft;
-                }
+                if (timerEl) timerEl.textContent = timeLeft;
 
                 if (timeLeft <= 0) {
                     clearInterval(countdown);
-
-
-                    timerContainer.classList.add('d-none');
-
-
-                    step2.classList.remove('d-none');
-                    step2.classList.add('animate-fade-in-up');
+                    if (step1) step1.classList.add('d-none');
+                    if (step2) step2.classList.remove('d-none');
                 }
             }, 1000);
         });
