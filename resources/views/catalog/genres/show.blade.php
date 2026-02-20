@@ -88,7 +88,12 @@
                                     @endphp
 
                                     @if($authorAvatar)
-                                        <img src="{{ asset('storage/' . $authorAvatar) }}" class="rounded-circle border border-white-10"
+                                        @php
+                                            $avatarUrl = Str::startsWith($authorAvatar, ['http://', 'https://'])
+                                                ? $authorAvatar
+                                                : asset('storage/' . $authorAvatar);
+                                        @endphp
+                                        <img src="{{ $avatarUrl }}" class="rounded-circle border border-white-10"
                                             style="width: 48px; height: 48px; object-fit: cover;"
                                             onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none'); this.nextElementSibling.classList.add('d-flex');">
                                         <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle d-none align-items-center justify-content-center fw-bold"

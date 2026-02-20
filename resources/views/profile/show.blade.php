@@ -12,7 +12,12 @@
                             @if(Auth::id() === $user->id) onclick="document.getElementById('avatar-input').click()" @endif>
                             <div class="rounded-circle overflow-hidden border border-4 border-primary shadow-xl"
                                 style="width: 150px; height: 150px;">
-                                <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://placehold.co/400x400/334155/cbd5e1?text=' . substr($user->name, 0, 1) }}"
+                                @php
+                                    $avatarUrl = $user->avatar 
+                                        ? (Str::startsWith($user->avatar, ['http://', 'https://']) ? $user->avatar : asset('storage/' . $user->avatar))
+                                        : 'https://placehold.co/400x400/334155/cbd5e1?text=' . mb_substr($user->name, 0, 1);
+                                @endphp
+                                <img src="{{ $avatarUrl }}"
                                     alt="{{ $user->name }}"
                                     class="w-100 h-100 object-fit-cover {{ Auth::id() === $user->id ? 'group-hover:opacity-75' : '' }} transition-opacity">
                             </div>

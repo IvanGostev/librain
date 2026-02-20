@@ -178,7 +178,12 @@
                                     href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false" v-pre>
                                     @if(Auth::user()->avatar)
-                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                        @php
+                                            $avatarUrl = Str::startsWith(Auth::user()->avatar, ['http://', 'https://'])
+                                                ? Auth::user()->avatar
+                                                : asset('storage/' . Auth::user()->avatar);
+                                        @endphp
+                                        <img src="{{ $avatarUrl }}" alt="{{ Auth::user()->name }}"
                                             class="rounded-circle border border-white-10" width="32" height="32"
                                             style="object-fit: cover;"
                                             onerror="this.classList.add('d-none'); this.nextElementSibling.classList.remove('d-none');">

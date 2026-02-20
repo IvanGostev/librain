@@ -11,8 +11,7 @@ Auth::routes();
 
 Route::get('auth/{provider}/redirect', [App\Http\Controllers\Auth\SocialController::class, 'redirect'])->name('social.redirect');
 Route::get('auth/{provider}/callback', [App\Http\Controllers\Auth\SocialController::class, 'callback'])->name('social.callback');
-Route::get('auth/social/email', [App\Http\Controllers\Auth\SocialController::class, 'showEmailForm'])->name('social.email');
-Route::post('auth/social/email', [App\Http\Controllers\Auth\SocialController::class, 'storeEmail'])->name('social.email.store');
+
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
