@@ -86,7 +86,11 @@ class CatalogController extends Controller
     {
         $genres = Genre::withCount('books')->orderBy('name')->get();
         $title = 'Все жанры книг - Librain';
-        return view('catalog.genres.index', compact('genres', 'title'));
+
+        $bottomTitle = \App\Models\SiteSetting::where('key', 'genres_bottom_title')->value('value');
+        $bottomText = \App\Models\SiteSetting::where('key', 'genres_bottom_text')->value('value');
+
+        return view('catalog.genres.index', compact('genres', 'title', 'bottomTitle', 'bottomText'));
     }
 
     public function genre(Request $request, $slug)
@@ -223,7 +227,11 @@ class CatalogController extends Controller
         $authors->appends(request()->query());
 
         $title = 'Все авторы - Librain';
-        return view('catalog.authors.index', compact('authors', 'title', 'sort', 'letters', 'currentLetter'));
+
+        $bottomTitle = \App\Models\SiteSetting::where('key', 'authors_bottom_title')->value('value');
+        $bottomText = \App\Models\SiteSetting::where('key', 'authors_bottom_text')->value('value');
+
+        return view('catalog.authors.index', compact('authors', 'title', 'sort', 'letters', 'currentLetter', 'bottomTitle', 'bottomText'));
     }
 
     public function author(Request $request, $slug)
@@ -351,7 +359,11 @@ class CatalogController extends Controller
         $series->appends(request()->query());
 
         $title = 'Все книжные серии - Librain';
-        return view('catalog.series.index', compact('series', 'title', 'sort', 'letters', 'currentLetter'));
+
+        $bottomTitle = \App\Models\SiteSetting::where('key', 'series_bottom_title')->value('value');
+        $bottomText = \App\Models\SiteSetting::where('key', 'series_bottom_text')->value('value');
+
+        return view('catalog.series.index', compact('series', 'title', 'sort', 'letters', 'currentLetter', 'bottomTitle', 'bottomText'));
     }
 
     public function seriesShow(Request $request, $slug)
@@ -518,7 +530,63 @@ class CatalogController extends Controller
         $description = $book->seo_description ?? Str::limit(strip_tags($book->description), 160);
         $keywords = $book->seo_keywords ?? $book->title . ', ' . $book->author->name . ', читать онлайн';
 
-        return view('catalog.books.show', compact('book', 'isFavorite', 'isPlanned', 'userStatus', 'userRating', 'title', 'description', 'keywords'));
+        // Rating Statistics
+        $ratings = \App\Models\Rating::where('book_id', $book->id)
+            ->select('rating', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+
+        $ratingCounts = [];
+        $totalRatings = array_sum($ratings);
+        for ($i = 10; $i >= 1; $i--) {
+            $count = $ratings[$i] ?? 0;
+            $percent = $totalRatings > 0 ? round(($count / $totalRatings) * 100) : 0;
+            $ratingCounts[$i] = [
+                'count' => $count,
+                'percent' => $percent
+            ];
+        }
+
+        // Library Status Statistics
+        $statuses = \App\Models\LibraryEntry::where('book_id', $book->id)
+            ->select('status', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $favoritesCount = \App\Models\LibraryEntry::where('book_id', $book->id)
+            ->where('is_favorite', true)
+            ->count();
+
+        $statusLabels = [
+            'reading' => ['label' => 'Читаю', 'icon' => 'bi-book', 'color' => 'primary'],
+            'planned' => ['label' => 'Хочу прочитать', 'icon' => 'bi-calendar-plus', 'color' => 'info'],
+            'finished' => ['label' => 'Прочитано', 'icon' => 'bi-check-circle', 'color' => 'success'],
+            'dropped' => ['label' => 'Брошено', 'icon' => 'bi-x-circle', 'color' => 'danger'],
+            'favorite' => ['label' => 'В избранном', 'icon' => 'bi-heart', 'color' => 'danger'],
+        ];
+
+        $statusCounts = [];
+        $totalStatuses = array_sum($statuses) + $favoritesCount; // Add to total for percentage scaling
+        
+        foreach ($statusLabels as $key => $data) {
+            $count = $key === 'favorite' ? $favoritesCount : ($statuses[$key] ?? 0);
+            $percent = $totalStatuses > 0 ? round(($count / $totalStatuses) * 100) : 0;
+            $statusCounts[$key] = [
+                'label' => $data['label'],
+                'icon' => $data['icon'],
+                'color' => $data['color'],
+                'count' => $count,
+                'percent' => $percent
+            ];
+        }
+
+        return view('catalog.books.show', compact(
+            'book', 'isFavorite', 'isPlanned', 'userStatus', 'userRating', 
+            'title', 'description', 'keywords', 
+            'ratingCounts', 'totalRatings', 'statusCounts', 'totalStatuses'
+        ));
     }
 
     public function read($slug, $chapterOrder = 1)
@@ -565,10 +633,11 @@ class CatalogController extends Controller
 
         $prevChapter = $book->chapters->where('order', '<', $chapter->order)->sortByDesc('order')->first();
         $nextChapter = $book->chapters->where('order', '>', $chapter->order)->sortBy('order')->first();
+        $totalChapters = $book->chapters->count();
 
         $title = 'Читать ' . $book->title . ' - ' . $chapter->title . ' онлайн | Librain';
 
-        return view('catalog.books.read', compact('book', 'chapter', 'prevChapter', 'nextChapter', 'title'));
+        return view('catalog.books.read', compact('book', 'chapter', 'prevChapter', 'nextChapter', 'totalChapters', 'title'));
     }
 
     public function top100()
@@ -603,7 +672,10 @@ class CatalogController extends Controller
         $books = $query->take(100)->get();
         $title = 'Топ-100 популярных книг - Librain';
 
-        return view('catalog.top100', compact('books', 'title', 'period'));
+        $bottomTitle = \App\Models\SiteSetting::where('key', 'top100_bottom_title')->value('value');
+        $bottomText = \App\Models\SiteSetting::where('key', 'top100_bottom_text')->value('value');
+
+        return view('catalog.top100', compact('books', 'title', 'period', 'bottomTitle', 'bottomText'));
     }
 
     public function search(Request $request)
@@ -715,12 +787,29 @@ class CatalogController extends Controller
         $field = 'file_' . $format;
         $filePath = $book->$field;
 
-        if (!$filePath) {
-            abort(404);
-        }
+        if (!$filePath || !\Illuminate\Support\Facades\Storage::disk('public')->exists($filePath)) {
+            $chapters = $book->chapters()->orderBy('order')->get();
+            if ($chapters->isEmpty()) {
+                abort(404, 'Нет глав для скачивания.');
+            }
 
-        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($filePath)) {
-            abort(404);
+            $generatedPath = 'books/files/' . \Illuminate\Support\Str::slug($book->slug) . '_' . time() . '.' . $format;
+            $importService = app(\App\Services\BookImportService::class);
+
+            if ($format === 'txt') {
+                $content = $importService->generateTxtContent($book, $chapters);
+                \Illuminate\Support\Facades\Storage::disk('public')->put($generatedPath, $content);
+            } elseif ($format === 'fb2') {
+                $importService->generateFb2($book, $chapters, $generatedPath);
+            } elseif ($format === 'epub') {
+                $success = $importService->generateEpub($book, $chapters, $generatedPath);
+                if (!$success) {
+                    abort(500, 'Не удалось сгенерировать EPUB.');
+                }
+            }
+
+            $book->update([$field => $generatedPath]);
+            $filePath = $generatedPath;
         }
 
         $fileUrl = asset('storage/' . $filePath);

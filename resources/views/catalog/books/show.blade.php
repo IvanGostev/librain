@@ -32,11 +32,10 @@
         $totalSymbols = $book->chapters->sum('symbols_count');
         $totalPages = ceil($totalSymbols / 1500);
     @endphp
-    <div class="container py-5">
+    <div class="container pt-0 pt-lg-5 pb-5 mt-0">
         <!-- Breadcrumb -->
 
-
-        <div class="row g-5 position-relative">
+        <div class="row g-4 g-lg-5 position-relative">
             <!-- ... (Sidebar omitted, changes are further down) ... -->
             @if(!$book->is_published)
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-3"
@@ -302,8 +301,8 @@
                     </div>
                 </div>
 
-                <div class="d-inline-flex flex-column gap-2 mb-5">
-                    <div class="d-flex flex-wrap gap-3">
+                <div class="d-flex flex-column gap-2 mb-5 align-items-center align-items-lg-start">
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start w-100">
                         <a href="{{ route('books.read', $book->slug) }}"
                             class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow hover-elevate">
                             <i class="bi bi-book-half me-2"></i> Читать онлайн
@@ -336,6 +335,52 @@
                     </div>
                 </div>
 
+                <!-- Блок Статистики -->
+                <div class="mb-5 border-top border-white-10 pt-5">
+                    <h2 class="text-white text-uppercase tracking-wider fw-bold mb-2 h5">Статистика</h2>
+                    <p class="text-white-50 mb-4 fw-medium">
+                        Средний рейтинг: <span class="text-white fw-bold">{{ number_format($book->rating, 2) }}</span> <i class="bi bi-star-fill text-warning"></i>
+                    </p>
+
+                    <div class="row g-4 g-lg-5">
+                        <!-- Левая колонка: Оценки -->
+                        <div class="col-md-6">
+                            @for($i = 10; $i >= 1; $i--)
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="text-white text-end me-1 fw-bold fs-6" style="width: 20px;">{{ $i }}</div>
+                                    <i class="bi bi-star-fill text-warning me-3 fs-6"></i>
+                                    <div class="progress flex-grow-1 rounded-pill" style="height: 6px; background-color: rgba(150, 150, 150, 0.3) !important;">
+                                        <div class="progress-bar bg-warning rounded-pill" role="progressbar" style="width: {{ $ratingCounts[$i]['percent'] }}%" aria-valuenow="{{ $ratingCounts[$i]['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="text-white-50 ms-3 text-end" style="width: 35px; font-size: 0.85rem;">
+                                        {{ number_format($ratingCounts[$i]['count'], 0, ',', ' ') }}
+                                    </div>
+                                </div>
+                            @endfor
+                        </div>
+
+                        <!-- Правая колонка: Списки -->
+                        <div class="col-md-6">
+                            @foreach($statusCounts as $key => $data)
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="text-white-50 me-2 text-center" style="width: 24px;">
+                                        <i class="bi {{ $data['icon'] }} fs-5"></i>
+                                    </div>
+                                    <div class="text-white me-3" style="width: 110px; font-size: 0.95rem;">
+                                        {{ $data['label'] }}
+                                    </div>
+                                    <div class="progress flex-grow-1 rounded-pill" style="height: 6px; background-color: rgba(150, 150, 150, 0.3) !important;">
+                                        <div class="progress-bar bg-{{ $data['color'] }} rounded-pill" role="progressbar" style="width: {{ $data['percent'] }}%" aria-valuenow="{{ $data['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="text-white-50 ms-3 text-end" style="width: 35px; font-size: 0.85rem;">
+                                        {{ number_format($data['count'], 0, ',', ' ') }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
 
 
                 @if($book->file_txt || $book->file_fb2 || $book->file_epub)
@@ -351,9 +396,9 @@
                             return $bytes . ' Б';
                         };
                     @endphp
-                    <div class="mb-5" id="downloads">
+                    <div class="mb-5 text-center text-lg-start" id="downloads">
                         <h2 class="text-white text-uppercase tracking-wider fw-bold mb-3 h5">Скачать книгу</h2>
-                        <div class="d-flex flex-wrap gap-3">
+                        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
                             @if($book->file_txt)
                                 <a class="btn btn-outline-primary rounded-pill download-link"
                                     href="{{ route('books.download.page', ['book' => $book->id, 'format' => 'txt']) }}">

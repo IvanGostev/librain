@@ -56,11 +56,10 @@ class DatabaseSeeder extends Seeder
             ]);
 
             foreach ($books as $book) {
-                // Generate download files (dummy content)
+                // Assign dummy paths so the UI renders the download buttons.
+                // Actual generation will happen on the fly in CatalogController.
                 foreach (['txt', 'fb2', 'epub'] as $format) {
-                    $filename = "books/{$book->id}.{$format}";
-                    Storage::disk('public')->put($filename, "Dummy content for {$book->title} ({$format})");
-                    $book->{'file_' . $format} = $filename;
+                    $book->{'file_' . $format} = "books/{$book->id}.{$format}";
                 }
 
                 $book->save();
@@ -88,7 +87,6 @@ class DatabaseSeeder extends Seeder
                     }
                 }
 
-                // Update total views based on daily stats
                 $book->views = $book->dailyViews()->sum('views');
                 $book->save();
 

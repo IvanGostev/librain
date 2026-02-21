@@ -53,14 +53,7 @@
 
             <!-- Main Content -->
             <div class="col-md-8 col-lg-9 animate-fade-in-up delay-100">
-                <h2 class="fw-bold text-white mb-4 border-start border-4 border-primary ps-3">Биография</h2>
-                <div class="bg-dark-card p-4 rounded-3 border border-white-10 mb-5">
-                    @if($author->bio)
-                        {!! nl2br(e($author->bio)) !!}
-                    @else
-                        <p class="text-muted fst-italic mb-0">Автор пока не добавил информацию о себе.</p>
-                    @endif
-                </div>
+
 
                 <div
                     class="d-flex justify-content-center justify-content-md-start gap-3 mb-4 flex-wrap animate-fade-in-up delay-100">
@@ -118,6 +111,17 @@
 
                 <div class="mt-5 d-flex justify-content-center">
                     {{ $books->appends(['filter' => $filter, 'period' => $period])->links() }}
+                </div>
+
+                <div class="mt-5">
+                    <h2 class="fw-bold text-white mb-4 border-start border-4 border-primary ps-3">Биография</h2>
+                    <div class="bg-dark-card p-4 rounded-3 border border-white-10 mb-5 text-white-75">
+                        @if($author->bio)
+                            {!! nl2br(e($author->bio)) !!}
+                        @else
+                            <p class="text-muted fst-italic mb-0">Автор пока не добавил информацию о себе.</p>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

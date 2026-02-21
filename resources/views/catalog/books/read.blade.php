@@ -242,26 +242,58 @@
         </div>
 
         <!-- Navigation -->
-        <div
-            class="d-flex justify-content-between align-items-center mt-5 py-5 border-top border-secondary border-opacity-10">
+        <div class="d-flex justify-content-between align-items-center mt-5 py-5 border-top border-secondary border-opacity-10">
             @if($prevChapter)
                 <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $prevChapter->order]) }}"
-                    class="btn btn-outline-secondary rounded-pill px-4">
-                    <i class="bi bi-arrow-left me-2"></i> Предыдущая
+                    class="btn btn-outline-secondary rounded-pill px-4" style="min-width: 140px;">
+                    <i class="bi bi-arrow-left me-2"></i> Пред.
                 </a>
             @else
-                <div></div>
+                <div style="min-width: 140px;"></div>
             @endif
+
+            <div class="d-flex align-items-center justify-content-center flex-wrap px-2">
+                @php
+                    $current = $chapter->order;
+                    $total = $totalChapters;
+                    $delta = 2; 
+                    
+                    $start = max(1, $current - $delta);
+                    $end = min($total, $current + $delta);
+                @endphp
+                
+                @if($start > 1)
+                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => 1]) }}" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center mx-1" style="width: 38px; height: 38px; padding: 0;">1</a>
+                    @if($start > 2)
+                        <span class="text-muted mx-1 px-1">...</span>
+                    @endif
+                @endif
+                
+                @for($i = $start; $i <= $end; $i++)
+                    @if($i == $current)
+                        <span class="btn btn-sm btn-primary rounded-circle d-flex align-items-center justify-content-center mx-1 fw-bold" style="width: 38px; height: 38px; padding: 0; pointer-events: none; opacity: 1; color: #ffffff !important;">{{ $i }}</span>
+                    @else
+                        <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $i]) }}" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center mx-1" style="width: 38px; height: 38px; padding: 0;">{{ $i }}</a>
+                    @endif
+                @endfor
+                
+                @if($end < $total)
+                    @if($end < $total - 1)
+                        <span class="text-muted mx-1 px-1">...</span>
+                    @endif
+                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $total]) }}" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center mx-1" style="width: 38px; height: 38px; padding: 0;">{{ $total }}</a>
+                @endif
+            </div>
 
             @if($nextChapter)
                 <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $nextChapter->order]) }}"
-                    class="btn btn-primary rounded-pill px-4 hover-elevate">
-                    Следующая <i class="bi bi-arrow-right ms-2"></i>
+                    class="btn btn-primary rounded-pill px-4 hover-elevate" style="min-width: 140px; color: #ffffff !important;">
+                    След. <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             @else
                 <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
-                    class="btn btn-success rounded-pill px-4 hover-elevate">
-                    Завершить <i class="bi bi-check-lg ms-2"></i>
+                    class="btn btn-success rounded-pill px-4 hover-elevate" style="min-width: 140px; color: #ffffff !important;">
+                    Финиш <i class="bi bi-check-lg ms-2"></i>
                 </a>
             @endif
         </div>

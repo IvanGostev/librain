@@ -80,9 +80,15 @@
             style="backdrop-filter: blur(20px); z-index: 1050;">
             <div class="container-fluid px-4 px-xl-5">
                 <!-- Logo -->
-                <a class="navbar-brand fw-bolder text-uppercase tracking-wider fs-4 me-5" href="{{ url('/') }}">
-                    <span class="text-primary">Lib</span>rain
-                </a>
+                @if(request()->is('/'))
+                    <span class="navbar-brand fw-bolder text-uppercase tracking-wider fs-4 me-5 cursor-default">
+                        <span class="text-primary">Lib</span>rain
+                    </span>
+                @else
+                    <a class="navbar-brand fw-bolder text-uppercase tracking-wider fs-4 me-5" href="{{ url('/') }}">
+                        <span class="text-primary">Lib</span>rain
+                    </a>
+                @endif
 
                 <!-- Mobile Toggle -->
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
@@ -233,8 +239,8 @@
             </div>
         </nav>
 
-        <main class="py-5 flex-grow-1">
-            <div class="container mt-3">
+        <main class="pt-3 pt-lg-5 pb-5 flex-grow-1">
+            <div class="container mt-1 mt-lg-3">
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show bg-success bg-opacity-10 text-success border-success border-opacity-25 rounded-pill px-4 animate-fade-in-up"
                         role="alert">
