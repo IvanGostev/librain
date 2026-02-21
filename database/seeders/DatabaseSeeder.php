@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create();
 
         // Genres (Use the factory to create specific ones or random)
-        // Since we hardcoded a list in factory, we can loop to create them if we want unique, 
+        // Since we hardcoded a list in factory, we can loop to create them if we want unique,
         // but for now let's just create 10 distinct ones if possible or just 10 random.
         // Better:
         $genres = Genre::factory()->count(10)->create();
@@ -110,5 +110,6 @@ class DatabaseSeeder extends Seeder
         });
 
         $this->call(PageSeeder::class);
+        $this->call(SiteSettingsSeeder::class);
     }
 }
