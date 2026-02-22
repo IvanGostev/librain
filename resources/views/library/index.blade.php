@@ -13,7 +13,7 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 animate-fade-in-up delay-100 position-relative"
             style="z-index: 10;">
             <!-- Status Tabs -->
-            <ul class="nav nav-pills" id="library-tabs" role="tablist">
+            <ul class="nav nav-pills nav-pills-mobile-scroll gap-2" id="library-tabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {{ $activeTab === 'reading' ? 'active' : '' }} rounded-pill px-4"
                         id="reading-tab" data-bs-toggle="pill" data-bs-target="#reading" type="button" role="tab"
@@ -201,4 +201,25 @@
             });
         });
     </script>
+    <style>
+        .nav-pills-mobile-scroll {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .nav-pills-mobile-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        @media (max-width: 576px) {
+            .nav-pills-mobile-scroll .nav-link {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 @endsection

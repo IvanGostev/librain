@@ -141,7 +141,7 @@
             box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.2);
             color: #1a202c;
         }
-
+40
         body.theme-dark .reader-settings-drawer {
             background: #1e293b;
             border-left: 1px solid rgba(255, 255, 255, 0.05);
@@ -153,12 +153,54 @@
             transform: translateX(0);
         }
 
+        .pagination-circle {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .pagination-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+                border-radius: 8px !important;
+            }
+            .pagination-container {
+                gap: 0.35rem !important;
+            }
+            .reader-nav-btn {
+                min-width: 89px !important;
+                width: 89px !important;
+                padding-left: 0.25rem !important;
+                padding-right: 0.25rem !important;
+                font-size: 0.85rem !important;
+                height: 31px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px !important;
+            }
+            .reader-nav-btn i {
+                font-size: 0.8rem;
+            }
+            .reader-nav-wrapper {
+                margin-top: 1.5rem !important;
+                padding-top: 1.5rem !important;
+                gap: 0.5rem;
+            }
+        }
+
         /* Hide navbar on scroll down, show on scroll up logic can be added */
     </style>
 </head>
 
 <body>
-    <!-- Toolbar -->
+
     <div class="reader-toolbar d-flex align-items-center justify-content-between px-3 px-lg-4">
         <div class="d-flex align-items-center">
             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
@@ -242,58 +284,56 @@
         </div>
 
         <!-- Navigation -->
-        <div class="d-flex justify-content-between align-items-center mt-5 py-5 border-top border-secondary border-opacity-10">
+        <div class="d-flex justify-content-center align-items-center flex-wrap reader-nav-wrapper mt-5 py-5 border-top border-secondary border-opacity-10 gap-2">
             @if($prevChapter)
                 <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $prevChapter->order]) }}"
-                    class="btn btn-outline-secondary rounded-pill px-4" style="min-width: 140px;">
-                    <i class="bi bi-arrow-left me-2"></i> Пред.
+                    class="btn btn-outline-secondary rounded-pill px-4 reader-nav-btn">
+                    <i class="bi bi-chevron-double-left me-1 d-none d-sm-inline"></i> <span class="d-none d-sm-inline">назад</span><span class="d-inline d-sm-none">назад</span>
                 </a>
-            @else
-                <div style="min-width: 140px;"></div>
             @endif
 
-            <div class="d-flex align-items-center justify-content-center flex-wrap px-2">
+            <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 px-1 pagination-container">
                 @php
                     $current = $chapter->order;
                     $total = $totalChapters;
-                    $delta = 2; 
-                    
+                    $delta = 2;
+
                     $start = max(1, $current - $delta);
                     $end = min($total, $current + $delta);
                 @endphp
-                
+
                 @if($start > 1)
-                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => 1]) }}" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center mx-1" style="width: 38px; height: 38px; padding: 0;">1</a>
+                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => 1]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">1</a>
                     @if($start > 2)
-                        <span class="text-muted mx-1 px-1">...</span>
+                        <span class="text-muted px-1">...</span>
                     @endif
                 @endif
-                
+
                 @for($i = $start; $i <= $end; $i++)
                     @if($i == $current)
-                        <span class="btn btn-sm btn-primary rounded-circle d-flex align-items-center justify-content-center mx-1 fw-bold" style="width: 38px; height: 38px; padding: 0; pointer-events: none; opacity: 1; color: #ffffff !important;">{{ $i }}</span>
+                        <span class="btn btn-sm btn-primary rounded-circle pagination-circle fw-bold" style="pointer-events: none; opacity: 1; color: #ffffff !important;">{{ $i }}</span>
                     @else
-                        <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $i]) }}" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center mx-1" style="width: 38px; height: 38px; padding: 0;">{{ $i }}</a>
+                        <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $i]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">{{ $i }}</a>
                     @endif
                 @endfor
-                
+
                 @if($end < $total)
                     @if($end < $total - 1)
-                        <span class="text-muted mx-1 px-1">...</span>
+                        <span class="text-muted px-1">...</span>
                     @endif
-                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $total]) }}" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center mx-1" style="width: 38px; height: 38px; padding: 0;">{{ $total }}</a>
+                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $total]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">{{ $total }}</a>
                 @endif
             </div>
 
             @if($nextChapter)
                 <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $nextChapter->order]) }}"
-                    class="btn btn-primary rounded-pill px-4 hover-elevate" style="min-width: 140px; color: #ffffff !important;">
-                    След. <i class="bi bi-arrow-right ms-2"></i>
+                    class="btn btn-outline-secondary rounded-pill px-4 reader-nav-btn">
+                    <span class="d-none d-sm-inline">вперед</span><span class="d-inline d-sm-none">вперед</span> <i class="bi bi-chevron-double-right ms-1 d-none d-sm-inline"></i>
                 </a>
             @else
                 <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
-                    class="btn btn-success rounded-pill px-4 hover-elevate" style="min-width: 140px; color: #ffffff !important;">
-                    Финиш <i class="bi bi-check-lg ms-2"></i>
+                    class="btn btn-success rounded-pill px-4 reader-nav-btn" style="color: #ffffff !important;">
+                    <span class="d-none d-sm-inline">в конец</span><span class="d-inline d-sm-none">в конец</span> <i class="bi bi-check-lg ms-1 d-none d-sm-inline"></i>
                 </a>
             @endif
         </div>

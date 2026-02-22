@@ -89,40 +89,41 @@
                             <a href="{{ route('authors.show', $author->slug) }}" class="text-decoration-none group">
                                 <article
                                     class="card bg-dark-card border-white-10 shadow-sm hover-card-lift position-relative overflow-hidden">
-                                    <div class="card-body p-3">
+                                    <div class="card-body p-3 position-relative" style="z-index: 1;">
                                         <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0 me-4">
+                                            <div class="flex-shrink-0 me-3 me-md-4">
                                                 <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
                                                     alt="{{ $author->name }}"
                                                     class="rounded-circle border border-white-10 shadow-sm"
                                                     style="width: 80px; height: 80px; object-fit: cover;">
                                             </div>
-                                            <div class="flex-grow-1 min-w-0">
+                                            <div class="flex-grow-1 min-w-0 pe-2 pe-md-4">
                                                 <div class="mb-2">
-                                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                                    <div class="d-flex flex-wrap gap-1 gap-md-2 mb-2">
                                                         <span
-                                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 ms-0">
+                                                            class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 px-md-3 ms-0 author-badge">
                                                             {{ $author->books_count }}
-                                                            {{ trans_choice('книга|книги|книг', $author->books_count) }}
+                                                            <span class="d-none d-sm-inline">{{ trans_choice('книга|книги|книг', $author->books_count) }}</span>
+                                                            <span class="d-inline d-sm-none">кн.</span>
                                                         </span>
                                                         @php
                                                             $totalViews = $author->books->sum('views');
                                                             $totalReviews = $author->books->sum('reviews_count');
                                                         @endphp
                                                         <span
-                                                            class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3"
+                                                            class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-2 px-md-3 author-badge"
                                                             title="Просмотры">
                                                             <i class="bi bi-eye me-1"></i>
                                                             {{ number_format($totalViews, 0, ',', ' ') }}
                                                         </span>
                                                         <span
-                                                            class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3"
+                                                            class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-2 px-md-3 author-badge"
                                                             title="Комментарии">
                                                             <i class="bi bi-chat-left-text me-1"></i> {{ $totalReviews }}
                                                         </span>
                                                     </div>
                                                     <h3
-                                                        class="h5 fw-bold text-white mb-2 text-truncate group-hover:text-primary transition-colors">
+                                                        class="h5 fw-bold text-white mb-2 group-hover:text-primary transition-colors pe-3 author-name">
                                                         {{ $author->name }}
                                                     </h3>
 
@@ -135,15 +136,15 @@
                                                     @endif
                                                 </p>
                                             </div>
-                                            <div class="ms-3">
+                                            <div class="ms-1 ms-md-3">
                                                 <i
                                                     class="bi bi-chevron-right text-white-50 fs-5 group-hover:text-primary transition-colors"></i>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- Decorative bg icon -->
-                                    <i class="bi bi-person position-absolute bottom-0 end-0 text-white opacity-5"
-                                        style="font-size: 5rem; transform: translate(20%, 30%) rotate(-15deg);"></i>
+                                    <i class="bi bi-person position-absolute bottom-0 end-0 text-white"
+                                        style="font-size: 5rem; transform: translate(20%, 30%) rotate(-15deg); opacity: 0.05; z-index: 0;"></i>
                                 </article>
                             </a>
                         </div>
@@ -178,6 +179,16 @@
     @endif
 
     <style>
+        @media (max-width: 576px) {
+            .author-name {
+                font-size: 1.05rem !important;
+            }
+            .author-badge {
+                font-size: 0.65rem !important;
+                padding: 0.35em 0.6em !important;
+            }
+        }
+
         /* Filter buttons styling */
         .btn-outline-light {
             border: 1px solid var(--bs-primary) !important;

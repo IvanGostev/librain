@@ -39,7 +39,8 @@ class GenreFactory extends Factory
         return [
             'name' => $genre,
             'slug' => Str::slug($genre),
-            'description' => fake()->paragraph(),
+            'title' => 'Лучшие книги в жанре ' . $genre,
+            'description' => '<p>' . fake()->realText(300) . '</p><p>' . fake()->realText(400) . '</p>',
         ];
     }
 }

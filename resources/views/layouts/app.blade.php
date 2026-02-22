@@ -78,7 +78,7 @@
     <div id="app" class="d-flex flex-column min-vh-100">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark-card border-bottom border-white-10 py-3"
             style="backdrop-filter: blur(20px); z-index: 1050;">
-            <div class="container-fluid px-4 px-xl-5">
+            <div class="container-fluid px-2 px-md-4 px-xl-5">
                 <!-- Logo -->
                 @if(request()->is('/'))
                     <span class="navbar-brand fw-bolder text-uppercase tracking-wider fs-4 me-5 cursor-default">
@@ -156,7 +156,7 @@
                     </form>
 
                     <!-- Right: User Actions -->
-                    <div class="d-flex align-items-center gap-2 ms-lg-3 mt-3 mt-lg-0">
+                    <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-2 ms-lg-3 mt-4 mt-lg-0 pb-3 pb-lg-0">
                         <button class="btn btn-icon btn-ghost p-2 text-white-50 hover-text-white me-2" id="theme-toggle"
                             title="Переключить тему">
                             <i class="bi bi-sun-fill"></i>
@@ -206,7 +206,7 @@
                                     <span class="d-none d-xl-inline fw-medium ms-1">{{ Auth::user()->name }}</span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-end bg-dark-card border-white-10 shadow-lg mt-2"
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-mobile-center bg-dark-card border-white-10 shadow-lg mt-2"
                                     aria-labelledby="navbarDropdown">
                                     <div class="px-3 py-2 text-muted small text-uppercase fw-bold ls-wider">Аккаунт</div>
                                     <a class="dropdown-item text-white hover-bg-white-10"
@@ -335,6 +335,22 @@
             .input-group input[type="search"] {
                 border-top-right-radius: 50rem !important;
                 border-bottom-right-radius: 50rem !important;
+            }
+        }
+
+        /* Center dropdown on mobile */
+        @media (max-width: 991.98px) {
+            .dropdown-menu-mobile-center {
+                text-align: center;
+                width: 100%;
+                border: none !important;
+                box-shadow: none !important;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .dropdown-menu-mobile-center .dropdown-item {
+                justify-content: center;
+                display: flex;
             }
         }
     </style>
