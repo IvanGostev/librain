@@ -5,7 +5,6 @@
 
 @section('content')
     <div class="hero-section position-relative">
-        <!-- Background Effects -->
         <div class="position-absolute top-0 start-0 w-100 h-100 bg-darker"></div>
         <div class="position-absolute opacity-20 flare-1 pe-none" style="z-index: 2000;"></div>
         <div class="position-absolute opacity-20 flare-2 pe-none" style="z-index: 2000;"></div>
@@ -53,7 +52,6 @@
 
     <section class="section py-4 bg-body-tertiary position-relative" style="margin-top: -100px; z-index: 10;">
         <div class="container">
-            <h2 class="visually-hidden">Преимущества платформы</h2>
             <div class="row g-5">
                 <!-- Feature 1 -->
                 <div class="col-md-4">
@@ -109,7 +107,6 @@
     </section>
 
     <style>
-        /* Custom Styles for Welcome Page */
         .hero-section {
             min-height: 100vh;
             padding-top: 80px;

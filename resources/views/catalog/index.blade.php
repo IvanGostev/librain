@@ -58,22 +58,28 @@
                         <div class="card bg-dark-card border-white-10 p-4 rounded-4 hover-elevate transition-transform">
                             <div class="mb-3 border-bottom border-white-10 pb-3 d-flex align-items-center gap-3">
                                 <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}" class="flex-shrink-0">
-                                    <img src="{{ $review->book->cover_image ? asset('storage/' . $review->book->cover_image) : asset('images/no-cover.svg') }}" 
-                                         alt="{{ $review->book->title }}" 
+                                    <img src="{{ $review->book->cover_image ? asset('storage/' . $review->book->cover_image) : asset('images/no-cover.svg') }}"
+                                         alt="{{ $review->book->title }}"
                                          class="rounded shadow-sm object-fit-cover"
                                          style="width: 50px; height: 75px;"
                                          onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                                 </a>
                                 <div>
-                                    <h5 class="mb-1 fw-bold">
+                                    <p class="mb-1 fw-bold">
                                         <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}"
                                             class="text-white text-decoration-none hover-text-primary transition-colors">
                                             {{ $review->book->title }}
                                         </a>
-                                    </h5>
+                                    </p>
                                     <div class="small text-muted">
-                                        Автор: <a href="{{ route('authors.show', $review->book->author->slug) }}"
-                                            class="text-muted text-decoration-none hover-text-white">{{ $review->book->author->name }}</a>
+                                        @if($review->book->authors->isNotEmpty())
+                                            Авторы: 
+                                            @foreach($review->book->authors as $author)
+                                                <a href="{{ route('authors.show', $author->slug) }}" class="text-muted text-decoration-none hover-text-white">{{ $author->name }}</a>{{ !$loop->last ? ', ' : '' }}
+                                            @endforeach
+                                        @else
+                                            Автор неизвестен
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -103,7 +109,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h6 class="mb-0 fw-bold text-white">{{ $authorName }}</h6>
+                                        <p class="mb-0 fw-bold text-white">{{ $authorName }}</p>
                                         <span class="text-muted small">{{ $review->created_at->diffForHumans() }}</span>
                                     </div>
                                     <div class="text-warning small mb-2">
@@ -133,7 +139,7 @@
         @else
             @if(isset($books) && $books->count() > 0)
                 <div
-                    class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-200">
+                    class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-200">
                     @foreach($books as $book)
                         <div class="col">
                             <x-book-card-vertical :book="$book" />
@@ -159,7 +165,7 @@
                 <div class="row">
                     <div class="col-12 text-start">
                         @if($bottomTitle)
-                        <h2 class="h3 fw-bold mb-4 text-white">{{ $bottomTitle }}</h2> @endif
+                        <h1 class="h1 fw-bold mb-4 text-white">{{ $bottomTitle }}</h1> @endif
                         @if($bottomText)
                         <div class="text-white-50">{!! $bottomText !!}</div> @endif
                     </div>

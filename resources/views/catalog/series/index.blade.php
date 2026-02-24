@@ -66,7 +66,7 @@
                     <a href="{{ route('series.index', ['sort' => 'alphabet']) }}"
                         class="btn btn-sm alphabet-filter btn-outline-light">Все</a>
                 @endif
-                
+
                 @foreach($letters as $l)
                     @if(request('letter') == $l)
                         <span class="btn btn-sm alphabet-filter btn-primary cursor-default">{{ $l }}</span>
@@ -81,7 +81,6 @@
         @endif
 
         <section>
-            <h2 class="visually-hidden">Список книжных серий</h2>
             @if($series->count() > 0)
                 <div class="row g-3 animate-fade-in-up delay-200">
                     @foreach($series as $item)
@@ -121,10 +120,10 @@
                                                             <i class="bi bi-chat-left-text me-1"></i> {{ $totalReviews }}
                                                         </span>
                                                     </div>
-                                                    <h3
+                                                    <p
                                                         class="h5 fw-bold text-white mb-2 group-hover:text-secondary transition-colors">
                                                         {{ $item->name }}
-                                                    </h3>
+                                                    </p>
 
                                                 </div>
                                                 <p class="text-white-50 small mb-0 text-truncate d-none d-md-block"
@@ -164,8 +163,6 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 text-start">
-                        @if($bottomTitle)
-                        <h2 class="h3 fw-bold mb-4 text-white">{{ $bottomTitle }}</h2> @endif
                         @if($bottomText)
                         <div class="text-white-50">{!! $bottomText !!}</div> @endif
                     </div>

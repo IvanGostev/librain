@@ -32,9 +32,10 @@ class BookResource extends Resource
             ->schema([
                     Forms\Components\Section::make('Основная информация')
                         ->schema([
-                                Forms\Components\Select::make('author_id')
-                                    ->label('Автор')
-                                    ->relationship('author', 'name')
+                                Forms\Components\Select::make('authors')
+                                    ->label('Авторы')
+                                    ->relationship('authors', 'name')
+                                    ->multiple()
                                     ->searchable()
                                     ->preload()
                                     ->required(),
@@ -136,10 +137,9 @@ class BookResource extends Resource
     {
         return $table
             ->columns([
-                    Tables\Columns\TextColumn::make('author.name')
-                        ->label('Автор')
-                        ->sortable()
-                        ->searchable(),
+                    Tables\Columns\TextColumn::make('authors.name')
+                        ->label('Авторы')
+                        ->badge(),
                     Tables\Columns\TextColumn::make('title')
                         ->label('Название')
                         ->searchable(),

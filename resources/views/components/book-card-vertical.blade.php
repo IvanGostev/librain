@@ -69,6 +69,14 @@
                 </ul>
             </div>
         @endauth
+        @guest
+            <div class="dropdown position-absolute top-0 end-0 m-2 z-2">
+                <button class="btn btn-sm btn-dark bg-opacity-75 p-2 rounded-circle border-0 lh-1 shadow-sm hover-scale-110 transition-transform" type="button"
+                    onclick="alert('Вы не авторизованы. Пожалуйста, войдите в систему.')">
+                    <i class="bi bi-heart"></i>
+                </button>
+            </div>
+        @endguest
 
         <div class="position-absolute bottom-0 start-0 w-100 p-2 bg-gradient-to-t from-black-80 to-transparent">
             <span
@@ -80,20 +88,22 @@
     </div>
 
     <div class="card-body p-3 d-flex flex-column">
-        <h5 class="card-title fw-bold text-white fs-6 mb-1 text-truncate-2" style="min-height: 2.5rem;">
+        <p class="card-title fw-bold text-white fs-6 mb-1">
             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                 class="text-white text-decoration-none hover-text-primary transition-colors">
                 {{ $book->title }}
             </a>
-        </h5>
+        </p>
 
         <p class="card-text text-muted small mb-2">
             {{ $book->created_at ? $book->created_at->format('d.m.Y') . ' - ' : '' }}
-            @if($book->author)
-                <a href="{{ route('authors.show', $book->author->slug) }}"
-                    class="text-muted text-decoration-none hover-text-primary transition-colors">
-                    {{ $book->author->name }}
-                </a>
+            @if($book->authors->isNotEmpty())
+                @foreach($book->authors as $author)
+                    <a href="{{ route('authors.show', $author->slug) }}"
+                        class="text-muted text-decoration-none hover-text-primary transition-colors">
+                        {{ $author->name }}
+                    </a>{{ !$loop->last ? ', ' : '' }}
+                @endforeach
             @else
                 Автор неизвестен
             @endif

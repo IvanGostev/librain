@@ -51,11 +51,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="flex-grow-1 ms-3 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-start mb-1">
-                    <h6 class="text-white mb-0 text-truncate" title="{{ $entry->book->title }}">{{ $entry->book->title }}
+            <div class="flex-grow-1 ms-3 d-flex flex-column overflow-hidden" style="min-width: 0;">
+                <div class="d-flex justify-content-between align-items-start mb-1 gap-2">
+                    <h6 class="text-white mb-0" title="{{ $entry->book->title }}">{{ $entry->book->title }}
                     </h6>
-                    <div class="d-flex gap-1">
+                    <div class="d-flex gap-1 flex-shrink-0">
                         @if(!$entry->book->is_published)
                             <span
                                 class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-0"
@@ -72,7 +72,13 @@
                         @endif
                     </div>
                 </div>
-                <p class="text-muted small mb-2 text-truncate">{{ $entry->book->author->name ?? 'Автор неизвестен' }}</p>
+                <p class="text-muted small mb-2">
+                    @if($entry->book->authors->isNotEmpty())
+                        {{ $entry->book->authors->pluck('name')->join(', ') }}
+                    @else
+                        Автор неизвестен
+                    @endif
+                </p>
 
                 <div class="mt-auto">
                     <!-- Progress Bar -->
@@ -82,7 +88,7 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-white-50 small">{{ $entry->progress_percent }}%</span>
-                        <a href="{{ route('books.read', $entry->book->slug) }}"
+                        <a href="{{ route('books.show', ['genre' => $entry->book->genres->first()->slug ?? 'general', 'slug' => $entry->book->slug]) }}"
                             class="btn btn-link btn-sm text-primary text-decoration-none p-0 small fw-bold">
                             {{ $entry->status == 'finished' ? 'Перечитать' : 'Читать' }}
                         </a>

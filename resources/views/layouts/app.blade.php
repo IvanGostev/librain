@@ -134,6 +134,37 @@
                                     href="{{ route('top100') }}">Топ 100</a>
                             @endif
                         </li>
+
+                        @auth
+                            <li class="nav-item d-lg-none mt-2 pt-2 border-top border-white-10">
+                                @if(request()->is('profile*'))
+                                    <span class="nav-link active text-primary cursor-default">Профиль</span>
+                                @else
+                                    <a class="nav-link {{ request()->is('profile*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('profile.show') }}">Профиль</a>
+                                @endif
+                            </li>
+                            <li class="nav-item d-lg-none">
+                                @if(request()->is('library*'))
+                                    <span class="nav-link active text-primary cursor-default">Моя библиотека</span>
+                                @else
+                                    <a class="nav-link {{ request()->is('library*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('library.index') }}">Моя библиотека</a>
+                                @endif
+                            </li>
+                            @if(Auth::user()->isAdmin())
+                                <li class="nav-item d-lg-none">
+                                    <a class="nav-link" href="{{ url('/admin') }}">Админ-панель</a>
+                                </li>
+                            @endif
+                            <li class="nav-item d-lg-none">
+                                <a class="nav-link text-danger" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">Выйти</a>
+                                <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </li>
+                        @endauth
                     </ul>
 
                     <!-- Center: Search Bar (Pill) -->
@@ -172,13 +203,13 @@
                         @else
                             <!-- Library Link -->
                             <a href="{{ route('library.index') }}"
-                                class="btn btn-icon btn-ghost p-2 position-relative text-white-50 hover-text-white me-2"
+                                class="btn btn-icon btn-ghost p-2 position-relative text-white-50 hover-text-white me-2 d-none d-lg-inline-block"
                                 title="Моя библиотека">
                                 <i class="bi bi-bookmark-heart fs-5"></i>
                             </a>
 
                             <!-- User Dropdown -->
-                            <div class="dropdown">
+                            <div class="dropdown d-none d-lg-block">
                                 <a id="navbarDropdown"
                                     class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-white ps-0"
                                     href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -206,7 +237,7 @@
                                     <span class="d-none d-xl-inline fw-medium ms-1">{{ Auth::user()->name }}</span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-mobile-center bg-dark-card border-white-10 shadow-lg mt-2"
+                                <div class="dropdown-menu dropdown-menu-end bg-dark-card border-white-10 shadow-lg mt-2"
                                     aria-labelledby="navbarDropdown">
                                     <div class="px-3 py-2 text-muted small text-uppercase fw-bold ls-wider">Аккаунт</div>
                                     <a class="dropdown-item text-white hover-bg-white-10"
@@ -338,21 +369,6 @@
             }
         }
 
-        /* Center dropdown on mobile */
-        @media (max-width: 991.98px) {
-            .dropdown-menu-mobile-center {
-                text-align: center;
-                width: 100%;
-                border: none !important;
-                box-shadow: none !important;
-                padding-left: 0;
-                padding-right: 0;
-            }
-            .dropdown-menu-mobile-center .dropdown-item {
-                justify-content: center;
-                display: flex;
-            }
-        }
     </style>
 </body>
 

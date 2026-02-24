@@ -50,7 +50,7 @@ Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'inde
 Route::get('/p/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('pages.show');
 
 
-Route::get('/read/{slug}/{chapterOrder?}', [App\Http\Controllers\CatalogController::class, 'read'])->name('books.read');
+Route::get('/read/{slug}/{page?}', [App\Http\Controllers\CatalogController::class, 'read'])->name('books.read');
 Route::get('/{genre}/{slug}', [App\Http\Controllers\CatalogController::class, 'book'])->name('books.show');
 Route::get('/{slug}', [App\Http\Controllers\CatalogController::class, 'bookLegacy'])->name('books.show.legacy');
 

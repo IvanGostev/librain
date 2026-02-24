@@ -16,15 +16,17 @@ class LibraryController extends Controller
         $activeTab = $request->get('tab', 'reading');
 
         $query = function ($q) use ($sort) {
-            $q->with('book.author')
+            $q->with('book.authors')
                 ->join('books', 'library_entries.book_id', '=', 'books.id')
                 ->select('library_entries.*');
 
             if ($sort === 'title') {
                 $q->orderBy('books.title', 'asc');
             } elseif ($sort === 'author') {
-                $q->join('authors', 'books.author_id', '=', 'authors.id')
-                    ->orderBy('authors.name', 'asc');
+                $q->orderBy(\App\Models\Author::select('name')
+                    ->join('author_book', 'authors.id', '=', 'author_book.author_id')
+                    ->whereColumn('author_book.book_id', 'books.id')
+                    ->limit(1), 'asc');
             } else {
                 $q->orderByDesc('library_entries.created_at');
             }

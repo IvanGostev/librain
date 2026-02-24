@@ -19,9 +19,6 @@ return new class extends Migration {
             $table->timestamps();
 
             $table->unique(['review_id', 'user_id'], 'unique_user_vote');
-            // For guests, we might want unique by IP and Review, but IP can change. 
-            // Usually simple protection is enough.
-            // Let's add an index for Guest IP checks
             $table->index(['review_id', 'ip_address']);
         });
     }

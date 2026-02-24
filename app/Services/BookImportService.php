@@ -80,7 +80,6 @@ class BookImportService
         $seoKeywords = mb_substr(implode(', ', array_unique(array_merge([$author->name], $genresList))), 0, 255);
 
         $book = Book::create([
-            'author_id' => $author->id,
             'title' => $title,
             'slug' => Str::slug($title) . '-' . Str::random(5),
             'description' => $description,
@@ -99,6 +98,8 @@ class BookImportService
             );
             $book->genres()->attach($genre->id);
         }
+
+        $book->authors()->attach($author->id);
 
 
         $coverHref = null;
@@ -205,7 +206,8 @@ class BookImportService
 
         $authorNode = $titleInfo->addChild('author');
 
-        $parts = explode(' ', $book->author->name, 2);
+        $authorName = $book->authors->isNotEmpty() ? $book->authors->first()->name : 'Unknown';
+        $parts = explode(' ', $authorName, 2);
         $authorNode->addChild('first-name', $parts[0] ?? '');
         $authorNode->addChild('last-name', $parts[1] ?? '');
 
@@ -243,7 +245,8 @@ class BookImportService
     public function generateTxtContent(Book $book, $chapters)
     {
         $content = "{$book->title}\n";
-        $content .= "{$book->author->name}\n\n";
+        $authorName = $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Unknown';
+        $content .= "{$authorName}\n\n";
         $content .= strip_tags(str_replace(['<p>', '</p>'], ["", "\n"], $book->description ?? '')) . "\n\n";
         $content .= str_repeat('=', 20) . "\n\n";
 
@@ -323,12 +326,13 @@ XML;
         }
 
 
+        $authorName = $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Unknown';
         $contentOpf = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">
     <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
         <dc:title>{$book->title}</dc:title>
-        <dc:creator>{$book->author->name}</dc:creator>
+        <dc:creator>{$authorName}</dc:creator>
         <dc:language>ru</dc:language>
         <dc:identifier id="BookId">urn:uuid:{$book->slug}</dc:identifier>
     </metadata>

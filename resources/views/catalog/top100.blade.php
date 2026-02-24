@@ -60,13 +60,19 @@
 
                                 <!-- Info -->
                                 <div class="flex-grow-1 min-w-0">
-                                    <h5 class="fw-bold text-white mb-1 text-truncate">
+                                    <p class="fw-bold text-white mb-1">
                                         <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                             class="text-white text-decoration-none hover-text-primary transition-colors">
                                             {{ $book->title }}
                                         </a>
-                                    </h5>
-                                    <p class="text-muted mb-2 text-truncate">{{ $book->author->name ?? 'Автор неизвестен' }}</p>
+                                    </p>
+                                    <p class="text-muted mb-2">
+                                        @if($book->authors->isNotEmpty())
+                                            {{ $book->authors->pluck('name')->join(', ') }}
+                                        @else
+                                            Автор неизвестен
+                                        @endif
+                                    </p>
 
                                     <div class="d-flex gap-3 small">
                                         <span class="text-warning"><i class="bi bi-star-fill me-1"></i>
@@ -101,8 +107,6 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 text-start">
-                        @if($bottomTitle)
-                        <h2 class="h3 fw-bold mb-4 text-white">{{ $bottomTitle }}</h2> @endif
                         @if($bottomText)
                         <div class="text-white-50">{!! $bottomText !!}</div> @endif
                     </div>

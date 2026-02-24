@@ -13,7 +13,7 @@
                                 alt="{{ $book->title }}" class="rounded shadow-lg mb-4"
                                 style="width: 120px; height: 180px; object-fit: cover;">
                             <h1 class="h3 fw-bold text-white mb-2">{{ $book->title }}</h1>
-                            <p class="text-white-50 mb-0">Автор: {{ $book->author->name }}</p>
+                            <p class="text-white-50 mb-0">Автор: {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Неизвестен' }}</p>
                         </div>
 
                         <div class="py-4" id="timer-container">
@@ -55,7 +55,68 @@
                 </div>
             </div>
         </div>
+
+        <!-- Genres section for second screen -->
+        <div class="mt-5 pt-5">
+            <section>
+                @if($genres->count() > 0)
+                    <div class="row g-4 animate-fade-in-up delay-200">
+                        @foreach($genres as $genre)
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <a href="{{ route('genres.show', $genre->slug) }}" class="text-decoration-none group">
+                                    <article
+                                        class="card bg-dark-card border-0 h-100 shadow-sm hover-card-lift position-relative overflow-hidden">
+                                        <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center"
+                                            style="min-height: 180px;">
+                                            <!-- Decorative Circle -->
+                                            <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10"
+                                                style="width: 120px; height: 120px; filter: blur(20px);"></div>
+
+                                            <div class="position-relative z-1">
+                                                <p class="h4 fw-bold genre-title mb-2 group-hover:text-primary transition-colors">
+                                                    {{ $genre->name }}
+                                                </p>
+                                                <span
+                                                    class="badge bg-white bg-opacity-10 text-white rounded-pill border border-white-10 px-3"
+                                                    style="color: white !important;">
+                                                    {{ $genre->books_count }}
+                                                    {{ trans_choice('книга|книги|книг', $genre->books_count) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+        </div>
     </div>
+
+    <style>
+        .transition-colors {
+            transition: color 0.3s ease;
+        }
+
+        .group:hover .group-hover\:text-primary {
+            color: var(--bs-primary) !important;
+        }
+
+        /* Genre title color - always white */
+        .genre-title {
+            color: white !important;
+        }
+
+        /* Override for light theme to keep it white */
+        [data-bs-theme="light"] .genre-title {
+            color: white !important;
+        }
+
+        [data-bs-theme="light"] .group:hover .group-hover\:text-primary {
+            color: var(--bs-primary) !important;
+        }
+    </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

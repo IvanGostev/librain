@@ -21,7 +21,6 @@ class ChapterFactory extends Factory
             'content' => fake()->paragraphs(10, true),
             'symbols_count' => fake()->numberBetween(1000, 10000),
             'is_free' => true,
-            // 'order' and 'book_id' will typically be overridden or handled by state/seeder, but defaults:
             'order' => 1,
         ];
     }

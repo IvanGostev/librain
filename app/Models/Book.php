@@ -23,7 +23,6 @@ class Book extends Model
     }
 
     protected $fillable = [
-        'author_id',
         'title',
         'slug',
         'description',
@@ -41,9 +40,9 @@ class Book extends Model
         'file_epub',
     ];
 
-    public function author()
+    public function authors()
     {
-        return $this->belongsTo(Author::class);
+        return $this->belongsToMany(Author::class);
     }
 
     public function genres()

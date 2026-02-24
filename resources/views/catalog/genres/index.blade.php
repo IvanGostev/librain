@@ -5,7 +5,6 @@
         <h1 class="h2 fw-bold text-white mb-4">Книги по жанрам</h1>
 
         <section>
-            <h2 class="visually-hidden">Список всех жанров</h2>
             @if($genres->count() > 0)
                 <div class="row g-4 animate-fade-in-up delay-200">
                     @foreach($genres as $genre)
@@ -20,9 +19,9 @@
                                             style="width: 120px; height: 120px; filter: blur(20px);"></div>
 
                                         <div class="position-relative z-1">
-                                            <h3 class="h4 fw-bold genre-title mb-2 group-hover:text-primary transition-colors">
+                                            <p class="h4 fw-bold genre-title mb-2 group-hover:text-primary transition-colors">
                                                 {{ $genre->name }}
-                                            </h3>
+                                            </p>
                                             <span
                                                 class="badge bg-white bg-opacity-10 text-white rounded-pill border border-white-10 px-3"
                                                 style="color: white !important;">
@@ -50,8 +49,6 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 text-start">
-                        @if($bottomTitle)
-                        <h2 class="h3 fw-bold mb-4 text-white">{{ $bottomTitle }}</h2> @endif
                         @if($bottomText)
                         <div class="text-white-50">{!! $bottomText !!}</div> @endif
                     </div>

@@ -38,7 +38,7 @@ class CatalogController extends Controller
                 $period = 'week';
             }
 
-            $query = Book::where('is_published', true)->with('author')->withCount('reviews');
+            $query = Book::where('is_published', true)->with('authors')->withCount('reviews');
 
             $date = null;
             if ($period) {
@@ -122,9 +122,6 @@ class CatalogController extends Controller
         if ($sort === 'latest') {
             $query->latest();
         } elseif ($sort === 'commented') {
-            // For commented sort, we need to fetch reviews instead of books directly if we want to show review cards
-            // However, the current view structure for genres expects $books.
-            // If the user wants to see reviews like on the main page, we need to pass $reviews.
 
             $reviews = Review::with(['user', 'book'])
                 ->whereHas('book', function ($q) use ($genre) {
@@ -137,12 +134,7 @@ class CatalogController extends Controller
                 ->latest()
                 ->paginate(20);
 
-            // We still need $books variable for other sorts or if reviews are empty/not used in the same way
-            // But if sort is commented, the view might expect reviews. 
-            // Let's keep $books query for structure but maybe not use it if we switch to reviews view.
-            // Actually, looking at the main page, it uses $reviews for 'commented' sort.
 
-            // Let's modify the query for books just in case, but we will primarily use $reviews in the view.
             $query->withCount('reviews')->orderByDesc('reviews_count');
         } else {
             $query->orderByDesc('views');
@@ -154,7 +146,6 @@ class CatalogController extends Controller
         $description = $genre->seo_description ?? 'Книги в жанре ' . $genre->name . '. Читайте лучшие произведения онлайн на Librain.';
         $keywords = $genre->seo_keywords ?? $genre->name . ', книги, читать онлайн';
 
-        // Pass reviews if it exists, otherwise null
         $reviews = isset($reviews) ? $reviews : null;
 
         return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'description', 'keywords', 'reviews'));
@@ -168,7 +159,7 @@ class CatalogController extends Controller
         $query = Author::withCount('books')
             ->with([
                 'books' => function ($q) {
-                    $q->select('id', 'author_id', 'views')->withCount('reviews');
+                    $q->select('books.id', 'books.views')->withCount('reviews');
                 }
             ]);
 
@@ -446,7 +437,7 @@ class CatalogController extends Controller
 
         $book = Book::where('slug', $slug)
             ->with([
-                'author',
+                'authors',
                 'genres',
                 'series.books' => function ($q) {
                     $q->select('books.id', 'books.title', 'books.slug', 'books.cover_image', 'books.rating')
@@ -526,11 +517,11 @@ class CatalogController extends Controller
                 ->value('rating') ?? 0;
         }
 
-        $title = $book->seo_title ?? $book->title . ' - ' . $book->author->name . ' | Librain';
+        $authorName = $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен';
+        $title = $book->seo_title ?? $book->title . ' - ' . $authorName . ' | Librain';
         $description = $book->seo_description ?? Str::limit(strip_tags($book->description), 160);
-        $keywords = $book->seo_keywords ?? $book->title . ', ' . $book->author->name . ', читать онлайн';
+        $keywords = $book->seo_keywords ?? $book->title . ', ' . $authorName . ', читать онлайн';
 
-        // Rating Statistics
         $ratings = \App\Models\Rating::where('book_id', $book->id)
             ->select('rating', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
             ->groupBy('rating')
@@ -548,7 +539,6 @@ class CatalogController extends Controller
             ];
         }
 
-        // Library Status Statistics
         $statuses = \App\Models\LibraryEntry::where('book_id', $book->id)
             ->select('status', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
             ->groupBy('status')
@@ -589,39 +579,68 @@ class CatalogController extends Controller
         ));
     }
 
-    public function read($slug, $chapterOrder = 1)
+    public function read($slug, $page = 1)
     {
         $book = Book::where('slug', $slug)
             ->where('is_published', true)
-            ->with([
-                'chapters' => function ($q) {
-                    $q->orderBy('order');
-                }
-            ])
             ->firstOrFail();
 
-        $chapter = $book->chapters->where('order', $chapterOrder)->first();
+        $pages = \Illuminate\Support\Facades\Cache::remember('book_pages_' . $book->id, 86400, function () use ($book) {
+            $allChapters = $book->chapters()->orderBy('order')->get();
+            $paragraphs = [];
+            foreach ($allChapters as $chapter) {
+                if ($allChapters->count() > 1 && $chapter->title) {
+                    $paragraphs[] = "<h3 class='mt-4 mb-3 fw-bold'>" . htmlspecialchars($chapter->title) . "</h3>"; 
+                }
+                $chapterParagraphs = explode("\n", $chapter->content);
+                foreach ($chapterParagraphs as $p) {
+                    $p = trim($p);
+                    if ($p !== '') {
+                        $paragraphs[] = "<p>" . nl2br(htmlspecialchars($p)) . "</p>";
+                    }
+                }
+            }
 
+            $pagesArray = [];
+            $currentPage = [];
+            $currentWordCount = 0;
 
-        if (!$chapter && $book->chapters->isNotEmpty()) {
-            $chapter = $book->chapters->first();
+            foreach ($paragraphs as $p) {
+                $cleanP = strip_tags($p);
+                $wordCount = count(preg_split('/\s+/u', $cleanP, -1, PREG_SPLIT_NO_EMPTY));
+                
+                $currentPage[] = $p;
+                $currentWordCount += $wordCount;
+                
+                if ($currentWordCount >= 2500) {
+                    $pagesArray[] = implode("\n", $currentPage);
+                    $currentPage = [];
+                    $currentWordCount = 0;
+                }
+            }
+            if (!empty($currentPage)) {
+                $pagesArray[] = implode("\n", $currentPage);
+            }
+            
+            return $pagesArray;
+        });
 
+        if (empty($pages)) {
+            return redirect()->route('books.show', $slug)->with('error', 'В этой книге нет текста для чтения.');
         }
 
+        $totalPages = count($pages);
+        $page = (int) request('page', $page);
+        if ($page < 1) $page = 1;
+        if ($page > $totalPages) $page = $totalPages;
 
-        if ($book->chapters->isEmpty()) {
-            return redirect()->route('books.show', $slug)->with('error', 'В этой книге нет глав для чтения.');
-        }
-
+        $pageContent = $pages[$page - 1];
 
         if (Auth::check()) {
-            $totalChapters = $book->chapters->count();
-
-            $progress = $totalChapters > 0 ? round(($chapter->order / $totalChapters) * 100) : 0;
-
+            $progress = $totalPages > 0 ? round(($page / $totalPages) * 100) : 0;
             $progress = min(100, $progress);
 
-            $entry = LibraryEntry::updateOrCreate(
+            LibraryEntry::updateOrCreate(
                 ['user_id' => Auth::id(), 'book_id' => $book->id],
                 [
                     'status' => $progress >= 100 ? 'finished' : 'reading',
@@ -630,14 +649,9 @@ class CatalogController extends Controller
             );
         }
 
+        $title = 'Читать ' . $book->title . ' - Страница ' . $page . ' онлайн | Librain';
 
-        $prevChapter = $book->chapters->where('order', '<', $chapter->order)->sortByDesc('order')->first();
-        $nextChapter = $book->chapters->where('order', '>', $chapter->order)->sortBy('order')->first();
-        $totalChapters = $book->chapters->count();
-
-        $title = 'Читать ' . $book->title . ' - ' . $chapter->title . ' онлайн | Librain';
-
-        return view('catalog.books.read', compact('book', 'chapter', 'prevChapter', 'nextChapter', 'totalChapters', 'title'));
+        return view('catalog.books.read', compact('book', 'pageContent', 'page', 'totalPages', 'title'));
     }
 
     public function top100()
@@ -689,7 +703,7 @@ class CatalogController extends Controller
             $books = Book::where('is_published', true)
                 ->where(function ($q) use ($searchTerm) {
                     $q->where('title', 'like', $searchTerm)
-                        ->orWhereHas('author', function ($q) use ($searchTerm) {
+                        ->orWhereHas('authors', function ($q) use ($searchTerm) {
                             $q->where('name', 'like', $searchTerm);
                         })
                         ->orWhereHas('genres', function ($q) use ($searchTerm) {
@@ -702,7 +716,7 @@ class CatalogController extends Controller
                 ->select('books.*')
                 ->selectRaw('
                     (CASE WHEN title LIKE ? THEN 100 ELSE 0 END) +
-                    (CASE WHEN EXISTS (SELECT 1 FROM authors WHERE authors.id = books.author_id AND authors.name LIKE ?) THEN 50 ELSE 0 END) +
+                    (CASE WHEN EXISTS (SELECT 1 FROM author_book JOIN authors ON authors.id = author_book.author_id WHERE author_book.book_id = books.id AND authors.name LIKE ?) THEN 50 ELSE 0 END) +
                     (CASE WHEN EXISTS (SELECT 1 FROM book_genre JOIN genres ON genres.id = book_genre.genre_id WHERE book_genre.book_id = books.id AND genres.name LIKE ?) THEN 20 ELSE 0 END) +
                     (CASE WHEN EXISTS (SELECT 1 FROM chapters WHERE chapters.book_id = books.id AND chapters.content LIKE ?) THEN 10 ELSE 0 END)
                     as relevance
@@ -725,7 +739,7 @@ class CatalogController extends Controller
 
         $query = Book::where('is_published', true)
             ->where('id', '!=', $book->id)
-            ->with('author');
+            ->with('authors');
 
 
         if ($book->genres->isNotEmpty()) {
@@ -825,7 +839,8 @@ class CatalogController extends Controller
         }
 
         $title = 'Скачивание ' . $book->title . ' (' . strtoupper($format) . ') - Librain';
+        $genres = Genre::withCount('books')->orderBy('name')->get();
 
-        return view('catalog.books.download', compact('book', 'format', 'fileUrl', 'formattedSize', 'title'));
+        return view('catalog.books.download', compact('book', 'format', 'fileUrl', 'formattedSize', 'title', 'genres'));
     }
 }

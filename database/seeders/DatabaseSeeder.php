@@ -21,63 +21,48 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seeding Site Settings
         SiteSetting::updateOrCreate(['key' => 'home_bottom_title'], ['value' => 'О библиотеке Librain']);
         SiteSetting::updateOrCreate(['key' => 'home_bottom_text'], ['value' => '<p>Librain - это современная электронная библиотека, где вы найдете тысячи книг различных жанров. Мы стремимся сделать чтение доступным и удобным для каждого. Наша коллекция регулярно пополняется новинками, а удобный поиск поможет вам быстро найти нужную книгу.</p><p>Присоединяйтесь к нашему сообществу читателей, оставляйте отзывы, делитесь впечатлениями и открывайте для себя новые литературные миры вместе с Librain!</p>']);
         SiteSetting::updateOrCreate(['key' => 'contact_email'], ['value' => 'support@librain.ru']);
 
-        // Users
-        User::factory()->create([
-            'name' => 'Test User',
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'username' => 'testuser',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+            ]
+        );
         User::factory(10)->create();
 
-        // Genres (Use the factory to create specific ones or random)
-        // Since we hardcoded a list in factory, we can loop to create them if we want unique,
-        // but for now let's just create 10 distinct ones if possible or just 10 random.
-        // Better:
         $genres = Genre::factory()->count(10)->create();
 
-        // Authors
         $authors = Author::factory()->count(20)->create();
 
-        // Series
         $seriesList = Series::factory()->count(5)->create();
 
-        // Books
-        // Create books for each author
-        $authors->each(function ($author) use ($genres, $seriesList) {
-            $books = Book::factory()->count(rand(2, 5))->make([
-                'author_id' => $author->id,
-            ]);
+        $books = Book::factory()->count(60)->make();
 
-            foreach ($books as $book) {
-                // Assign dummy paths so the UI renders the download buttons.
-                // Actual generation will happen on the fly in CatalogController.
+        foreach ($books as $book) {
                 foreach (['txt', 'fb2', 'epub'] as $format) {
                     $book->{'file_' . $format} = "books/{$book->id}.{$format}";
                 }
 
                 $book->save();
+                
+                $book->authors()->attach($authors->random(rand(1, 3))->pluck('id'));
 
-                // Assign a random series sometimes
                 if (rand(0, 100) < 30 && $seriesList->count() > 0) {
                     $series = $seriesList->random();
                     $book->series()->attach($series->id, ['order' => rand(1, 10)]);
                 }
 
-                // Attach genres
                 $book->genres()->attach($genres->random(rand(1, 3))->pluck('id'));
 
-                // Generate Daily Views Stats (last year)
                 $startDate = Carbon::now()->subYear();
                 for ($i = 0; $i <= 365; $i++) {
                     $date = $startDate->copy()->addDays($i);
-                    // 30% chance of views on any given day
                     if (rand(0, 100) < 30) {
                         \App\Models\BookDailyView::create([
                             'book_id' => $book->id,
@@ -90,24 +75,34 @@ class DatabaseSeeder extends Seeder
                 $book->views = $book->dailyViews()->sum('views');
                 $book->save();
 
-                // Create chapters
-                $chapterCount = rand(5, 15);
+                $targetPages = rand(4, 10);
+                $totalWordsNeeded = $targetPages * 2500;
+                $chapterCount = rand(5, 10);
+                $wordsPerChapter = max(100, (int)($totalWordsNeeded / $chapterCount));
+
                 for ($i = 1; $i <= $chapterCount; $i++) {
+                    $paragraphs = [];
+                    $currentWords = 0;
+                    while ($currentWords < $wordsPerChapter) {
+                        $paragraph = fake()->realText(rand(800, 1500));
+                        $paragraphs[] = $paragraph;
+                        $currentWords += count(preg_split('/\s+/u', $paragraph, -1, PREG_SPLIT_NO_EMPTY));
+                    }
+                    $content = implode("\n\n", $paragraphs);
+
                     \App\Models\Chapter::factory()->create([
                         'book_id' => $book->id,
                         'order' => $i,
                         'title' => "Глава $i: " . fake()->realText(30),
-                        'content' => fake()->realText(2000),
+                        'content' => $content,
                     ]);
                 }
 
-                // Generate reviews
                 \App\Models\Review::factory(rand(0, 5))->create([
                     'book_id' => $book->id,
                     'user_id' => User::inRandomOrder()->first()->id
                 ]);
             }
-        });
 
         $this->call(PageSeeder::class);
         $this->call(SiteSettingsSeeder::class);

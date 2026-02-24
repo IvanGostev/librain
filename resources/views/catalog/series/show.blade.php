@@ -14,7 +14,7 @@
                                     style="max-width: 150px; aspect-ratio: 1/1; object-fit: cover;"
                                     onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                             </div>
-                            <h4 class="fw-bold text-white mb-2">{{ $series->name }}</h4>
+                            <h1 class="fw-bold text-white mb-2">{{ $series->name }}</h1>
                             <div class="badge bg-secondary text-dark fw-bold rounded-pill px-3">
                                 {{ $series->books->count() }}
                                 {{ trans_choice('книга|книги|книг', $series->books->count()) }}
@@ -36,7 +36,7 @@
 
             <!-- Main Content: Books List -->
             <div class="col-md-8 col-lg-9 animate-fade-in-up delay-100">
-                <h2 class="fw-bold text-white mb-4 border-start border-4 border-secondary ps-3">Книги серии</h2>
+                <p class="fw-bold text-white mb-4 border-start border-4 border-secondary ps-3">Книги серии</p>
 
                 <div
                     class="d-flex justify-content-center justify-content-md-start gap-3 mb-4 flex-wrap animate-fade-in-up delay-100">
@@ -98,15 +98,21 @@
                                                     onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                                             </a>
                                             <div>
-                                                <h5 class="mb-1 fw-bold">
+                                                <p class="mb-1 fw-bold">
                                                     <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}"
                                                         class="text-white text-decoration-none hover-text-primary transition-colors">
                                                         {{ $review->book->title }}
                                                     </a>
-                                                </h5>
+                                                </p>
                                                 <div class="small text-muted">
-                                                    Автор: <a href="{{ route('authors.show', $review->book->author->slug) }}"
-                                                        class="text-muted text-decoration-none hover-text-white">{{ $review->book->author->name }}</a>
+                                                    @if($review->book->authors->isNotEmpty())
+                                                        Авторы:
+                                                        @foreach($review->book->authors as $author)
+                                                            <a href="{{ route('authors.show', $author->slug) }}" class="text-muted text-decoration-none hover-text-white">{{ $author->name }}</a>{{ !$loop->last ? ', ' : '' }}
+                                                        @endforeach
+                                                    @else
+                                                        Автор неизвестен
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -141,7 +147,7 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                                    <h6 class="mb-0 fw-bold text-white">{{ $authorName }}</h6>
+                                                    <p class="mb-0 fw-bold text-white">{{ $authorName }}</p>
                                                     <span class="text-muted small">{{ $review->created_at->diffForHumans() }}</span>
                                                 </div>
                                                 <div class="text-warning small mb-2">
@@ -191,14 +197,14 @@
 
                                         <!-- Content -->
                                         <div class="flex-grow-1 min-w-0">
-                                            <h5 class="fw-bold text-white mb-1 text-truncate">
+                                            <p class="fw-bold text-white mb-1">
                                                 <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                                     class="text-white text-decoration-none hover-text-secondary transition-colors">
                                                     {{ $book->title }}
                                                 </a>
-                                            </h5>
-                                            <p class="text-muted small mb-0 text-truncate">
-                                                {{ $book->author->name ?? 'Автор неизвестен' }}
+                                            </p>
+                                            <p class="text-muted small mb-0">
+                                                {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен' }}
                                             </p>
                                         </div>
 
@@ -220,7 +226,7 @@
                         </div>
                     @else
                         {{-- Grid Layout for other filters --}}
-                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
                             @foreach($books as $book)
                                 <div class="col animate-fade-in-up">
                                     <x-book-card-vertical :book="$book" />

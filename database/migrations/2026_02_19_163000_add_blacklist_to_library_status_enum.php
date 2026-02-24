@@ -19,8 +19,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        // Note: Reversing this might cause data loss for 'blacklist' entries if not handled.
-        // We will just set blacklist entries to null before reverting.
         DB::table('library_entries')->where('status', 'blacklist')->update(['status' => null]);
         DB::statement("ALTER TABLE library_entries MODIFY COLUMN status ENUM('planned', 'reading', 'dropped', 'finished') NULL");
     }

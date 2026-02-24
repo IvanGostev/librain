@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $chapter->title }} - {{ $book->title }} - {{ config('app.name', 'Librain') }}</title>
+    <title>Страница {{ $page }} - {{ $book->title }} - {{ config('app.name', 'Librain') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -208,8 +208,8 @@
                 <i class="bi bi-arrow-left fs-5"></i>
             </a>
             <div class="d-none d-md-block">
-                <h6 class="mb-0 fw-bold text-truncate" style="max-width: 300px;">{{ $book->title }}</h6>
-                <small class="text-muted">{{ $chapter->title }}</small>
+                <h6 class="mb-0 fw-bold" style="max-width: 300px;">{{ $book->title }}</h6>
+                <small class="text-muted">Страница {{ $page }} из {{ $totalPages }}</small>
             </div>
         </div>
 
@@ -221,14 +221,13 @@
                 <button class="btn btn-icon btn-ghost" data-bs-toggle="dropdown" title="Chapters">
                     <i class="bi bi-list-ul fs-5"></i>
                 </button>
-                <div class="dropdown-menu dropdown-menu-end bg-dark-card border-white-10 shadow-lg"
-                    style="max-height: 400px; overflow-y: auto;">
-                    @foreach($book->chapters as $ch)
-                        <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $ch->order]) }}"
-                            class="dropdown-item text-white-50 hover-text-white {{ $ch->id === $chapter->id ? 'active bg-primary text-white' : '' }}">
-                            {{ $ch->title }}
-                        </a>
-                    @endforeach
+                <div class="dropdown-menu dropdown-menu-end bg-dark-card border-white-10 shadow-lg p-3"
+                    style="min-width: 250px;">
+                    <form action="{{ route('books.read', ['slug' => $book->slug]) }}" method="GET" class="d-flex align-items-center gap-2">
+                        <input type="number" name="page" class="form-control form-control-sm bg-dark text-white border-white-10" min="1" max="{{ $totalPages }}" value="{{ $page }}" placeholder="Страница">
+                        <button type="submit" class="btn btn-sm btn-primary">Перейти</button>
+                    </form>
+                    <div class="text-muted small mt-2 text-center">Всего страниц: {{ $totalPages }}</div>
                 </div>
             </div>
         </div>
@@ -276,17 +275,17 @@
     <!-- Content -->
     <div class="reader-container">
         <div class="text-center mb-5 pt-5">
-            <h2 class="mb-3 fw-bold chapter-title">{{ $chapter->title }}</h2>
+            <h2 class="mb-3 fw-bold chapter-title">Страница {{ $page }}</h2>
         </div>
 
         <div class="reader-content" id="readerContent">
-            {!! nl2br(e($chapter->content)) !!}
+            {!! $pageContent !!}
         </div>
 
         <!-- Navigation -->
         <div class="d-flex justify-content-center align-items-center flex-wrap reader-nav-wrapper mt-5 py-5 border-top border-secondary border-opacity-10 gap-2">
-            @if($prevChapter)
-                <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $prevChapter->order]) }}"
+            @if($page > 1)
+                <a href="{{ route('books.read', ['slug' => $book->slug, 'page' => $page - 1]) }}"
                     class="btn btn-outline-secondary rounded-pill px-4 reader-nav-btn">
                     <i class="bi bi-chevron-double-left me-1 d-none d-sm-inline"></i> <span class="d-none d-sm-inline">назад</span><span class="d-inline d-sm-none">назад</span>
                 </a>
@@ -294,8 +293,8 @@
 
             <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 px-1 pagination-container">
                 @php
-                    $current = $chapter->order;
-                    $total = $totalChapters;
+                    $current = $page;
+                    $total = $totalPages;
                     $delta = 2;
 
                     $start = max(1, $current - $delta);
@@ -303,7 +302,7 @@
                 @endphp
 
                 @if($start > 1)
-                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => 1]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">1</a>
+                    <a href="{{ route('books.read', ['slug' => $book->slug, 'page' => 1]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">1</a>
                     @if($start > 2)
                         <span class="text-muted px-1">...</span>
                     @endif
@@ -313,7 +312,7 @@
                     @if($i == $current)
                         <span class="btn btn-sm btn-primary rounded-circle pagination-circle fw-bold" style="pointer-events: none; opacity: 1; color: #ffffff !important;">{{ $i }}</span>
                     @else
-                        <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $i]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">{{ $i }}</a>
+                        <a href="{{ route('books.read', ['slug' => $book->slug, 'page' => $i]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">{{ $i }}</a>
                     @endif
                 @endfor
 
@@ -321,17 +320,17 @@
                     @if($end < $total - 1)
                         <span class="text-muted px-1">...</span>
                     @endif
-                    <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $total]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">{{ $total }}</a>
+                    <a href="{{ route('books.read', ['slug' => $book->slug, 'page' => $total]) }}" class="btn btn-sm btn-outline-secondary rounded-circle pagination-circle">{{ $total }}</a>
                 @endif
             </div>
 
-            @if($nextChapter)
-                <a href="{{ route('books.read', ['slug' => $book->slug, 'chapterOrder' => $nextChapter->order]) }}"
+            @if($page < $totalPages)
+                <a href="{{ route('books.read', ['slug' => $book->slug, 'page' => $page + 1]) }}"
                     class="btn btn-outline-secondary rounded-pill px-4 reader-nav-btn">
                     <span class="d-none d-sm-inline">вперед</span><span class="d-inline d-sm-none">вперед</span> <i class="bi bi-chevron-double-right ms-1 d-none d-sm-inline"></i>
                 </a>
             @else
-                <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
+                <a href="{{ route('books.show', ['genre' => $book->genre_slug ?? 'all', 'slug' => $book->slug]) }}"
                     class="btn btn-success rounded-pill px-4 reader-nav-btn" style="color: #ffffff !important;">
                     <span class="d-none d-sm-inline">в конец</span><span class="d-inline d-sm-none">в конец</span> <i class="bi bi-check-lg ms-1 d-none d-sm-inline"></i>
                 </a>
@@ -340,30 +339,25 @@
     </div>
 
     <script>
-        // Init state
         let currentFontSize = 18;
         let currentTheme = 'light';
         let currentFont = 'font-sans';
 
-        // DOM elements
         const settingsDrawer = document.getElementById('settingsDrawer');
         const readerContent = document.getElementById('readerContent');
         const body = document.body;
         const fontSizeDisplay = document.getElementById('fontSizeDisplay');
 
-        // Toggle Settings
         document.getElementById('toggleSettings').addEventListener('click', () => {
             settingsDrawer.classList.toggle('open');
         });
 
-        // Close when clicking outside
         document.addEventListener('click', (e) => {
             if (!settingsDrawer.contains(e.target) && !e.target.closest('#toggleSettings')) {
                 settingsDrawer.classList.remove('open');
             }
         });
 
-        // Theme function
         function setTheme(theme) {
             body.classList.remove('theme-dark', 'theme-light', 'theme-sepia');
             if (theme !== 'light') {
@@ -372,7 +366,6 @@
             currentTheme = theme;
             localStorage.setItem('reader_theme', theme);
 
-            // Update buttons state
             const buttons = document.querySelectorAll('.btn-group button');
             buttons.forEach(btn => {
                 const btnText = btn.textContent.trim().toLowerCase();
@@ -385,7 +378,6 @@
             });
         }
 
-        // Font Size
         function changeFontSize(delta) {
             currentFontSize = Math.max(14, Math.min(32, currentFontSize + delta));
             readerContent.style.fontSize = `${currentFontSize}px`;
@@ -393,14 +385,12 @@
             localStorage.setItem('reader_fontSize', currentFontSize);
         }
 
-        // Font Family
         function setFontFamily(font) {
             readerContent.classList.remove('font-sans', 'font-serif', 'font-lora');
             readerContent.classList.add(font);
             localStorage.setItem('reader_fontFamily', font);
         }
 
-        // Initialize from LocalStorage
         function initSettings() {
             const savedTheme = localStorage.getItem('reader_theme') || 'light';
             const savedSize = parseInt(localStorage.getItem('reader_fontSize')) || 18;

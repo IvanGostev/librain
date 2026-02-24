@@ -79,20 +79,28 @@
                     </ul>
                 </div>
             @endauth
+            @guest
+                <div class="dropdown position-absolute top-0 start-0 m-1">
+                    <button class="btn btn-sm btn-dark bg-opacity-75 p-1 rounded-circle border-0 lh-1" type="button"
+                        onclick="alert('Вы не авторизованы. Пожалуйста, войдите в систему.')">
+                        <i class="bi bi-heart text-white"></i>
+                    </button>
+                </div>
+            @endguest
         </div>
 
         <!-- Content -->
         <div class="flex-grow-1 min-w-0">
             <div class="d-flex flex-column h-100">
                 <div class="mb-2">
-                    <h5 class="fw-bold text-white mb-1 text-truncate">
+                    <p class="fw-bold text-white mb-1">
                         <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                             class="text-white text-decoration-none hover-text-primary transition-colors">
                             {{ $book->title }}
                         </a>
-                    </h5>
+                    </p>
                     <p class="text-muted small mb-0">
-                        <i class="bi bi-person me-1"></i> {{ $book->author->name ?? 'Автор неизвестен' }}
+                        <i class="bi bi-person me-1"></i> {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен' }}
                     </p>
                 </div>
 

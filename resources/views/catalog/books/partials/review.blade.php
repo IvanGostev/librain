@@ -42,7 +42,7 @@
     </div>
     <div class="flex-grow-1">
         <div class="d-flex align-items-center justify-content-between mb-1">
-            <h6 class="mb-0 fw-bold">
+            <p class="mb-0 fw-bold">
                 @if($review->user)
                     <a href="{{ $authorUrl }}" class="text-white text-decoration-none hover-text-primary transition-colors">
                         {{ $authorName }}
@@ -54,7 +54,7 @@
                             style="font-size: 0.65rem;">Гость</span>
                     </span>
                 @endif
-            </h6>
+            </p>
             <span class="text-muted small">{{ $review->created_at->diffForHumans() }}</span>
         </div>
 
