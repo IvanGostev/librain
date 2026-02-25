@@ -79,9 +79,7 @@
                         Автор неизвестен
                     @endif
                 </p>
-
                 <div class="mt-auto">
-                    <!-- Progress Bar -->
                     <div class="progress bg-dark border border-white-10 mb-1" style="height: 6px;">
                         <div class="progress-bar bg-primary" role="progressbar"
                             style="width: {{ $entry->progress_percent }}%"></div>

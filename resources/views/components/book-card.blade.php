@@ -1,8 +1,6 @@
 @props(['book'])
-
 <div class="card bg-dark-card border-white-10 p-3 hover-card-lift transition-transform">
     <div class="d-flex align-items-center">
-        <!-- Cover -->
         <div class="flex-shrink-0 me-3 position-relative">
             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}">
                 <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
@@ -88,8 +86,6 @@
                 </div>
             @endguest
         </div>
-
-        <!-- Content -->
         <div class="flex-grow-1 min-w-0">
             <div class="d-flex flex-column h-100">
                 <div class="mb-2">
@@ -103,7 +99,6 @@
                         <i class="bi bi-person me-1"></i> {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен' }}
                     </p>
                 </div>
-
                 <div class="mt-auto d-flex align-items-center gap-3">
                     <span
                         class="badge bg-black bg-opacity-25 text-warning border border-white-10 rounded-pill px-2 py-1">
@@ -122,8 +117,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Action Button -->
         <div class="ms-3 d-none d-sm-block">
             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                 class="btn btn-outline-primary rounded-pill px-4">

@@ -39,6 +39,32 @@ class BookResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required(),
+                                Forms\Components\Repeater::make('bookSeries')
+                                    ->relationship()
+                                    ->label('Серии')
+                                    ->schema([
+                                            Forms\Components\Select::make('series_id')
+                                                ->label('Серия')
+                                                ->relationship('series', 'name')
+                                                ->required()
+                                                ->searchable()
+                                                ->preload(),
+                                            Forms\Components\TextInput::make('order')
+                                                ->label('Номер в серии')
+                                                ->numeric()
+                                                ->required()
+                                                ->default(1),
+                                        ])
+                                    ->columns(2)
+                                    ->defaultItems(0)
+                                    ->addActionLabel('Добавить серию')
+                                    ->columnSpanFull(),
+                                Forms\Components\Select::make('genres')
+                                    ->label('Жанры')
+                                    ->relationship('genres', 'name')
+                                    ->multiple()
+                                    ->searchable()
+                                    ->preload(),
                                 Forms\Components\TextInput::make('title')
                                     ->label('Название')
                                     ->required()
@@ -84,7 +110,7 @@ class BookResource extends Resource
                                     ->required(),
                             ])->columns(2),
 
-                    Forms\Components\Section::make('Главы')
+                    Forms\Components\Section::make('Главы (по главам)')
                         ->schema([
                                 Forms\Components\Repeater::make('chapters')
                                     ->relationship()
@@ -105,6 +131,16 @@ class BookResource extends Resource
                                     ->orderColumn('order')
                                     ->defaultItems(0)
                                     ->addActionLabel('Добавить главу')
+                            ]),
+
+                    Forms\Components\Section::make('Текст книги (Одним текстом)')
+                        ->schema([
+                                Forms\Components\RichEditor::make('full_text')
+                                    ->label('Полный текст книги')
+                                    ->fileAttachmentsDisk('public')
+                                    ->fileAttachmentsDirectory('books/images')
+                                    ->helperText('Можно использовать этот вариант вместо добавления по главам.')
+                                    ->columnSpanFull(),
                             ]),
 
                     Forms\Components\Section::make('Файлы для скачивания')
@@ -129,7 +165,18 @@ class BookResource extends Resource
                                     ->helperText('Если не загружено, будет создано автоматически из глав.'),
                             ])->columns(3),
 
-                    \App\Filament\Helpers\SeoHelper::seoSection(),
+                    Forms\Components\Section::make('SEO Настройки')
+                        ->description('Настройки для поисковых систем')
+                        ->collapsed()
+                        ->schema([
+                                Forms\Components\Textarea::make('seo_description')
+                                    ->label('SEO Описание (Meta Description)')
+                                    ->rows(3)
+                                    ->default(fn () => \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value')),
+                                Forms\Components\TextInput::make('seo_keywords')
+                                    ->label('SEO Ключевые слова (Keywords)')
+                                    ->maxLength(255),
+                            ]),
                 ]);
     }
 

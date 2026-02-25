@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('title', 'Регистрация - Librain')
-
 @section('content')
     <div class="container py-5">
         <div class="row justify-content-center">
@@ -10,13 +8,10 @@
                     <h3 class="fw-bold text-white">Создать аккаунт</h3>
                     <p class="text-muted">Присоединяйтесь к сообществу читателей</p>
                 </div>
-
                 <div class="card bg-dark-card border-0 shadow-lg animate-fade-in-up delay-100">
                     <div class="card-body p-4 p-md-5">
                         <form method="POST" action="{{ route('register') }}">
                             @csrf
-
-                            <!-- Username -->
                             <div class="mb-3">
                                 <label for="username"
                                     class="form-label text-white-50 small text-uppercase fw-bold">{{ __('Никнейм') }}</label>
@@ -33,8 +28,6 @@
                                     </span>
                                 @enderror
                             </div>
-
-                            <!-- Name -->
                             <div class="mb-3">
                                 <label for="name"
                                     class="form-label text-white-50 small text-uppercase fw-bold">{{ __('Имя') }}</label>
@@ -51,8 +44,6 @@
                                     </span>
                                 @enderror
                             </div>
-
-                            <!-- Email -->
                             <div class="mb-3">
                                 <label for="email"
                                     class="form-label text-white-50 small text-uppercase fw-bold">{{ __('Email') }}</label>
@@ -70,8 +61,6 @@
                                     </span>
                                 @enderror
                             </div>
-
-                            <!-- Password -->
                             <div class="mb-3">
                                 <label for="password"
                                     class="form-label text-white-50 small text-uppercase fw-bold">{{ __('Пароль') }}</label>
@@ -87,8 +76,6 @@
                                     </span>
                                 @enderror
                             </div>
-
-                            <!-- Confirm Password -->
                             <div class="mb-4">
                                 <label for="password-confirm"
                                     class="form-label text-white-50 small text-uppercase fw-bold">{{ __('Подтверждение пароля') }}</label>
@@ -100,7 +87,6 @@
                                         placeholder="••••••••">
                                 </div>
                             </div>
-
                             <div class="d-grid mb-4">
                                 <button type="submit"
                                     class="btn btn-secondary rounded-pill py-2 fw-bold shadow-lg hover-elevate text-white"
@@ -108,9 +94,7 @@
                                     {{ __('Зарегистрироваться') }}
                                 </button>
                             </div>
-
                             <div class="text-center text-white-50 small mb-3">Или зарегистрируйтесь через</div>
-
                             <div class="d-grid gap-2 mb-4">
                                 <a href="{{ route('social.redirect', 'vkontakte') }}"
                                     class="btn btn-primary d-flex align-items-center justify-content-center gap-2 rounded-pill py-2 fw-semibold shadow-sm hover-elevate text-white"
@@ -138,7 +122,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="text-center text-muted small">
                                 Уже есть аккаунт? <a href="{{ route('login') }}"
                                     class="text-white text-decoration-none fw-semibold hover-text-secondary transition-colors">Войти</a>
@@ -146,7 +129,6 @@
                         </form>
                     </div>
                 </div>
-
                 <div class="text-center mt-4 text-white-50 animate-fade-in-up delay-200 small">
                     Нажимая "Зарегистрироваться", вы соглашаетесь с правилами сервиса.
                 </div>

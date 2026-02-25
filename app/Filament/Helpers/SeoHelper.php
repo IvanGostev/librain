@@ -12,12 +12,10 @@ class SeoHelper
             ->description('Настройки для поисковых систем')
             ->collapsed()
             ->schema([
-                    Forms\Components\TextInput::make('seo_title')
-                        ->label('SEO Заголовок (Title)')
-                        ->maxLength(255),
                     Forms\Components\Textarea::make('seo_description')
                         ->label('SEO Описание (Meta Description)')
-                        ->rows(3),
+                        ->rows(3)
+                        ->default(fn () => \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value')),
                     Forms\Components\TextInput::make('seo_keywords')
                         ->label('SEO Ключевые слова (Keywords)')
                         ->maxLength(255),

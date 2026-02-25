@@ -47,6 +47,11 @@ Route::get('/books/{id}/related', [App\Http\Controllers\CatalogController::class
 Route::get('/books/{book}/download/{format}', [App\Http\Controllers\CatalogController::class, 'downloadPage'])->name('books.download.page');
 
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap_pages.xml', [App\Http\Controllers\SitemapController::class, 'pages'])->name('sitemap.pages');
+Route::get('/sitemap_genres.xml', [App\Http\Controllers\SitemapController::class, 'genres'])->name('sitemap.genres');
+Route::get('/sitemap_authors.xml', [App\Http\Controllers\SitemapController::class, 'authors'])->name('sitemap.authors');
+Route::get('/sitemap_series.xml', [App\Http\Controllers\SitemapController::class, 'series'])->name('sitemap.series');
+Route::get('/sitemap_books_{index}.xml', [App\Http\Controllers\SitemapController::class, 'books'])->name('sitemap.books');
 Route::get('/p/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('pages.show');
 
 

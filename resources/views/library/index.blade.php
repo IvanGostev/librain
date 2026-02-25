@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container py-5">
         <div class="d-flex align-items-center justify-content-between mb-5 animate-fade-in-up">
@@ -8,11 +7,8 @@
                 <i class="bi bi-plus-lg me-1"></i> Добавить книгу
             </a>
         </div>
-
-        <!-- Tabs and Sorting Header -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 animate-fade-in-up delay-100 position-relative"
             style="z-index: 10;">
-            <!-- Status Tabs -->
             <ul class="nav nav-pills nav-pills-mobile-scroll gap-2" id="library-tabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {{ $activeTab === 'reading' ? 'active' : '' }} rounded-pill px-4"
@@ -57,8 +53,6 @@
                     </button>
                 </li>
             </ul>
-
-            <!-- Sorting Dropdown -->
             <div class="dropdown">
                 <button class="btn btn-dark-glass btn-sm rounded-pill px-3 border-white-10 dropdown-toggle" type="button"
                     data-bs-toggle="dropdown">
@@ -81,10 +75,7 @@
                 </ul>
             </div>
         </div>
-
-        <!-- Tab Content -->
         <div class="tab-content animate-fade-in-up delay-200" id="library-content">
-            <!-- Reading -->
             <div class="tab-pane fade {{ $activeTab === 'reading' ? 'show active' : '' }}" id="reading" role="tabpanel"
                 aria-labelledby="reading-tab">
                 @if(isset($reading) && $reading->count() > 0)
@@ -98,8 +89,6 @@
                     </div>
                 @endif
             </div>
-
-            <!-- Want to Read -->
             <div class="tab-pane fade {{ $activeTab === 'want' ? 'show active' : '' }}" id="want" role="tabpanel"
                 aria-labelledby="want-tab">
                 @if(isset($wantToRead) && $wantToRead->count() > 0)
@@ -113,8 +102,6 @@
                     </div>
                 @endif
             </div>
-
-            <!-- Completed -->
             <div class="tab-pane fade {{ $activeTab === 'completed' ? 'show active' : '' }}" id="completed" role="tabpanel"
                 aria-labelledby="completed-tab">
                 @if(isset($completed) && $completed->count() > 0)
@@ -128,8 +115,6 @@
                     </div>
                 @endif
             </div>
-
-            <!-- Favorites -->
             <div class="tab-pane fade {{ $activeTab === 'favorites' ? 'show active' : '' }}" id="favorites" role="tabpanel"
                 aria-labelledby="favorites-tab">
                 @if(isset($favorites) && $favorites->count() > 0)
@@ -143,8 +128,6 @@
                     </div>
                 @endif
             </div>
-
-            <!-- In Progress (Writing) -->
             <div class="tab-pane fade {{ $activeTab === 'writing' ? 'show active' : '' }}" id="writing" role="tabpanel"
                 aria-labelledby="writing-tab">
                 @if(isset($writing) && $writing->count() > 0)
@@ -158,8 +141,6 @@
                     </div>
                 @endif
             </div>
-
-            <!-- Blacklist (Hidden) -->
             <div class="tab-pane fade {{ $activeTab === 'hidden' ? 'show active' : '' }}" id="hidden" role="tabpanel"
                 aria-labelledby="hidden-tab">
                 @if(isset($hidden) && $hidden->count() > 0)
@@ -173,27 +154,20 @@
                     </div>
                 @endif
             </div>
-
-
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const tabs = document.querySelectorAll('button[data-bs-toggle="pill"]');
             const sortLinks = document.querySelectorAll('.sort-link');
-
             tabs.forEach(tab => {
                 tab.addEventListener('shown.bs.tab', function (event) {
                     const tabId = event.target.id.replace('-tab', '');
-
                     sortLinks.forEach(link => {
                         const url = new URL(link.href);
                         url.searchParams.set('tab', tabId);
                         link.href = url.toString();
                     });
-
-
                     const newUrl = new URL(window.location.href);
                     newUrl.searchParams.set('tab', tabId);
                     window.history.pushState({}, '', newUrl);

@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('title', 'Укажите Email - Librain')
-
 @section('content')
     <div class="container py-5">
         <div class="row justify-content-center">
@@ -10,13 +8,10 @@
                     <h3 class="fw-bold text-white">Укажите Email</h3>
                     <p class="text-muted">Ваш провайдер не передал нам ваш email</p>
                 </div>
-
                 <div class="card bg-dark-card border-0 shadow-lg animate-fade-in-up delay-100">
                     <div class="card-body p-4 p-md-5">
                         <form method="POST" action="{{ route('social.email.store') }}">
                             @csrf
-
-                            <!-- Email -->
                             <div class="mb-3">
                                 <label for="email"
                                     class="form-label text-white-50 small text-uppercase fw-bold">{{ __('Email') }}</label>
@@ -34,7 +29,6 @@
                                     </span>
                                 @enderror
                             </div>
-
                             <div class="d-grid mb-4">
                                 <button type="submit"
                                     class="btn btn-secondary rounded-pill py-2 fw-bold shadow-lg hover-elevate text-white"
@@ -42,7 +36,6 @@
                                     {{ __('Продолжить') }}
                                 </button>
                             </div>
-
                             <div class="text-center text-muted small">
                                 Не хотите указывать? <a href="{{ route('login') }}"
                                     class="text-white text-decoration-none fw-semibold hover-text-secondary transition-colors">Отмена</a>

@@ -28,5 +28,6 @@ class SiteSettingsSeeder extends Seeder
         SiteSetting::updateOrCreate(['key' => 'top100_bottom_text'], ['value' => '<p>Самые популярные и читаемые книги нашей библиотеки, собранные в один рейтинг по просмотрам и оценкам.</p>']);
         
         SiteSetting::updateOrCreate(['key' => 'contact_email'], ['value' => 'support@librain.ru']);
+        SiteSetting::updateOrCreate(['key' => 'default_seo_description'], ['value' => 'Читайте лучшие книги онлайн бесплатно и без регистрации. Большая библиотека электронных книг на Librain.']);
     }
 }

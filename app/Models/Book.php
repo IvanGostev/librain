@@ -38,6 +38,7 @@ class Book extends Model
         'file_txt',
         'file_fb2',
         'file_epub',
+        'full_text',
     ];
 
     public function authors()
@@ -53,6 +54,11 @@ class Book extends Model
     public function series()
     {
         return $this->belongsToMany(Series::class, 'book_series')->withPivot('order');
+    }
+
+    public function bookSeries()
+    {
+        return $this->hasMany(BookSeries::class);
     }
 
     public function chapters()
@@ -89,5 +95,16 @@ class Book extends Model
     {
         $avg = $this->ratings()->avg('rating');
         $this->update(['rating' => $avg ?? 0]);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($book) {
+            \Illuminate\Support\Facades\Cache::forget('book_pages_' . $book->id);
+        });
+
+        static::deleted(function ($book) {
+            \Illuminate\Support\Facades\Cache::forget('book_pages_' . $book->id);
+        });
     }
 }

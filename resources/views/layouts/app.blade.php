@@ -1,35 +1,23 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
-
         (function () {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
         })();
     </script>
-
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
-
-    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>@yield('title', isset($title) ? $title : config('app.name', 'Librain'))</title>
     <meta name="description"
         content="@yield('description', isset($description) ? $description : 'Librain - ваша цифровая библиотека. Читайте книги онлайн, следите за авторами и создавайте свою коллекцию.')">
     <meta name="keywords"
         content="@yield('keywords', isset($keywords) ? $keywords : 'книги, читать онлайн, библиотека, авторы, жанры')">
-
-    <!-- Canonical Tag -->
     <link rel="canonical" href="{{ url()->current() }}">
-
-    <!-- Noindex for specific pages -->
-    <!-- Noindex for specific pages -->
     @hasSection('robots')
         <meta name="robots" content="@yield('robots')">
     @else
@@ -45,41 +33,29 @@
             <meta name="robots" content="noindex, follow">
         @endif
     @endif
-
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('title', config('app.name', 'Librain'))">
     <meta property="og:description"
         content="@yield('description', 'Librain - ваша цифровая библиотека. Читайте книги онлайн, следите за авторами и создавайте свою коллекцию.')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
-
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="@yield('title', config('app.name', 'Librain'))">
     <meta property="twitter:description"
         content="@yield('description', 'Librain - ваша цифровая библиотека. Читайте книги онлайн, следите за авторами и создавайте свою коллекцию.')">
     <meta property="twitter:image" content="@yield('og_image', asset('images/og-image.jpg'))">
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-
     @yield('schema')
-
 </head>
-
 <body class="bg-body-tertiary">
     <div id="app" class="d-flex flex-column min-vh-100">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark-card border-bottom border-white-10 py-3"
             style="backdrop-filter: blur(20px); z-index: 1050;">
             <div class="container-fluid px-2 px-md-4 px-xl-5">
-                <!-- Logo -->
                 @if(request()->is('/'))
                     <span class="navbar-brand fw-bolder text-uppercase tracking-wider fs-4 me-5 cursor-default">
                         <span class="text-primary">Lib</span>rain
@@ -89,19 +65,40 @@
                         <span class="text-primary">Lib</span>rain
                     </a>
                 @endif
-
-                <!-- Mobile Toggle -->
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Navbar Content -->
+                <div class="d-flex align-items-center d-lg-none gap-2">
+                    <a href="{{ url('/search') }}" class="text-white-50 hover-text-white py-2 px-1 text-decoration-none d-flex align-items-center" aria-label="Поиск">
+                        <i class="bi bi-search" style="font-size: 1.15rem;"></i>
+                    </a>
+                    @guest
+                        <a href="{{ route('login') }}" class="text-white-50 hover-text-white py-2 px-1 text-decoration-none d-flex align-items-center" aria-label="Войти">
+                            <i class="bi bi-person" style="font-size: 1.5rem;"></i>
+                        </a>
+                    @else
+                        <a href="{{ route('profile.show') }}" class="text-white-50 hover-text-white py-2 px-1 text-decoration-none d-flex align-items-center" aria-label="Профиль">
+                            @if(Auth::user()->avatar)
+                                @php
+                                    $avatarUrl = Str::startsWith(Auth::user()->avatar, ['http://', 'https://'])
+                                        ? Auth::user()->avatar
+                                        : asset('storage/' . Auth::user()->avatar);
+                                @endphp
+                                <img src="{{ $avatarUrl }}" alt="{{ Auth::user()->name }}"
+                                    class="rounded-circle border border-white-10" width="26" height="26"
+                                    style="object-fit: cover;"
+                                    onerror="this.classList.add('d-none'); this.nextElementSibling.classList.remove('d-none');">
+                                <i class="bi bi-person-circle d-none" style="font-size: 1.5rem;"></i>
+                            @else
+                                <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+                            @endif
+                        </a>
+                    @endguest
+                    <button class="navbar-toggler border-0 ms-1 p-1 d-flex align-items-center" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <!-- Left: Navigation Links -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-3 fw-medium">
-
                         <li class="nav-item">
                             @if(request()->is('genres'))
                                 <span class="nav-link active text-primary cursor-default">Жанры</span>
@@ -134,7 +131,6 @@
                                     href="{{ route('top100') }}">Топ 100</a>
                             @endif
                         </li>
-
                         @auth
                             <li class="nav-item d-lg-none mt-2 pt-2 border-top border-white-10">
                                 @if(request()->is('profile*'))
@@ -166,8 +162,6 @@
                             </li>
                         @endauth
                     </ul>
-
-                    <!-- Center: Search Bar (Pill) -->
                     <form class="d-flex mx-lg-4 flex-grow-1" role="search" action="{{ url('/search') }}" method="GET"
                         style="max-width: 500px;">
                         <div class="input-group">
@@ -185,30 +179,22 @@
                             </button>
                         </div>
                     </form>
-
-                    <!-- Right: User Actions -->
                     <div class="d-flex align-items-center justify-content-center justify-content-lg-start gap-2 ms-lg-3 mt-4 mt-lg-0 pb-3 pb-lg-0">
                         <button class="btn btn-icon btn-ghost p-2 text-white-50 hover-text-white me-2" id="theme-toggle"
                             title="Переключить тему">
                             <i class="bi bi-sun-fill"></i>
                         </button>
                         @guest
-
                             <a class="btn btn-outline-light rounded-pill px-4 me-2"
                                 href="{{ route('login') }}">{{ __('Войти') }}</a>
-
                             <a class="btn btn-primary rounded-pill px-4 text-white " style="color: #ffffff !important;"
                                 href="{{ route('register') }}">{{ __('Регистрация') }}</a>
-
                         @else
-                            <!-- Library Link -->
                             <a href="{{ route('library.index') }}"
                                 class="btn btn-icon btn-ghost p-2 position-relative text-white-50 hover-text-white me-2 d-none d-lg-inline-block"
                                 title="Моя библиотека">
                                 <i class="bi bi-bookmark-heart fs-5"></i>
                             </a>
-
-                            <!-- User Dropdown -->
                             <div class="dropdown d-none d-lg-block">
                                 <a id="navbarDropdown"
                                     class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-white ps-0"
@@ -236,7 +222,6 @@
                                     @endif
                                     <span class="d-none d-xl-inline fw-medium ms-1">{{ Auth::user()->name }}</span>
                                 </a>
-
                                 <div class="dropdown-menu dropdown-menu-end bg-dark-card border-white-10 shadow-lg mt-2"
                                     aria-labelledby="navbarDropdown">
                                     <div class="px-3 py-2 text-muted small text-uppercase fw-bold ls-wider">Аккаунт</div>
@@ -258,7 +243,6 @@
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         <i class="bi bi-box-arrow-right me-2"></i> {{ __('Выйти') }}
                                     </a>
-
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
@@ -269,7 +253,6 @@
                 </div>
             </div>
         </nav>
-
         <main class="pt-3 pt-lg-5 pb-5 flex-grow-1">
             <div class="container mt-1 mt-lg-3">
                 @if(session('success'))
@@ -279,7 +262,6 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show bg-danger bg-opacity-10 text-danger border-danger border-opacity-25 rounded-pill px-4 animate-fade-in-up"
                         role="alert">
@@ -301,7 +283,6 @@
             </div>
             @yield('content')
         </main>
-
         <footer class="footer mt-auto py-4 border-top border-white-10 bg-darker">
             <div
                 class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 text-muted">
@@ -314,7 +295,6 @@
                             class="text-decoration-none text-muted hover-text-white">Политика конфиденциальности</a>
                     </div>
                 </div>
-
                 <div class="text-center text-md-end">
                     @php
                         $contactEmail = \App\Models\SiteSetting::where('key', 'contact_email')->value('value');
@@ -328,14 +308,11 @@
             </div>
         </footer>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
             const icon = themeToggle.querySelector('i');
-
-
             const updateIcon = (theme) => {
                 if (theme === 'dark') {
                     icon.classList.remove('bi-moon-stars-fill');
@@ -345,21 +322,16 @@
                     icon.classList.add('bi-moon-stars-fill');
                 }
             };
-
-
             updateIcon(html.getAttribute('data-bs-theme'));
-
             themeToggle.addEventListener('click', () => {
                 const currentTheme = html.getAttribute('data-bs-theme');
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
                 html.setAttribute('data-bs-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
                 updateIcon(newTheme);
             });
         });
     </script>
-
     <style>
         /* On desktop (lg and up), round the search input on the right side */
         @media (min-width: 992px) {
@@ -368,8 +340,6 @@
                 border-bottom-right-radius: 50rem !important;
             }
         }
-
     </style>
 </body>
-
 </html>

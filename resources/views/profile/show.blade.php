@@ -1,13 +1,10 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container py-5">
         <div class="row g-5">
-            <!-- Left Column: User Info -->
             <div class="col-md-4 col-lg-3 animate-fade-in-up">
                 <div class="card bg-dark-card border-0 shadow-lg position-sticky" style="top: 100px;">
                     <div class="card-body text-center p-4">
-                        <!-- Avatar Display/Upload -->
                         <div class="position-relative d-inline-block mb-4 {{ Auth::id() === $user->id ? 'group cursor-pointer' : '' }}"
                             @if(Auth::id() === $user->id) onclick="document.getElementById('avatar-input').click()" @endif>
                             <div class="rounded-circle overflow-hidden border border-4 border-primary shadow-xl"
@@ -32,10 +29,8 @@
                                 </form>
                             @endif
                         </div>
-
                         <h4 class="fw-bold text-white mb-1">{{ $user->name }}</h4>
                         <p class="text-muted small mb-3">{{ '@' . ($user->username ?? Str::slug($user->name)) }}</p>
-
                         <div class="d-flex justify-content-center gap-2 mb-4">
                             <span class="badge bg-body-tertiary border border-white-10 text-muted">
                                 {{ $user->gender == 'male' ? 'Мужской' : ($user->gender == 'female' ? 'Женский' : 'Пол не указан') }}
@@ -44,9 +39,7 @@
                                 С нами с {{ $user->created_at->format('d.m.Y') }}
                             </span>
                         </div>
-
                         <hr class="border-white-10 my-4">
-
                         @if(Auth::id() === $user->id)
                             <form action="{{ route('profile.update') }}" method="POST">
                                 @csrf
@@ -93,8 +86,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Right Column: Stats/Library? -->
             <div class="col-md-8 col-lg-9 animate-fade-in-up delay-100">
                 <div class="bg-dark-card p-4 rounded-3 border border-white-10 mb-4">
                     <h4 class="fw-bold text-white mb-3">Статистика</h4>
@@ -119,8 +110,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Latest Activity -->
                 <h5 class="text-white mb-3 tracking-wider fw-bold text-uppercase small">Последняя активность</h5>
                 <div class="activity-list animate-fade-in-up delay-200">
                     @forelse($latestReviews as $review)
@@ -144,7 +133,6 @@
                                         </div>
                                         <span class="text-muted small">{{ $review->created_at->diffForHumans() }}</span>
                                     </div>
-                                    
                                     @if($review->rating > 0)
                                         <div class="text-warning mb-2" style="font-size: 0.75rem;">
                                             @for($i = 1; $i <= 5; $i++)
@@ -152,7 +140,6 @@
                                             @endfor
                                         </div>
                                     @endif
-
                                     <div class="text-light text-opacity-75 small fst-italic border-start border-primary border-3 ps-3 py-1">
                                         "{{ Str::limit($review->comment, 150) }}"
                                     </div>

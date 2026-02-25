@@ -1,10 +1,7 @@
 <?php
-
 namespace Database\Factories;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Author>
  */
@@ -22,7 +19,7 @@ class AuthorFactory extends Factory
             'name' => $name,
             'slug' => Str::slug($name),
             'bio' => fake()->paragraphs(3, true),
-            'photo' => null, // We can maybe add a placeholder URL logic here if needed, or leave null
+            'photo' => null, 
             'views_count' => fake()->numberBetween(100, 100000),
         ];
     }

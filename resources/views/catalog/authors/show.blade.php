@@ -1,9 +1,7 @@
 @extends('layouts.app')
-
 @section('title', 'Об авторе: ' . $author->name . ' | ' . config('app.name'))
 @section('description', Str::limit(strip_tags($author->bio ?? 'Читайте лучшие книги автора ' . $author->name . ' в нашей библиотеке.'), 160))
 @section('keywords', $author->name . ', автор, книги, биография')
-
 @section('schema')
     <script type="application/ld+json">
                         {
@@ -15,11 +13,9 @@
                         }
                         </script>
 @endsection
-
 @section('content')
     <div class="container py-5">
         <div class="row g-5">
-            <!-- Sidebar Info -->
             <div class="col-md-4 col-lg-3 animate-fade-in-up">
                 <div class="card bg-dark-card border-0 shadow-lg position-sticky" style="top: 100px;">
                     <div class="card-body text-center p-4">
@@ -28,11 +24,9 @@
                             <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
                                 alt="{{ $author->name }}" class="w-100 h-100 object-fit-cover">
                         </div>
-                        <h3 class="fw-bold text-white mb-1">{{ $author->name }}</h3>
+                        <h1 class="h3 fw-bold text-white mb-1">{{ $author->name }}</h1>
                         <div class="text-muted small mb-3">На платформе с {{ $author->created_at->format('d.m.Y') }}</div>
-
                         <hr class="border-white-10 my-4">
-
                         <div class="row text-center g-2">
                             <div class="col-6">
                                 <div class="h4 fw-bold text-white mb-0">
@@ -50,11 +44,7 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Main Content -->
             <div class="col-md-8 col-lg-9 animate-fade-in-up delay-100">
-
-
                 <div
                     class="d-flex justify-content-center justify-content-md-start gap-3 mb-4 flex-wrap animate-fade-in-up delay-100">
                     @if($filter === 'new')
@@ -63,14 +53,12 @@
                         <a href="{{ route('authors.show', ['slug' => $author->slug, 'filter' => 'new']) }}"
                             class="btn btn-outline-light rounded-pill px-4">Новые</a>
                     @endif
-
                     @if($filter === 'popular')
                         <span class="btn btn-primary rounded-pill px-4 cursor-default">Популярные</span>
                     @else
                         <a href="{{ route('authors.show', ['slug' => $author->slug, 'filter' => 'popular']) }}"
                             class="btn btn-outline-light rounded-pill px-4">Популярные</a>
                     @endif
-
                     @if($filter === 'discussed')
                         <span class="btn btn-primary rounded-pill px-4 cursor-default">Обсуждаемое</span>
                     @else
@@ -78,7 +66,6 @@
                             class="btn btn-outline-light rounded-pill px-4">Обсуждаемое</a>
                     @endif
                 </div>
-
                 @if($filter === 'popular')
                     <div
                         class="d-flex justify-content-center justify-content-md-start gap-2 mb-4 animate-fade-in-up delay-150 flex-wrap">
@@ -92,7 +79,6 @@
                         @endforeach
                     </div>
                 @endif
-
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
                     @if($books->count() > 0)
                         @foreach($books as $book)
@@ -108,11 +94,9 @@
                         </div>
                     @endif
                 </div>
-
                 <div class="mt-5 d-flex justify-content-center">
                     {{ $books->appends(['filter' => $filter, 'period' => $period])->links() }}
                 </div>
-
                 <div class="mt-5">
                     <h2 class="fw-bold text-white mb-4 border-start border-4 border-primary ps-3">Биография</h2>
                     <div class="bg-dark-card p-4 rounded-3 border border-white-10 mb-5 text-white-75">
@@ -126,23 +110,19 @@
             </div>
         </div>
     </div>
-
     <style>
         .btn-outline-light {
             border: 1px solid var(--bs-primary) !important;
             color: var(--bs-primary) !important;
         }
-
         .btn-outline-light:hover {
             background-color: var(--bs-primary) !important;
             color: white !important;
         }
-
         .btn-primary {
             border: 1px solid var(--bs-primary) !important;
             color: white !important;
         }
-
         .cursor-default {
             cursor: default !important;
         }

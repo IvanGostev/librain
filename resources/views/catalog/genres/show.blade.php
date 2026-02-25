@@ -1,11 +1,8 @@
 @extends('layouts.app')
-
 @section('title', 'Жанр: ' . $genre->name . ' - Читать книги онлайн | ' . config('app.name'))
 @section('description', 'Лучшие книги в жанре ' . $genre->name . '. Обширная библиотека произведений, доступных для чтения онлайн.')
-
 @section('content')
     <div class="container py-3">
-        <!-- Filters/Categories Links -->
         <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap animate-fade-in-up">
             @if(request('sort', 'latest') === 'latest')
                 <span class="btn btn-primary rounded-pill px-4 cursor-default">Новые</span>
@@ -13,14 +10,12 @@
                 <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'latest']) }}"
                     class="btn btn-outline-light rounded-pill px-4">Новые</a>
             @endif
-
             @if(request('sort') === 'popular')
                 <span class="btn btn-primary rounded-pill px-4 cursor-default">Популярные</span>
             @else
                 <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'popular']) }}"
                     class="btn btn-outline-light rounded-pill px-4">Популярные</a>
             @endif
-
             @if(request('sort') === 'commented')
                 <span class="btn btn-primary rounded-pill px-4 cursor-default">Комментируемые</span>
             @else
@@ -28,7 +23,6 @@
                     class="btn btn-outline-light rounded-pill px-4">Комментируемые</a>
             @endif
         </div>
-
         @if(request('sort') === 'popular')
             <div class="d-flex justify-content-center gap-2 mb-3 animate-fade-in-up delay-150" style="margin-top: -0.5rem;">
                 <a href="{{ route('genres.show', ['slug' => $genre->slug, 'sort' => 'popular', 'period' => 'week']) }}"
@@ -42,8 +36,6 @@
                     все время</a>
             </div>
         @endif
-
-        <!-- Header -->
         <div class="d-flex align-items-center justify-content-between mb-3 animate-fade-in-up delay-100">
             <div>
                 <h1 class="display-5 fw-bold text-white mb-0">{{ $genre->name }}</h1>
@@ -52,7 +44,6 @@
                 </div>
             </div>
         </div>
-
         @if(request('sort') === 'commented')
             @if(isset($reviews) && $reviews->count() > 0)
                 <div class="d-flex flex-column gap-4 animate-fade-in-up delay-100" style="max-width: 800px; margin: 0 auto;">
@@ -84,7 +75,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="d-flex align-items-start gap-3 mb-3">
                                 <div class="flex-shrink-0">
                                     @php
@@ -92,7 +82,6 @@
                                         $authorAvatar = $review->user ? $review->user->avatar : null;
                                         $authorInitial = mb_substr($authorName, 0, 1);
                                     @endphp
-
                                     @if($authorAvatar)
                                         @php
                                             $avatarUrl = Str::startsWith($authorAvatar, ['http://', 'https://'])
@@ -132,7 +121,6 @@
                         </div>
                     @endforeach
                 </div>
-
                 <div class="mt-5 d-flex justify-content-center">
                     {{ $reviews->links() }}
                 </div>
@@ -144,7 +132,6 @@
                 </div>
             @endif
         @else
-            <!-- Book List -->
             @if($books->count() > 0)
                 <div
                     class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-100">
@@ -154,8 +141,6 @@
                         </div>
                     @endforeach
                 </div>
-
-                <!-- Pagination -->
                 <div class="mt-5 d-flex justify-content-center">
                     {{ $books->links() }}
                 </div>
@@ -171,7 +156,6 @@
             @endif
         @endif
     </div>
-
     @if($genre->title || $genre->description)
         <section class="py-5 bg-dark-card border-top border-white-10 mt-5 w-100">
             <div class="container">
@@ -185,56 +169,44 @@
             </div>
         </section>
     @endif
-
     <style>
         /* Filter buttons with primary border - only for outline variants */
         .btn-outline-light {
             border: 1px solid var(--bs-primary) !important;
             color: var(--bs-primary) !important;
         }
-
         /* Primary buttons already have background, no need for special border */
         .btn-primary {
             border: 1px solid var(--bs-primary) !important;
             color: white !important;
         }
-
         .backdrop-blur {
             backdrop-filter: blur(4px);
         }
-
         .duration-300 {
             transition-duration: 0.3s;
         }
-
         .duration-500 {
             transition-duration: 0.5s;
         }
-
         .group:hover .group-hover\:scale-105 {
             transform: scale(1.05);
         }
-
         .group:hover .group-hover\:opacity-100 {
             opacity: 1;
         }
-
         .group-hover\:transform-none {
             transform: translateY(0) !important;
         }
-
         .transform-y-2 {
             transform: translateY(10px);
         }
-
         .delay-75 {
             transition-delay: 0.075s;
         }
-
         .delay-100 {
             transition-delay: 0.1s;
         }
-
         .book-cover-container {
             background: #1e293b;
         }

@@ -1,9 +1,7 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
 return new class extends Migration {
     /**
      * Run the migrations.
@@ -14,13 +12,12 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('book_id')->constrained()->cascadeOnDelete();
-            $table->unsignedTinyInteger('rating')->nullable(); // nullable because a reply might not have a rating
+            $table->unsignedTinyInteger('rating')->nullable(); 
             $table->text('comment');
             $table->foreignId('parent_id')->nullable()->constrained('reviews')->cascadeOnDelete();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

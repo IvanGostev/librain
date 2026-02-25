@@ -1,35 +1,27 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container pb-5">
-
-
-        <!-- Filters/Categories Links -->
         <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap animate-fade-in-up delay-100">
             @if(request('sort', 'new') === 'new')
                 <span class="btn btn-primary rounded-pill px-4 cursor-default">Новые</span>
             @else
                 <a href="{{ route('catalog.index') }}" class="btn btn-outline-light rounded-pill px-4">Новые</a>
             @endif
-
             @if(request('sort') === 'popular')
                 <span class="btn btn-primary rounded-pill px-4 cursor-default">Популярные</span>
             @else
                 <a href="{{ route('catalog.index', ['sort' => 'popular']) }}"
                     class="btn btn-outline-light rounded-pill px-4">Популярные</a>
             @endif
-
             @if(request('sort') === 'commented')
                 <span class="btn btn-primary rounded-pill px-4 cursor-default">Комментируемые</span>
             @else
                 <a href="{{ route('catalog.index', ['sort' => 'commented']) }}"
                     class="btn btn-outline-light rounded-pill px-4">Комментируемые</a>
             @endif
-
             <a href="{{ route('top100') }}" class="btn btn-outline-warning rounded-pill px-4"><i
                     class="bi bi-star-fill me-2"></i>Топ 100</a>
         </div>
-
         @if(request('sort') === 'popular')
             <div class="d-flex justify-content-center gap-2 mb-5 animate-fade-in-up delay-150 flex-wrap"
                 style="margin-top: -1.5rem;">
@@ -50,7 +42,6 @@
                     все время</a>
             </div>
         @endif
-
         @if(request('sort') === 'commented')
             @if(isset($reviews) && $reviews->count() > 0)
                 <div class="d-flex flex-column gap-4 animate-fade-in-up delay-200" style="max-width: 800px; margin: 0 auto;">
@@ -83,7 +74,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="d-flex align-items-start gap-3 mb-3">
                                 <div class="flex-shrink-0">
                                     @php
@@ -91,7 +81,6 @@
                                         $authorAvatar = $review->user ? $review->user->avatar : null;
                                         $authorInitial = mb_substr($authorName, 0, 1);
                                     @endphp
-
                                     @if($authorAvatar)
                                         <img src="{{ asset('storage/' . $authorAvatar) }}" class="rounded-circle border border-white-10"
                                             style="width: 48px; height: 48px; object-fit: cover;"
@@ -126,7 +115,6 @@
                         </div>
                     @endforeach
                 </div>
-
                 <div class="mt-5 d-flex justify-content-center">
                     {{ $reviews->links() }}
                 </div>
@@ -146,7 +134,6 @@
                         </div>
                     @endforeach
                 </div>
-
                 <div class="mt-5 d-flex justify-content-center">
                     {{ $books->links() }}
                 </div>
@@ -158,7 +145,6 @@
             @endif
         @endif
     </div>
-
     @if(isset($bottomTitle) && ($bottomTitle || $bottomText))
         <section class="py-5 bg-dark-card border-top border-white-10 mt-5 w-100">
             <div class="container">
@@ -173,14 +159,12 @@
             </div>
         </section>
     @endif
-
     <style>
         /* Filter buttons styling */
         .btn-outline-light {
             border: 1px solid var(--bs-primary) !important;
             color: var(--bs-primary) !important;
         }
-
         .btn-primary {
             border: 1px solid var(--bs-primary) !important;
             color: white !important;

@@ -1,9 +1,7 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container pb-5">
         <h1 class="h2 fw-bold text-white mb-4">Книги по жанрам</h1>
-
         <section>
             @if($genres->count() > 0)
                 <div class="row g-4 animate-fade-in-up delay-200">
@@ -14,10 +12,8 @@
                                     class="card bg-dark-card border-0 h-100 shadow-sm hover-card-lift position-relative overflow-hidden">
                                     <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center"
                                         style="min-height: 180px;">
-                                        <!-- Decorative Circle -->
                                         <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10"
                                             style="width: 120px; height: 120px; filter: blur(20px);"></div>
-
                                         <div class="position-relative z-1">
                                             <p class="h4 fw-bold genre-title mb-2 group-hover:text-primary transition-colors">
                                                 {{ $genre->name }}
@@ -43,7 +39,6 @@
             @endif
         </section>
     </div>
-
     @if(isset($bottomTitle) && ($bottomTitle || $bottomText))
         <section class="py-5 bg-dark-card border-top border-white-10 mt-5 w-100">
             <div class="container">
@@ -56,26 +51,21 @@
             </div>
         </section>
     @endif
-
     <style>
         .transition-colors {
             transition: color 0.3s ease;
         }
-
         .group:hover .group-hover\:text-primary {
             color: var(--bs-primary) !important;
         }
-
         /* Genre title color - always white */
         .genre-title {
             color: white !important;
         }
-
         /* Override for light theme to keep it white */
         [data-bs-theme="light"] .genre-title {
             color: white !important;
         }
-
         [data-bs-theme="light"] .group:hover .group-hover\:text-primary {
             color: var(--bs-primary) !important;
         }

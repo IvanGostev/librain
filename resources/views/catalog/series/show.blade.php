@@ -1,9 +1,7 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container py-5">
         <div class="row g-5">
-            <!-- Sidebar Info -->
             <div class="col-md-4 col-lg-3 animate-fade-in-up">
                 <div class="card bg-dark-card border-0 shadow-lg position-sticky" style="top: 100px;">
                     <div class="card-body p-4">
@@ -14,15 +12,13 @@
                                     style="max-width: 150px; aspect-ratio: 1/1; object-fit: cover;"
                                     onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                             </div>
-                            <h1 class="fw-bold text-white mb-2">{{ $series->name }}</h1>
+                            <h1 class="h3 fw-bold text-white mb-2">{{ $series->name }}</h1>
                             <div class="badge bg-secondary text-dark fw-bold rounded-pill px-3">
                                 {{ $series->books->count() }}
                                 {{ trans_choice('книга|книги|книг', $series->books->count()) }}
                             </div>
                         </div>
-
                         <hr class="border-white-10 my-4">
-
                         <div class="text-white-50 small">
                             @if($series->description)
                                 {!! nl2br(e($series->description)) !!}
@@ -33,11 +29,8 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Main Content: Books List -->
             <div class="col-md-8 col-lg-9 animate-fade-in-up delay-100">
                 <p class="fw-bold text-white mb-4 border-start border-4 border-secondary ps-3">Книги серии</p>
-
                 <div
                     class="d-flex justify-content-center justify-content-md-start gap-3 mb-4 flex-wrap animate-fade-in-up delay-100">
                     @if($filter === 'order')
@@ -46,21 +39,18 @@
                         <a href="{{ route('series.show', ['slug' => $series->slug, 'filter' => 'order']) }}"
                             class="btn btn-outline-light rounded-pill px-4">По порядку</a>
                     @endif
-
                     @if($filter === 'new')
                         <span class="btn btn-primary rounded-pill px-4 cursor-default">Новые</span>
                     @else
                         <a href="{{ route('series.show', ['slug' => $series->slug, 'filter' => 'new']) }}"
                             class="btn btn-outline-light rounded-pill px-4">Новые</a>
                     @endif
-
                     @if($filter === 'popular')
                         <span class="btn btn-primary rounded-pill px-4 cursor-default">Популярные</span>
                     @else
                         <a href="{{ route('series.show', ['slug' => $series->slug, 'filter' => 'popular']) }}"
                             class="btn btn-outline-light rounded-pill px-4">Популярные</a>
                     @endif
-
                     @if($filter === 'discussed')
                         <span class="btn btn-primary rounded-pill px-4 cursor-default">Обсуждаемое</span>
                     @else
@@ -68,7 +58,6 @@
                             class="btn btn-outline-light rounded-pill px-4">Обсуждаемое</a>
                     @endif
                 </div>
-
                 @if($filter === 'popular')
                     <div
                         class="d-flex justify-content-center justify-content-md-start gap-2 mb-4 animate-fade-in-up delay-150 flex-wrap">
@@ -82,7 +71,6 @@
                         @endforeach
                     </div>
                 @endif
-
                 @if($books->count() > 0)
                     @if($filter === 'discussed' && isset($reviews))
                         @if($reviews->count() > 0)
@@ -116,7 +104,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="d-flex align-items-start gap-3 mb-3">
                                             <div class="flex-shrink-0">
                                                 @php
@@ -124,7 +111,6 @@
                                                     $authorAvatar = $review->user ? $review->user->avatar : null;
                                                     $authorInitial = mb_substr($authorName, 0, 1);
                                                 @endphp
-
                                                 @if($authorAvatar)
                                                     @php
                                                         $avatarUrl = Str::startsWith($authorAvatar, ['http://', 'https://'])
@@ -164,7 +150,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
                             <div class="mt-5 d-flex justify-content-center">
                                 {{ $reviews->links() }}
                             </div>
@@ -180,22 +165,17 @@
                             @foreach($books as $index => $book)
                                 <div class="card bg-dark-card border-0 p-3 hover-card-lift transition-transform">
                                     <div class="d-flex align-items-center">
-                                        <!-- Order Badge -->
                                         <div class="me-3 d-flex flex-column align-items-center justify-content-center"
                                             style="width: 50px; height: 50px; min-width: 50px;">
                                             <span class="small text-muted text-uppercase" style="font-size: 0.6rem;">Книга</span>
                                             <span class="h4 fw-bold mb-0">{{ $book->pivot->order ?? $index + 1 }}</span>
                                         </div>
-
-                                        <!-- Cover (Small) -->
                                         <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                             class="me-3 d-none d-sm-block">
                                             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                                                 alt="{{ $book->title }}" class="rounded shadow-sm"
                                                 style="width: 50px; height: 75px; object-fit: cover;">
                                         </a>
-
-                                        <!-- Content -->
                                         <div class="flex-grow-1 min-w-0">
                                             <p class="fw-bold text-white mb-1">
                                                 <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
@@ -207,8 +187,6 @@
                                                 {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен' }}
                                             </p>
                                         </div>
-
-                                        <!-- Action -->
                                         <div class="ms-3">
                                             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                                 class="btn btn-sm btn-outline-secondary rounded-circle" title="Читать">
@@ -217,15 +195,12 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Connector Line (Visual only, skip for last item) -->
                                 @if(!$loop->last)
                                     <div class="ms-4 ps-2 border-start border-white-10 h-4"></div>
                                 @endif
                             @endforeach
                         </div>
                     @else
-                        {{-- Grid Layout for other filters --}}
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
                             @foreach($books as $book)
                                 <div class="col animate-fade-in-up">
@@ -234,7 +209,6 @@
                             @endforeach
                         </div>
                     @endif
-
                     <div class="mt-5 d-flex justify-content-center">
                         {{ $books->appends(['filter' => $filter, 'period' => $period])->links() }}
                     </div>
@@ -246,23 +220,19 @@
             </div>
         </div>
     </div>
-
     <style>
         .btn-outline-light {
             border: 1px solid var(--bs-primary) !important;
             color: var(--bs-primary) !important;
         }
-
         .btn-outline-light:hover {
             background-color: var(--bs-primary) !important;
             color: white !important;
         }
-
         .btn-primary {
             border: 1px solid var(--bs-primary) !important;
             color: white !important;
         }
-
         .cursor-default {
             cursor: default !important;
         }

@@ -1,10 +1,8 @@
 @extends('layouts.app')
-
 @section('title', $book->title . ' - ' . ($book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор') . ' | ' . config('app.name'))
 @section('description', Str::limit(strip_tags($book->description), 160))
 @section('keywords', $book->title . ', ' . ($book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : '') . ', ' . $book->genres->pluck('name')->implode(', '))
 @section('og_image', $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg'))
-
 @section('schema')
     <script type="application/ld+json">
                                                                                                                                                                 {
@@ -26,17 +24,13 @@
                                                                                                                                                                 }
   </script>
 @endsection
-
 @section('content')
     @php
         $totalSymbols = $book->chapters->sum('symbols_count');
         $totalPages = ceil($totalSymbols / 1500);
     @endphp
     <div class="container pt-0 pt-lg-5 pb-5 mt-0">
-        <!-- Breadcrumb -->
-
         <div class="row g-4 g-lg-5 position-relative">
-            <!-- ... (Sidebar omitted, changes are further down) ... -->
             @if(!$book->is_published)
                 <div
                     class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-3"
@@ -52,13 +46,9 @@
                     </div>
                 </div>
             @endif
-
-            <!-- Sidebar: Cover & Actions -->
             <div class="col-lg-4 col-md-5 animate-fade-in-up delay-100 position-relative" style="z-index: 10;">
                 <div class="position-sticky" style="top: 100px;">
                     <div class="card bg-transparent border-0 mb-4">
-
-
                         <div class="position-relative rounded-3 overflow-hidden shadow-lg card-cover"
                              style="max-width: 300px; margin: 0 auto;">
                             <img
@@ -66,7 +56,6 @@
                                 class="w-100 object-fit-cover mx-auto d-block" alt="{{ $book->title }}"
                                 style="width: 100%; aspect-ratio: 2/3;"
                                 onerror="this.src='{{ asset('images/no-cover.svg') }}'">
-
                             <div class="position-absolute top-0 end-0 p-3">
                                 <span class="badge bg-dark bg-opacity-75 backdrop-blur-sm fs-6"
                                       style="color: #fff !important;" id="cover-rating-display">
@@ -75,7 +64,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="d-flex gap-2 mb-4">
                         @auth
                             <div class="flex-grow-1 dropdown">
@@ -122,7 +110,6 @@
                                             </button>
                                         </form>
                                     </li>
-                                    {{-- Dropped removed --}}
                                     @if($userStatus)
                                         <li>
                                             <hr class="dropdown-divider border-white-10 my-1">
@@ -140,7 +127,6 @@
                                     @endif
                                 </ul>
                             </div>
-
                             <form action="{{ route('books.favorite', $book->id) }}" method="POST">
                                 @csrf
                                 <button type="submit"
@@ -162,8 +148,6 @@
                             </a>
                         @endauth
                     </div>
-
-                    <!-- Share Button (unchanged) -->
                     <div class="dropdown">
                         <button
                             class="btn btn-dark-glass btn-lg rounded-pill fw-semibold border-white-10 hover-elevate w-100"
@@ -233,11 +217,8 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Main Content -->
             <div class="col-lg-8 col-md-7 animate-fade-in-up delay-200">
                 <h1 class="display-5 fw-bold text-white mb-2">{{ $book->title }}</h1>
-
                 <div class="mb-3 text-white fs-5 fw-semibold" style="line-height: 1.6;">
                     <span class="me-2">
                         @if($book->authors->isNotEmpty())
@@ -261,21 +242,16 @@
                     <span class="text-white-50 me-2">•</span>
                     <span>{{ $book->published_year }}</span>
                 </div>
-
-                <!-- New Info Line: Status, Age, Volume, Date -->
                 <div class="d-flex flex-wrap align-items-center gap-3 mb-4 text-muted small">
                     <span
                         class="badge bg-{{ $book->status === 'finished' ? 'success' : 'warning text-dark' }} rounded-pill">
                         {{ $book->status === 'finished' ? 'Завершена' : 'В процессе' }}
                     </span>
-
                     <span class="badge bg-secondary rounded-pill border border-white-10">{{ $book->age_rating }}</span>
-
                     <span title="Объем текста" class="d-flex align-items-center">
                         <i class="bi bi-file-earmark-text me-1"></i>
                         {{ number_format($totalSymbols, 0, ',', ' ') }} зн. / ~{{ $totalPages }} стр.
                     </span>
-
                     <span title="Дата публикации" class="d-flex align-items-center">
                         <i class="bi bi-calendar3 me-1"></i> {{ $book->created_at->format('d.m.Y') }}
                         @if($book->updated_at->gt($book->created_at))
@@ -283,7 +259,6 @@
                         @endif
                     </span>
                 </div>
-
                 @if($book->series->isNotEmpty())
                     <div class="mb-4">
                         <span class="text-muted">Серия:</span>
@@ -292,11 +267,9 @@
                                class="text-decoration-none text-info fw-medium ms-1">
                                 {{ $series->name }}
                             </a>{{ !$loop->last ? ',' : '' }}
-
                         @endforeach
                     </div>
                 @endif
-
                 <div class="mb-5">
                     <div class="d-flex flex-wrap gap-2 justify-content-start" id="user-rating-stars"
                          data-current-rating="{{ $userRating ?? 0 }}" onmouseleave="resetStars()">
@@ -307,7 +280,6 @@
                         @endfor
                     </div>
                 </div>
-
                 <div class="mb-5">
                     <p class="text-white text-uppercase tracking-wider fw-bold mb-3 h5">Жанры</p>
                     <div class="d-flex flex-wrap gap-2">
@@ -319,7 +291,6 @@
                         @endforeach
                     </div>
                 </div>
-
                 <div class="d-flex flex-column gap-3 mb-5 align-items-center align-items-lg-start">
                     <div class="d-flex flex-column gap-3" style="width: fit-content; max-width: 100%;">
                         <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
@@ -327,14 +298,12 @@
                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow hover-elevate">
                                 <i class="bi bi-book-half me-2"></i> Читать онлайн
                             </a>
-
                             @if($book->file_txt || $book->file_fb2 || $book->file_epub)
                                 <a href="#downloads"
                                    class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow hover-elevate d-flex align-items-center">
                                     <i class="bi bi-download me-2"></i>   Скачать книгу
                                 </a>
                             @endif
-
                             <a href="#reviews-form"
                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow hover-elevate">
                                 <i class="bi bi-chat-text me-2"></i> Оставить отзыв
@@ -348,24 +317,19 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="mb-5">
                     <h2 class="text-white text-uppercase tracking-wider fw-bold mb-3 h5">О книге</h2>
                     <div class="text-white lead" style="font-size: 1.1rem; line-height: 1.8;">
                         {!! nl2br(e($book->description)) !!}
                     </div>
                 </div>
-
-                <!-- Блок Статистики -->
                 <div class="mb-5 border-top border-white-10 pt-5">
                     <p class="text-white text-uppercase tracking-wider fw-bold mb-2 h5">Статистика</p>
                     <p class="text-white-50 mb-4 fw-medium">
                         Средний рейтинг: <span class="text-white fw-bold">{{ number_format($book->rating, 2) }}</span>
                         <i class="bi bi-star-fill text-warning"></i>
                     </p>
-
                     <div class="row g-4 g-lg-5">
-                        <!-- Левая колонка: Оценки -->
                         <div class="col-md-6">
                             @for($i = 10; $i >= 1; $i--)
                                 <div class="d-flex align-items-center mb-2">
@@ -385,8 +349,6 @@
                                 </div>
                             @endfor
                         </div>
-
-                        <!-- Правая колонка: Списки -->
                         <div class="col-md-6">
                             @foreach($statusCounts as $key => $data)
                                 <div class="d-flex align-items-center mb-3">
@@ -411,8 +373,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 @if($book->file_txt || $book->file_fb2 || $book->file_epub)
                     @php
                         $formatSize = function ($path) {
@@ -453,7 +413,6 @@
                         </div>
                     </div>
                 @endif
-
                 @if($book->series->isNotEmpty())
                     @foreach($book->series as $series)
                         <div class="mb-5 border-top border-white-10 pt-5">
@@ -464,7 +423,6 @@
                                 </p>
                                 <span class="text-muted fw-bold ms-3 fs-5">({{ $series->books->count() }})</span>
                             </div>
-
                             <div class="bg-dark-card rounded-3 overflow-hidden border border-white-10">
                                 @foreach($series->books as $sBook)
                                     @if($sBook->id === $book->id)
@@ -497,7 +455,6 @@
                         </div>
                     @endforeach
                 @endif
-
                 <div class="mb-5 border-top border-white-10 pt-5">
                     <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 mb-4">
                         <p class="text-white text-uppercase tracking-wider fw-bold mb-0 h5">Отзывы
@@ -506,7 +463,6 @@
                                     class="text-muted ms-2">{{ $book->reviews->count() }}</span>
                             @endif
                         </p>
-
                         <div class="dropdown">
                             <button class="btn btn-sm btn-outline-light dropdown-toggle rounded-pill" type="button"
                                     data-bs-toggle="dropdown">
@@ -526,12 +482,10 @@
                             </ul>
                         </div>
                     </div>
-
                     <div class="card bg-feature-card border-white-10 p-4 mb-5">
                         <p class="text-white fw-bold mb-3 h6">Оставить отзыв</p>
                         <form action="{{ route('reviews.store', $book->id) }}" method="POST" id="reviews-form">
                             @csrf
-
                             @guest
                                 <div class="mb-3">
                                     <label class="form-label text-muted small">Ваше имя <span
@@ -540,7 +494,6 @@
                                            placeholder="Представьтесь">
                                 </div>
                             @endguest
-
                             <div class="mb-3">
                                 <div class="mb-3">
                                     <textarea name="comment" class="form-control form-control-dark" rows="4"
@@ -552,7 +505,6 @@
                                 </button>
                         </form>
                     </div>
-
                     <div class="reviews-list">
                         @forelse($book->reviews as $review)
                             @include('catalog.books.partials.review', ['review' => $review, 'level' => 0])
@@ -563,14 +515,11 @@
                             </div>
                         @endforelse
                     </div>
-
                 </div>
             </div>
         </div>
-        <!-- Related Books Section -->
         <div class="mt-5 pt-5 border-top border-white-10" id="related-books-section">
             <p class="h3 fw-bold text-white mb-4 text-uppercase tracking-wider">Что еще можно почитать</p>
-
             <div class="d-flex flex-wrap gap-2 mb-4">
                 <button class="btn btn-primary rounded-pill px-4 related-filter active" data-filter="new">Новые</button>
                 <button class="btn btn-outline-light rounded-pill px-4 related-filter"
@@ -580,8 +529,6 @@
                         data-filter="discussed">Обсуждаемые
                 </button>
             </div>
-
-            <!-- Sub-filters for Popular -->
             <div class="d-flex flex-wrap gap-2 mb-4 d-none animate-fade-in-up" id="popular-sub-filters">
                 <button class="btn btn-primary rounded-pill px-3 btn-sm popular-period-filter active"
                         data-period="week">За
@@ -603,19 +550,15 @@
                     все время
                 </button>
             </div>
-
             <div class="position-relative">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3" id="related-books-grid">
-                    <!-- Content loaded via AJAX -->
                 </div>
-
                 <div class="text-center py-5 d-none" id="related-loading">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Загрузка...</span>
                     </div>
                 </div>
             </div>
-
             <div class="text-center mt-4 d-none" id="related-load-more-container">
                 <button class="btn btn-outline-primary rounded-pill px-5 py-2 fw-bold" id="related-load-more">
                     Загрузить еще
@@ -623,7 +566,6 @@
             </div>
         </div>
     </div>
-
     <script>
         function setRating(rating) {
             document.getElementById('rating-input').value = rating;
@@ -637,23 +579,19 @@
                 }
             });
         }
-
         function showReplyForm(reviewId) {
             const form = document.getElementById(`reply-form-${reviewId}`);
             form.classList.remove('d-none');
         }
-
         function hideReplyForm(reviewId) {
             const form = document.getElementById(`reply-form-${reviewId}`);
             form.classList.add('d-none');
         }
-
         function voteReview(reviewId, type, btn) {
             const url = `/reviews/${reviewId}/vote`;
             const container = btn.closest('.d-flex');
             const likeBtn = container.querySelectorAll('button')[0];
             const dislikeBtn = container.querySelectorAll('button')[1];
-
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -667,18 +605,12 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-
                         likeBtn.querySelector('.vote-count').textContent = data.likes;
                         dislikeBtn.querySelector('.vote-count').textContent = data.dislikes;
-
-
                         likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-success';
                         likeBtn.querySelector('i').className = 'bi bi-hand-thumbs-up';
-
                         dislikeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-muted hover-text-danger';
                         dislikeBtn.querySelector('i').className = 'bi bi-hand-thumbs-down';
-
-
                         if (data.action !== 'removed') {
                             if (type === 'like') {
                                 likeBtn.className = 'btn btn-sm btn-link text-decoration-none p-0 text-success';
@@ -692,13 +624,10 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
-
-
         document.addEventListener('DOMContentLoaded', function () {
             let currentRelatedPage = 1;
             let currentRelatedFilter = 'new';
             let currentRelatedPeriod = 'week';
-
             const bookId = {{ $book->id }};
             const grid = document.getElementById('related-books-grid');
             const loadMoreBtn = document.getElementById('related-load-more');
@@ -707,7 +636,6 @@
             const filters = document.querySelectorAll('.related-filter');
             const subFiltersContainer = document.getElementById('popular-sub-filters');
             const subFilters = document.querySelectorAll('.popular-period-filter');
-
             function loadRelatedBooks(filter, period, page, append = false) {
                 if (!append) {
                     grid.innerHTML = '';
@@ -717,12 +645,10 @@
                     loadMoreBtn.disabled = true;
                     loadMoreBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загрузка...';
                 }
-
                 let url = `/books/${bookId}/related?filter=${filter}&page=${page}`;
                 if (filter === 'popular') {
                     url += `&period=${period}`;
                 }
-
                 fetch(url, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
@@ -738,7 +664,6 @@
                             grid.innerHTML = data.html;
                             loadingSpinner.classList.add('d-none');
                         }
-
                         if (data.hasMore) {
                             loadMoreContainer.classList.remove('d-none');
                         } else {
@@ -754,26 +679,18 @@
                         }
                     });
             }
-
-
             loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
-
-
             filters.forEach(btn => {
                 btn.addEventListener('click', function () {
                     if (this.classList.contains('active')) return;
-
                     filters.forEach(b => {
                         b.classList.remove('btn-primary', 'active');
                         b.classList.add('btn-outline-light');
                     });
                     this.classList.remove('btn-outline-light');
                     this.classList.add('btn-primary', 'active');
-
                     currentRelatedFilter = this.getAttribute('data-filter');
                     currentRelatedPage = 1;
-
-
                     if (currentRelatedFilter === 'popular') {
                         subFiltersContainer.classList.remove('d-none');
                         subFiltersContainer.classList.add('d-flex');
@@ -781,31 +698,23 @@
                         subFiltersContainer.classList.add('d-none');
                         subFiltersContainer.classList.remove('d-flex');
                     }
-
                     loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage);
                 });
             });
-
-
             subFilters.forEach(btn => {
                 btn.addEventListener('click', function () {
                     if (this.classList.contains('active')) return;
-
                     subFilters.forEach(b => {
                         b.classList.remove('btn-primary', 'active');
                         b.classList.add('btn-outline-light');
                     });
                     this.classList.remove('btn-outline-light');
                     this.classList.add('btn-primary', 'active');
-
                     currentRelatedPeriod = this.getAttribute('data-period');
                     currentRelatedPage = 1;
-
                     loadRelatedBooks('popular', currentRelatedPeriod, currentRelatedPage);
                 });
             });
-
-
             loadMoreBtn.addEventListener('click', function () {
                 currentRelatedPage++;
                 loadRelatedBooks(currentRelatedFilter, currentRelatedPeriod, currentRelatedPage, true);
@@ -818,17 +727,14 @@
             border: 1px solid var(--bs-primary) !important;
             color: var(--bs-primary) !important;
         }
-
         .btn-primary,
         .btn-danger {
             color: white !important;
         }
-
         /* Heart icon should always be white */
         .bi-heart-fill {
             color: white !important;
         }
-
         /* Firework Effect */
         .firework-particle {
             position: fixed;
@@ -839,24 +745,20 @@
             z-index: 9999;
             animation: firework-pop 0.8s ease-out forwards;
         }
-
         @keyframes firework-pop {
             0% {
                 transform: translate(0, 0) scale(1);
                 opacity: 1;
             }
-
             100% {
                 transform: translate(var(--tx), var(--ty)) scale(0);
                 opacity: 0;
             }
         }
     </style>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
         });
-
         function highlightStars(rating) {
             document.querySelectorAll('.user-rating-star').forEach(star => {
                 const r = parseInt(star.dataset.rating);
@@ -869,13 +771,11 @@
                 }
             });
         }
-
         function resetStars() {
             const container = document.getElementById('user-rating-stars');
             const currentRating = parseInt(container.dataset.currentRating);
             highlightStars(currentRating);
         }
-
         function updateAverageRatingDisplay(newAvg) {
             const formattedAvg = parseFloat(newAvg).toFixed(1);
             const avgEl = document.getElementById('average-rating-display');
@@ -883,7 +783,6 @@
             const coverEl = document.getElementById('cover-rating-display');
             if (coverEl) coverEl.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i> ${formattedAvg}`;
         }
-
         function createFirework(x, y) {
             const colors = ['#ffc107', '#ff5722', '#4caf50', '#2196f3', '#ffffff'];
             const particleCount = 30;
@@ -905,11 +804,9 @@
                 });
             }
         }
-
         function rateBook(bookId, rating) {
             const container = document.getElementById('user-rating-stars');
             const previousRating = parseInt(container.dataset.currentRating);
-
             container.dataset.currentRating = rating;
             highlightStars(rating);
             const star = document.querySelector(`.user-rating-star[data-rating="${rating}"]`);

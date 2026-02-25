@@ -1,12 +1,9 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="card bg-dark-card border-white-10 p-5 rounded-4 shadow-lg text-center animate-fade-in-up">
-
-                    <!-- Step 1: Timer -->
                     <div id="download-step-1">
                         <div class="mb-4">
                             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
@@ -15,7 +12,6 @@
                             <h1 class="h3 fw-bold text-white mb-2">{{ $book->title }}</h1>
                             <p class="text-white-50 mb-0">Автор: {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Неизвестен' }}</p>
                         </div>
-
                         <div class="py-4" id="timer-container">
                             <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
                                 <span class="visually-hidden">Загрузка...</span>
@@ -25,25 +21,20 @@
                                     class="text-primary fw-bold">15</span> сек.</p>
                         </div>
                     </div>
-
-                    <!-- Step 2: Download Button -->
                     <div id="download-step-2" class="d-none">
                         <div class="mb-5">
                             <i class="bi bi-file-earmark-check text-success" style="font-size: 5rem;"></i>
                         </div>
-
                         <h2 class="text-white mb-3">Файл готов!</h2>
                         <p class="text-white-50 mb-4">
                             Книга: <span class="text-white">{{ $book->title }}</span><br>
                             Формат: <span class="text-uppercase fw-bold text-primary">{{ $format }}</span><br>
                             Размер: <span class="text-white">{{ $formattedSize }}</span>
                         </p>
-
                         <a href="{{ $fileUrl }}"
                             class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-glow hover-elevate w-100" download>
                             <i class="bi bi-download me-2"></i> Нажмите, чтобы скачать
                         </a>
-
                         <div class="mt-4">
                             <a href="{{ route('books.show', ['genre' => $book->genres->first()->slug ?? 'general', 'slug' => $book->slug]) }}"
                                 class="text-muted text-decoration-none small hover-text-white">
@@ -51,12 +42,9 @@
                             </a>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-
-        <!-- Genres section for second screen -->
         <div class="mt-5 pt-5">
             <section>
                 @if($genres->count() > 0)
@@ -68,10 +56,8 @@
                                         class="card bg-dark-card border-0 h-100 shadow-sm hover-card-lift position-relative overflow-hidden">
                                         <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center"
                                             style="min-height: 180px;">
-                                            <!-- Decorative Circle -->
                                             <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10"
                                                 style="width: 120px; height: 120px; filter: blur(20px);"></div>
-
                                             <div class="position-relative z-1">
                                                 <p class="h4 fw-bold genre-title mb-2 group-hover:text-primary transition-colors">
                                                     {{ $genre->name }}
@@ -93,42 +79,34 @@
             </section>
         </div>
     </div>
-
     <style>
         .transition-colors {
             transition: color 0.3s ease;
         }
-
         .group:hover .group-hover\:text-primary {
             color: var(--bs-primary) !important;
         }
-
         /* Genre title color - always white */
         .genre-title {
             color: white !important;
         }
-
         /* Override for light theme to keep it white */
         [data-bs-theme="light"] .genre-title {
             color: white !important;
         }
-
         [data-bs-theme="light"] .group:hover .group-hover\:text-primary {
             color: var(--bs-primary) !important;
         }
     </style>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let timeLeft = 15;
             const timerEl = document.getElementById('timer');
             const step1 = document.getElementById('download-step-1');
             const step2 = document.getElementById('download-step-2');
-
             const countdown = setInterval(() => {
                 timeLeft--;
                 if (timerEl) timerEl.textContent = timeLeft;
-
                 if (timeLeft <= 0) {
                     clearInterval(countdown);
                     if (step1) step1.classList.add('d-none');

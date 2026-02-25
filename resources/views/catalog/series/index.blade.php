@@ -1,15 +1,11 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container pb-5">
         <h1 class="h2 fw-bold text-white mb-4">Серии</h1>
-
         <div class="d-flex gap-2 mb-4 flex-wrap animate-fade-in-up delay-100">
             @php
                 $currentSort = request('sort');
             @endphp
-
-            {{-- Count Sort --}}
             @if($currentSort === 'count_desc' || $currentSort === 'count')
                 <a href="{{ route('series.index', ['sort' => 'count_asc']) }}" class="btn btn-primary rounded-pill px-4">По
                     количеству<i class="bi bi-sort-numeric-down ms-1"></i></a>
@@ -20,8 +16,6 @@
                 <a href="{{ route('series.index', ['sort' => 'count_desc']) }}"
                     class="btn btn-outline-light rounded-pill px-4">По количеству<i class="bi bi-arrow-down-up ms-1"></i></a>
             @endif
-
-            {{-- Views Sort --}}
             @if($currentSort === 'views_desc' || $currentSort === 'views')
                 <a href="{{ route('series.index', ['sort' => 'views_asc']) }}" class="btn btn-primary rounded-pill px-4">По
                     просмотрам<i class="bi bi-sort-numeric-down ms-1"></i></a>
@@ -32,8 +26,6 @@
                 <a href="{{ route('series.index', ['sort' => 'views_desc']) }}"
                     class="btn btn-outline-light rounded-pill px-4">По просмотрам<i class="bi bi-arrow-down-up ms-1"></i></a>
             @endif
-
-            {{-- Name Sort --}}
             @if($currentSort === 'name_asc')
                 <a href="{{ route('series.index', ['sort' => 'name_desc']) }}" class="btn btn-primary rounded-pill px-4">По
                     имени<i class="bi bi-sort-alpha-down ms-1"></i></a>
@@ -44,8 +36,6 @@
                 <a href="{{ route('series.index', ['sort' => 'name_asc']) }}" class="btn btn-outline-light rounded-pill px-4">По
                     имени<i class="bi bi-arrow-down-up ms-1"></i></a>
             @endif
-
-            {{-- Alphabet Sort --}}
             @if($currentSort === 'alphabet_asc' || $currentSort === 'alphabet' || request('letter'))
                 <a href="{{ route('series.index', ['sort' => 'alphabet_desc']) }}" class="btn btn-primary rounded-pill px-4">По
                     алфавиту<i class="bi bi-sort-alpha-down ms-1"></i></a>
@@ -57,7 +47,6 @@
                     class="btn btn-outline-light rounded-pill px-4">По алфавиту<i class="bi bi-arrow-down-up ms-1"></i></a>
             @endif
         </div>
-
         @if(isset($letters) && $letters->isNotEmpty())
             <div class="d-flex flex-wrap gap-2 mb-5 p-4 bg-dark-card rounded-4 animate-fade-in-up delay-150">
                 @if(!request('letter'))
@@ -66,7 +55,6 @@
                     <a href="{{ route('series.index', ['sort' => 'alphabet']) }}"
                         class="btn btn-sm alphabet-filter btn-outline-light">Все</a>
                 @endif
-
                 @foreach($letters as $l)
                     @if(request('letter') == $l)
                         <span class="btn btn-sm alphabet-filter btn-primary cursor-default">{{ $l }}</span>
@@ -79,7 +67,6 @@
                 @endforeach
             </div>
         @endif
-
         <section>
             @if($series->count() > 0)
                 <div class="row g-3 animate-fade-in-up delay-200">
@@ -124,7 +111,6 @@
                                                         class="h5 fw-bold text-white mb-2 group-hover:text-secondary transition-colors">
                                                         {{ $item->name }}
                                                     </p>
-
                                                 </div>
                                                 <p class="text-white-50 small mb-0 text-truncate d-none d-md-block"
                                                     style="max-width: 80%;">
@@ -137,7 +123,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Decorative bg icon -->
                                     <i class="bi bi-journals position-absolute bottom-0 end-0 text-white opacity-5"
                                         style="font-size: 5rem; transform: translate(20%, 30%) rotate(-15deg);"></i>
                                 </article>
@@ -145,7 +130,6 @@
                         </div>
                     @endforeach
                 </div>
-
                 <div class="mt-5 d-flex justify-content-center">
                     {{ $series->links() }}
                 </div>
@@ -157,7 +141,6 @@
             @endif
         </section>
     </div>
-
     @if(isset($bottomTitle) && ($bottomTitle || $bottomText))
         <section class="py-5 bg-dark-card border-top border-white-10 mt-5 w-100">
             <div class="container">
@@ -170,24 +153,20 @@
             </div>
         </section>
     @endif
-
     <style>
         /* Filter buttons styling */
         .btn-outline-light {
             border: 1px solid var(--bs-primary) !important;
             color: var(--bs-primary) !important;
         }
-
         .btn-primary {
             border: 1px solid var(--bs-primary) !important;
             color: white !important;
         }
-
         /* Alphabet filter buttons */
         .alphabet-filter.btn-outline-light {
             transition: all 0.3s ease;
         }
-
         .alphabet-filter.btn-outline-light:hover {
             background-color: var(--bs-primary);
             color: white !important;
