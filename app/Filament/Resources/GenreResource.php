@@ -44,7 +44,7 @@ class GenreResource extends Resource
                                     ->unique(Genre::class, 'slug', ignoreRecord: true),
                             ])->columns(2),
 
-                    \App\Filament\Helpers\SeoHelper::seoSection(),
+                    \App\Filament\Helpers\SeoHelper::seoSection('genre'),
                 ]);
     }
 

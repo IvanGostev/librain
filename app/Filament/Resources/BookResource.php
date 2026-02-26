@@ -165,18 +165,7 @@ class BookResource extends Resource
                                     ->helperText('Если не загружено, будет создано автоматически из глав.'),
                             ])->columns(3),
 
-                    Forms\Components\Section::make('SEO Настройки')
-                        ->description('Настройки для поисковых систем')
-                        ->collapsed()
-                        ->schema([
-                                Forms\Components\Textarea::make('seo_description')
-                                    ->label('SEO Описание (Meta Description)')
-                                    ->rows(3)
-                                    ->default(fn () => \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value')),
-                                Forms\Components\TextInput::make('seo_keywords')
-                                    ->label('SEO Ключевые слова (Keywords)')
-                                    ->maxLength(255),
-                            ]),
+                    \App\Filament\Helpers\SeoHelper::seoSection('book'),
                 ]);
     }
 

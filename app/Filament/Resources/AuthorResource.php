@@ -66,7 +66,7 @@ class AuthorResource extends Resource
                                     ->default(0),
                             ])->columns(2),
 
-                    \App\Filament\Helpers\SeoHelper::seoSection(),
+                    \App\Filament\Helpers\SeoHelper::seoSection('author'),
                 ]);
     }
 

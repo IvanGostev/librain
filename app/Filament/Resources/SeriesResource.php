@@ -56,7 +56,7 @@ class SeriesResource extends Resource
                                     ->directory('series'),
                             ]),
 
-                    \App\Filament\Helpers\SeoHelper::seoSection(),
+                    \App\Filament\Helpers\SeoHelper::seoSection('series'),
                 ]);
     }
 
