@@ -41,5 +41,22 @@ class AppServiceProvider extends ServiceProvider
             \SocialiteProviders\Manager\SocialiteWasCalled::class,
             \SocialiteProviders\VKontakte\VKontakteExtendSocialite::class . '@handle'
         );
+
+        \Illuminate\Auth\Notifications\VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            return (new \Illuminate\Notifications\Messages\MailMessage)
+                ->subject('Активация аккаунта — ' . config('app.name', 'Librain'))
+                ->view('emails.verify-email', ['url' => $url, 'user' => $notifiable]);
+        });
+
+        \Illuminate\Auth\Notifications\ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new \Illuminate\Notifications\Messages\MailMessage)
+                ->subject('Сброс пароля — ' . config('app.name', 'Librain'))
+                ->view('emails.reset-password', ['url' => $url, 'user' => $notifiable]);
+        });
     }
 }
