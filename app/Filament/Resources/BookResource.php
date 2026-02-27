@@ -86,6 +86,9 @@ class BookResource extends Resource
                                 Forms\Components\FileUpload::make('cover_image')
                                     ->label('Обложка')
                                     ->image()
+                                    ->imageEditor()
+                                    ->maxSize(10240)
+                                    ->disk('public')
                                     ->directory('books/covers'),
                                 Forms\Components\Select::make('status')
                                     ->label('Статус')

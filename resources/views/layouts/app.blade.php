@@ -15,8 +15,6 @@
     <title>@yield('title', isset($title) ? $title : config('app.name', 'Librain'))</title>
     <meta name="description"
         content="@yield('description', isset($description) ? $description : 'Librain - ваша цифровая библиотека. Читайте книги онлайн, следите за авторами и создавайте свою коллекцию.')">
-    <meta name="keywords"
-        content="@yield('keywords', isset($keywords) ? $keywords : 'книги, читать онлайн, библиотека, авторы, жанры')">
     <link rel="canonical" href="{{ url()->current() }}">
     @hasSection('robots')
         <meta name="robots" content="@yield('robots')">

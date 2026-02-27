@@ -77,7 +77,6 @@ class BookImportService
 
         $seoTitle = mb_substr($title . ' - ' . $author->name, 0, 255);
         $seoDescription = mb_substr(strip_tags(str_replace(['<p>', '</p>'], ["", " "], $description)), 0, 160);
-        $seoKeywords = mb_substr(implode(', ', array_unique(array_merge([$author->name], $genresList))), 0, 255);
 
         $book = Book::create([
             'title' => $title,
@@ -87,7 +86,6 @@ class BookImportService
             'is_published' => true,
             'seo_title' => $seoTitle,
             'seo_description' => $seoDescription,
-            'seo_keywords' => $seoKeywords,
         ]);
 
 

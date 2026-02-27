@@ -17,7 +17,11 @@ class ReviewController extends Controller
             'parent_id' => 'nullable|exists:reviews,id',
         ];
 
-        if (!Auth::check()) {
+        if (Auth::check()) {
+            if (!Auth::user()->hasVerifiedEmail()) {
+                return back()->with('error', 'Пожалуйста, подтвердите email для этого действия.');
+            }
+        } else {
             $rules['guest_name'] = 'required|string|max:255';
         }
 
@@ -44,6 +48,11 @@ class ReviewController extends Controller
         }
 
         $userId = Auth::id();
+
+        if ($userId && !Auth::user()->hasVerifiedEmail()) {
+            return response()->json(['error' => 'Пожалуйста, подтвердите email для этого действия.'], 403);
+        }
+
         $ip = $request->ip();
 
         $vote = \App\Models\ReviewVote::where('review_id', $review->id)

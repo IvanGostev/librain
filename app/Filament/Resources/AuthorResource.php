@@ -57,6 +57,8 @@ class AuthorResource extends Resource
                                 Forms\Components\FileUpload::make('photo')
                                     ->label('Фото')
                                     ->image()
+                                    ->imageEditor()
+                                    ->maxSize(10240)
                                     ->disk('public')
                                     ->directory('authors'),
                                 Forms\Components\TextInput::make('views_count')

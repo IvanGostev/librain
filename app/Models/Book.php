@@ -34,7 +34,6 @@ class Book extends Model
         'is_published',
         'seo_title',
         'seo_description',
-        'seo_keywords',
         'file_txt',
         'file_fb2',
         'file_epub',
@@ -94,7 +93,7 @@ class Book extends Model
     public function recalculateRating()
     {
         $avg = $this->ratings()->avg('rating');
-        $this->update(['rating' => $avg ?? 0]);
+        $this->update(['rating' => round($avg ?? 0, 2)]);
     }
 
     protected static function booted()

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Жанр: ' . $genre->name . ' - Читать книги онлайн | ' . config('app.name'))
+@section('title', trim($genre->name . ' ' . \App\Models\SiteSetting::where('key', $genre->seo_title ?: 'seo_title_genre_default')->value('value')))
 @section('description', 'Лучшие книги в жанре ' . $genre->name . '. Обширная библиотека произведений, доступных для чтения онлайн.')
 @section('content')
     <div class="container py-3">

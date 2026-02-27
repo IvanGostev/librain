@@ -32,5 +32,10 @@ class SiteSettingsSeeder extends Seeder
         SiteSetting::updateOrCreate(['key' => 'seo_title_author_default'], ['value' => '— Книги автора читать онлайн']);
         SiteSetting::updateOrCreate(['key' => 'seo_title_genre_default'], ['value' => '— Книги жанра онлайн']);
         SiteSetting::updateOrCreate(['key' => 'seo_title_series_default'], ['value' => '— Книжная серия читать']);
+
+        SiteSetting::updateOrCreate(['key' => 'seo_desc_book_default'], ['value' => '— читать онлайн или скачать в форматах fb2, epub, txt.']);
+        SiteSetting::updateOrCreate(['key' => 'seo_desc_author_default'], ['value' => '— читать лучшие книги онлайн.']);
+        SiteSetting::updateOrCreate(['key' => 'seo_desc_genre_default'], ['value' => '— большая библиотека произведений онлайн.']);
+        SiteSetting::updateOrCreate(['key' => 'seo_desc_series_default'], ['value' => '— читать книги серии по порядку.']);
     }
 }

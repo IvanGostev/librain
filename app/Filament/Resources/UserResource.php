@@ -90,6 +90,11 @@ class UserResource extends Resource
                         'user' => 'Пользователь',
                         default => $state,
                     }),
+                Tables\Columns\IconColumn::make('email_verified_at')
+                    ->label('Активирован')
+                    ->boolean()
+                    ->getStateUsing(fn ($record) => $record->email_verified_at !== null)
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_blocked')
                     ->label('Блок')
                     ->boolean()
@@ -107,6 +112,15 @@ class UserResource extends Resource
                         'user' => 'Пользователь',
                         'admin' => 'Администратор',
                     ]),
+                Tables\Filters\TernaryFilter::make('email_verified_at')
+                    ->label('Активирован')
+                    ->placeholder('Все')
+                    ->trueLabel('Да')
+                    ->falseLabel('Нет')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('email_verified_at'),
+                        false: fn (Builder $query) => $query->whereNull('email_verified_at'),
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

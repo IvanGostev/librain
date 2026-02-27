@@ -19,6 +19,12 @@ class RatingController extends Controller
         $ip = $request->ip();
 
         if ($userId) {
+            if (!Auth::user()->hasVerifiedEmail()) {
+                if ($request->wantsJson()) {
+                    return response()->json(['error' => 'Пожалуйста, подтвердите email для этого действия.'], 403);
+                }
+                return back()->with('error', 'Пожалуйста, подтвердите email для этого действия.');
+            }
             $rating = Rating::updateOrCreate(
                 ['user_id' => $userId, 'book_id' => $book->id],
                 ['rating' => $request->rating, 'ip_address' => $ip]

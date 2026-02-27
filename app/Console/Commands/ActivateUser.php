@@ -4,21 +4,21 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class MakeUserAdmin extends Command
+class ActivateUser extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'admin:make {email}';
+    protected $signature = 'user:activate {email}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Grant admin privileges to a user by email';
+    protected $description = 'Activate a user account by email';
 
     /**
      * Execute the console command.
@@ -33,12 +33,14 @@ class MakeUserAdmin extends Command
             return;
         }
 
-        $user->role = 'admin';
-        if (is_null($user->email_verified_at)) {
-            $user->email_verified_at = now();
+        if ($user->email_verified_at) {
+            $this->info("User {$user->name} ({$email}) is already activated.");
+            return;
         }
+
+        $user->email_verified_at = now();
         $user->save();
 
-        $this->info("User {$user->name} ({$email}) has been granted admin privileges.");
+        $this->info("User {$user->name} ({$email}) has been successfully activated.");
     }
 }

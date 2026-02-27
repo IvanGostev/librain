@@ -6,7 +6,7 @@ Route::view('/ivangostev', 'developer.ivangostev')->name('developer');
 
 
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 
 Route::get('auth/{provider}/redirect', [App\Http\Controllers\Auth\SocialController::class, 'redirect'])->name('social.redirect');
@@ -31,17 +31,17 @@ Route::get('/top100', [App\Http\Controllers\CatalogController::class, 'top100'])
 Route::get('/search', [App\Http\Controllers\CatalogController::class, 'search'])->name('search');
 
 
-Route::get('/library', [App\Http\Controllers\LibraryController::class, 'index'])->middleware('auth')->name('library.index');
-Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->middleware('auth')->name('profile.show');
+Route::get('/library', [App\Http\Controllers\LibraryController::class, 'index'])->middleware(['auth', 'verified'])->name('library.index');
+Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->middleware(['auth', 'verified'])->name('profile.show');
 Route::get('/users/{user}', [App\Http\Controllers\ProfileController::class, 'show'])->name('users.show');
-Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->middleware('auth')->name('profile.update');
+Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->middleware(['auth', 'verified'])->name('profile.update');
 
 
-Route::post('/books/{book}/favorite', [App\Http\Controllers\LibraryController::class, 'toggleFavorite'])->middleware('auth')->name('books.favorite');
-Route::post('/books/{book}/planned', [App\Http\Controllers\LibraryController::class, 'togglePlanned'])->middleware('auth')->name('books.planned');
+Route::post('/books/{book}/favorite', [App\Http\Controllers\LibraryController::class, 'toggleFavorite'])->middleware(['auth', 'verified'])->name('books.favorite');
+Route::post('/books/{book}/planned', [App\Http\Controllers\LibraryController::class, 'togglePlanned'])->middleware(['auth', 'verified'])->name('books.planned');
 Route::post('/books/{book}/rate', [App\Http\Controllers\RatingController::class, 'store'])->name('books.rate');
 Route::post('/books/{book}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
-Route::post('/books/{book}/status', [App\Http\Controllers\LibraryController::class, 'updateStatus'])->middleware('auth')->name('books.status');
+Route::post('/books/{book}/status', [App\Http\Controllers\LibraryController::class, 'updateStatus'])->middleware(['auth', 'verified'])->name('books.status');
 Route::post('/reviews/{review}/vote', [App\Http\Controllers\ReviewController::class, 'vote'])->name('reviews.vote');
 Route::get('/books/{id}/related', [App\Http\Controllers\CatalogController::class, 'related'])->name('books.related');
 Route::get('/books/{book}/download/{format}', [App\Http\Controllers\CatalogController::class, 'downloadPage'])->name('books.download.page');

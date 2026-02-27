@@ -24,13 +24,18 @@ class SeoHelper
                         })
                         ->default("seo_title_{$entityType}_default")
                         ->helperText('Заголовок страницы: Название + выбранная константа. Константы добавляются в "Настройки сайта" (ключ: seo_title_' . $entityType . '_...).'),
-                    Forms\Components\Textarea::make('seo_description')
+                    Forms\Components\Select::make('seo_description')
                         ->label('SEO Описание (Meta Description)')
-                        ->rows(3)
-                        ->default(fn () => \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value')),
-                    Forms\Components\TextInput::make('seo_keywords')
-                        ->label('SEO Ключевые слова (Keywords)')
-                        ->maxLength(255),
+                        ->options(function () use ($entityType) {
+                            $settings = \App\Models\SiteSetting::where('key', 'like', "seo_desc_{$entityType}_%")->get();
+                            $options = [];
+                            foreach ($settings as $setting) {
+                                $options[$setting->key] = 'Название + ' . $setting->value;
+                            }
+                            return $options;
+                        })
+                        ->default("seo_desc_{$entityType}_default")
+                        ->helperText('Описание страницы: Название + выбранная константа. Константы добавляются в "Настройки сайта" (ключ: seo_desc_' . $entityType . '_...).'),
                 ]);
     }
 }

@@ -115,9 +115,8 @@ class CatalogController extends Controller
         $books = $query->paginate(12)->withQueryString();
         $title = $genre->name;
         $description = $genre->seo_description ?? \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value') ?? 'Книги в жанре ' . $genre->name . '. Читайте лучшие произведения онлайн на Librain.';
-        $keywords = $genre->seo_keywords ?? $genre->name . ', книги, читать онлайн';
         $reviews = isset($reviews) ? $reviews : null;
-        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'description', 'keywords', 'reviews'));
+        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'description', 'reviews'));
     }
     public function authors()
     {
@@ -223,8 +222,7 @@ class CatalogController extends Controller
         $books = $query->paginate(12)->withQueryString();
         $title = $author->name;
         $description = $author->seo_description ?? \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value') ?? 'Автор ' . $author->name . '. Читайте лучшие книги автора онлайн на Librain.';
-        $keywords = $author->seo_keywords ?? $author->name . ', книги, читать онлайн, автор';
-        return view('catalog.authors.show', compact('author', 'books', 'title', 'description', 'keywords', 'filter', 'period'));
+        return view('catalog.authors.show', compact('author', 'books', 'title', 'description', 'filter', 'period'));
     }
     public function series()
     {
@@ -343,8 +341,7 @@ class CatalogController extends Controller
         $reviews = isset($reviews) ? $reviews : null;
         $title = $series->name;
         $description = $series->seo_description ?? \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value') ?? 'Книжная серия ' . $series->name;
-        $keywords = $series->seo_keywords ?? $series->name . ', книжная серия, читать онлайн';
-        return view('catalog.series.show', compact('series', 'books', 'title', 'description', 'keywords', 'filter', 'period', 'reviews'));
+        return view('catalog.series.show', compact('series', 'books', 'title', 'description', 'filter', 'period', 'reviews'));
     }
     public function bookLegacy(Request $request, $slug)
     {
@@ -429,7 +426,6 @@ class CatalogController extends Controller
         $authorName = $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен';
         $title = $book->title;
         $description = $book->seo_description ?? Str::limit(strip_tags($book->description), 160);
-        $keywords = $book->seo_keywords ?? $book->title . ', ' . $authorName . ', читать онлайн';
         $ratings = \App\Models\Rating::where('book_id', $book->id)
             ->select('rating', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
             ->groupBy('rating')
@@ -474,8 +470,7 @@ class CatalogController extends Controller
             ];
         }
         return view('catalog.books.show', compact(
-            'book', 'isFavorite', 'isPlanned', 'userStatus', 'userRating', 
-            'title', 'description', 'keywords', 
+            'title', 'description', 
             'ratingCounts', 'totalRatings', 'statusCounts', 'totalStatuses'
         ));
     }

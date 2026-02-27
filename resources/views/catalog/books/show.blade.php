@@ -1,7 +1,5 @@
 @extends('layouts.app')
-@section('title', $book->title . ' - ' . ($book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор') . ' | ' . config('app.name'))
-@section('description', Str::limit(strip_tags($book->description), 160))
-@section('keywords', $book->title . ', ' . ($book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : '') . ', ' . $book->genres->pluck('name')->implode(', '))
+@section('title', trim($book->title . ' ' . \App\Models\SiteSetting::where('key', $book->seo_title ?: 'seo_title_book_default')->value('value')))
 @section('og_image', $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg'))
 @section('schema')
     <script type="application/ld+json">

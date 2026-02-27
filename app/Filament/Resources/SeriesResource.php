@@ -52,6 +52,8 @@ class SeriesResource extends Resource
                                 Forms\Components\FileUpload::make('cover')
                                     ->label('Обложка')
                                     ->image()
+                                    ->imageEditor()
+                                    ->maxSize(10240)
                                     ->disk('public')
                                     ->directory('series'),
                             ]),
