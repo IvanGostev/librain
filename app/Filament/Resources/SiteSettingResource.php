@@ -21,6 +21,8 @@ class SiteSettingResource extends Resource
     protected static ?string $navigationLabel = 'Настройки сайта';
     protected static ?string $modelLabel = 'Настройка';
     protected static ?string $pluralModelLabel = 'Настройки сайта';
+    protected static ?string $navigationGroup = 'Настройки';
+    protected static ?int $navigationSort = 99;
 
     public static function form(Form $form): Form
     {

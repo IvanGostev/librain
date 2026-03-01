@@ -1,5 +1,6 @@
 @extends('layouts.app')
-@section('title', trim($book->title . ' ' . \App\Models\SiteSetting::where('key', $book->seo_title ?: 'seo_title_book_default')->value('value')))
+@section('title', trim($seoTitle))
+@section('description', trim($seoDescription))
 @section('og_image', $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg'))
 @section('schema')
     <script type="application/ld+json">

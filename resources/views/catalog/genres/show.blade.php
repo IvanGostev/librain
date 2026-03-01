@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', trim($genre->name . ' ' . \App\Models\SiteSetting::where('key', $genre->seo_title ?: 'seo_title_genre_default')->value('value')))
-@section('description', 'Лучшие книги в жанре ' . $genre->name . '. Обширная библиотека произведений, доступных для чтения онлайн.')
+@section('title', trim($seoTitle))
+@section('description', trim($seoDescription))
 @section('content')
     <div class="container py-3">
         <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap animate-fade-in-up">

@@ -1,5 +1,6 @@
 @extends('layouts.app')
-@section('title', trim($series->name . ' ' . \App\Models\SiteSetting::where('key', $series->seo_title ?: 'seo_title_series_default')->value('value')))
+@section('title', trim($seoTitle))
+@section('description', trim($seoDescription))
 @section('content')
     <div class="container py-5">
         <div class="row g-5">

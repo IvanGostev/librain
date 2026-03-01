@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', trim($author->name . ' ' . \App\Models\SiteSetting::where('key', $author->seo_title ?: 'seo_title_author_default')->value('value')))
-@section('description', Str::limit(strip_tags($author->bio ?? 'Читайте лучшие книги автора ' . $author->name . ' в нашей библиотеке.'), 160))
+@section('title', trim($seoTitle))
+@section('description', trim($seoDescription))
 @section('schema')
     <script type="application/ld+json">
                         {

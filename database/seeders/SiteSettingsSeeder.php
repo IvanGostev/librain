@@ -28,14 +28,14 @@ class SiteSettingsSeeder extends Seeder
         SiteSetting::updateOrCreate(['key' => 'top100_bottom_text'], ['value' => '<p>Самые популярные и читаемые книги нашей библиотеки, собранные в один рейтинг по просмотрам и оценкам.</p>']);
         
         SiteSetting::updateOrCreate(['key' => 'contact_email'], ['value' => 'support@librain.ru']);
-        SiteSetting::updateOrCreate(['key' => 'seo_title_book_default'], ['value' => '— Читать книгу онлайн']);
-        SiteSetting::updateOrCreate(['key' => 'seo_title_author_default'], ['value' => '— Книги автора читать онлайн']);
-        SiteSetting::updateOrCreate(['key' => 'seo_title_genre_default'], ['value' => '— Книги жанра онлайн']);
-        SiteSetting::updateOrCreate(['key' => 'seo_title_series_default'], ['value' => '— Книжная серия читать']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_book'], ['value' => '{title} — Читать книгу онлайн']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_author'], ['value' => '{name} — Книги автора читать онлайн']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_genre'], ['value' => '{name} — Книги жанра онлайн']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_series'], ['value' => '{name} — Книжная серия читать']);
 
-        SiteSetting::updateOrCreate(['key' => 'seo_desc_book_default'], ['value' => '— читать онлайн или скачать в форматах fb2, epub, txt.']);
-        SiteSetting::updateOrCreate(['key' => 'seo_desc_author_default'], ['value' => '— читать лучшие книги онлайн.']);
-        SiteSetting::updateOrCreate(['key' => 'seo_desc_genre_default'], ['value' => '— большая библиотека произведений онлайн.']);
-        SiteSetting::updateOrCreate(['key' => 'seo_desc_series_default'], ['value' => '— читать книги серии по порядку.']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_desc_book'], ['value' => '{title} — читать онлайн или скачать в форматах fb2, epub, txt.']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_desc_author'], ['value' => '{name} — читать лучшие книги онлайн.']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_desc_genre'], ['value' => '{name} — большая библиотека произведений онлайн.']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_desc_series'], ['value' => '{name} — читать книги серии по порядку.']);
     }
 }

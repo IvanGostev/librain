@@ -114,9 +114,17 @@ class CatalogController extends Controller
         }
         $books = $query->paginate(12)->withQueryString();
         $title = $genre->name;
-        $description = $genre->seo_description ?? \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value') ?? 'Книги в жанре ' . $genre->name . '. Читайте лучшие произведения онлайн на Librain.';
+        $seoTitleTpl = $genre->seo_title ?: \App\Models\SiteSetting::where('key', 'tpl_seo_title_genre')->value('value') ?? '{name} — Книги жанра онлайн';
+        $seoDescTpl = $genre->seo_description ?: \App\Models\SiteSetting::where('key', 'tpl_seo_desc_genre')->value('value') ?? '{name} — большая библиотека произведений онлайн.';
+        
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $replacements = array_merge(['{name}' => $genre->name], $settingsReplacements);
+        
+        $seoTitle = strtr($seoTitleTpl, $replacements);
+        $seoDescription = strtr($seoDescTpl, $replacements);
+        
         $reviews = isset($reviews) ? $reviews : null;
-        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'description', 'reviews'));
+        return view('catalog.genres.show', compact('genre', 'books', 'sort', 'period', 'title', 'seoTitle', 'seoDescription', 'reviews'));
     }
     public function authors()
     {
@@ -221,8 +229,17 @@ class CatalogController extends Controller
         }
         $books = $query->paginate(12)->withQueryString();
         $title = $author->name;
-        $description = $author->seo_description ?? \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value') ?? 'Автор ' . $author->name . '. Читайте лучшие книги автора онлайн на Librain.';
-        return view('catalog.authors.show', compact('author', 'books', 'title', 'description', 'filter', 'period'));
+        
+        $seoTitleTpl = $author->seo_title ?: \App\Models\SiteSetting::where('key', 'tpl_seo_title_author')->value('value') ?? '{name} — Книги автора читать онлайн';
+        $seoDescTpl = $author->seo_description ?: \App\Models\SiteSetting::where('key', 'tpl_seo_desc_author')->value('value') ?? '{name} — читать лучшие книги онлайн.';
+        
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $replacements = array_merge(['{name}' => $author->name], $settingsReplacements);
+        
+        $seoTitle = strtr($seoTitleTpl, $replacements);
+        $seoDescription = strtr($seoDescTpl, $replacements);
+        
+        return view('catalog.authors.show', compact('author', 'books', 'title', 'seoTitle', 'seoDescription', 'filter', 'period'));
     }
     public function series()
     {
@@ -340,8 +357,17 @@ class CatalogController extends Controller
         $books = $query->paginate(12)->withQueryString();
         $reviews = isset($reviews) ? $reviews : null;
         $title = $series->name;
-        $description = $series->seo_description ?? \App\Models\SiteSetting::where('key', 'default_seo_description')->value('value') ?? 'Книжная серия ' . $series->name;
-        return view('catalog.series.show', compact('series', 'books', 'title', 'description', 'filter', 'period', 'reviews'));
+        
+        $seoTitleTpl = $series->seo_title ?: \App\Models\SiteSetting::where('key', 'tpl_seo_title_series')->value('value') ?? '{name} — Книжная серия читать';
+        $seoDescTpl = $series->seo_description ?: \App\Models\SiteSetting::where('key', 'tpl_seo_desc_series')->value('value') ?? '{name} — читать книги серии по порядку.';
+        
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $replacements = array_merge(['{name}' => $series->name], $settingsReplacements);
+        
+        $seoTitle = strtr($seoTitleTpl, $replacements);
+        $seoDescription = strtr($seoDescTpl, $replacements);
+        
+        return view('catalog.series.show', compact('series', 'books', 'title', 'seoTitle', 'seoDescription', 'filter', 'period', 'reviews'));
     }
     public function bookLegacy(Request $request, $slug)
     {
@@ -425,7 +451,21 @@ class CatalogController extends Controller
         }
         $authorName = $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен';
         $title = $book->title;
-        $description = $book->seo_description ?? Str::limit(strip_tags($book->description), 160);
+        $description = Str::limit(strip_tags($book->description), 160);
+        
+        $seoTitleTpl = $book->seo_title ?: \App\Models\SiteSetting::where('key', 'tpl_seo_title_book')->value('value') ?? '{title} — Читать книгу онлайн';
+        $seoDescTpl = $book->seo_description ?: \App\Models\SiteSetting::where('key', 'tpl_seo_desc_book')->value('value') ?? '{title} — читать онлайн или скачать в форматах fb2, epub, txt.';
+        
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $replacements = array_merge([
+            '{title}' => $book->title,
+            '{author}' => $authorName,
+            '{genres}' => $book->genres->pluck('name')->join(', '),
+            '{year}' => $book->published_year ?? '',
+        ], $settingsReplacements);
+        
+        $seoTitle = strtr($seoTitleTpl, $replacements);
+        $seoDescription = strtr($seoDescTpl, $replacements);
         $ratings = \App\Models\Rating::where('book_id', $book->id)
             ->select('rating', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
             ->groupBy('rating')
@@ -470,7 +510,7 @@ class CatalogController extends Controller
             ];
         }
         return view('catalog.books.show', compact(
-            'title', 'description', 
+            'book', 'title', 'description', 'seoTitle', 'seoDescription', 'userStatus', 'isFavorite', 'isPlanned', 'userRating',
             'ratingCounts', 'totalRatings', 'statusCounts', 'totalStatuses'
         ));
     }
