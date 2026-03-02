@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;
 
-class BookSeries extends Pivot
+class BookSeries extends Model
 {
     protected $table = 'book_series';
     
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'book_id',
         'series_id',
         'order',

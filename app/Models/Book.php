@@ -38,6 +38,10 @@ class Book extends Model
         'file_fb2',
         'file_epub',
         'full_text',
+        'hide_download_button',
+        'hide_txt',
+        'hide_fb2',
+        'hide_epub',
     ];
 
     public function authors()

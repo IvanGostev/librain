@@ -148,25 +148,50 @@ class BookResource extends Resource
 
                     Forms\Components\Section::make('Файлы для скачивания')
                         ->schema([
-                                Forms\Components\FileUpload::make('file_txt')
-                                    ->label('TXT файл')
-                                    ->disk('public')
-                                    ->directory('books/files')
-                                    ->acceptedFileTypes(['text/plain'])
-                                    ->helperText('Если не загружено, будет создано автоматически из глав.'),
-                                Forms\Components\FileUpload::make('file_fb2')
-                                    ->label('FB2 файл')
-                                    ->disk('public')
-                                    ->directory('books/files')
-                                    ->acceptedFileTypes(['application/x-fictionbook+xml', 'text/xml', 'application/xml', 'application/octet-stream'])
-                                    ->helperText('Если не загружено, будет создано автоматически из глав.'),
-                                Forms\Components\FileUpload::make('file_epub')
-                                    ->label('EPUB файл')
-                                    ->disk('public')
-                                    ->directory('books/files')
-                                    ->acceptedFileTypes(['application/epub+zip', 'application/octet-stream'])
-                                    ->helperText('Если не загружено, будет создано автоматически из глав.'),
-                            ])->columns(3),
+                                Forms\Components\Toggle::make('hide_download_button')
+                                    ->label('Скрыть кнопку загрузки')
+                                    ->helperText('Если включено, пользователи не смогут скачивать книгу.')
+                                    ->live(),
+
+                                Forms\Components\Group::make([
+                                    Forms\Components\Grid::make(3)
+                                        ->schema([
+                                            Forms\Components\Group::make([
+                                                Forms\Components\Toggle::make('hide_txt')
+                                                    ->label('Скрыть TXT')
+                                                    ->default(false),
+                                                Forms\Components\FileUpload::make('file_txt')
+                                                    ->label('TXT файл')
+                                                    ->disk('public')
+                                                    ->directory('books/files')
+                                                    ->acceptedFileTypes(['text/plain'])
+                                                    ->helperText('Если не загружено, будет создано автоматически из глав.'),
+                                            ]),
+                                            Forms\Components\Group::make([
+                                                Forms\Components\Toggle::make('hide_fb2')
+                                                    ->label('Скрыть FB2')
+                                                    ->default(false),
+                                                Forms\Components\FileUpload::make('file_fb2')
+                                                    ->label('FB2 файл')
+                                                    ->disk('public')
+                                                    ->directory('books/files')
+                                                    ->acceptedFileTypes(['application/x-fictionbook+xml', 'text/xml', 'application/xml', 'application/octet-stream'])
+                                                    ->helperText('Если не загружено, будет создано автоматически из глав.'),
+                                            ]),
+                                            Forms\Components\Group::make([
+                                                Forms\Components\Toggle::make('hide_epub')
+                                                    ->label('Скрыть EPUB')
+                                                    ->default(false),
+                                                Forms\Components\FileUpload::make('file_epub')
+                                                    ->label('EPUB файл')
+                                                    ->disk('public')
+                                                    ->directory('books/files')
+                                                    ->acceptedFileTypes(['application/epub+zip', 'application/octet-stream'])
+                                                    ->helperText('Если не загружено, будет создано автоматически из глав.'),
+                                            ]),
+                                        ]),
+                                ])->hidden(fn (Forms\Get $get) => $get('hide_download_button')),
+                            ]),
 
                     \App\Filament\Helpers\SeoHelper::seoSection('book'),
                 ]);

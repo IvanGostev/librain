@@ -140,7 +140,7 @@
                                             @endfor
                                         </div>
                                     @endif
-                                    <div class="text-light text-opacity-75 small fst-italic border-start border-primary border-3 ps-3 py-1">
+                                    <div class="text-muted small fst-italic border-start border-primary border-3 ps-3 py-1">
                                         "{{ Str::limit($review->comment, 150) }}"
                                     </div>
                                 </div>

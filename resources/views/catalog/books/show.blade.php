@@ -25,7 +25,9 @@
 @endsection
 @section('content')
     @php
-        $totalSymbols = $book->chapters->sum('symbols_count');
+        $totalSymbolsFromChapters = $book->chapters->sum('symbols_count');
+        $totalSymbolsFromFullText = $book->full_text ? mb_strlen(strip_tags($book->full_text)) : 0;
+        $totalSymbols = max($totalSymbolsFromChapters, $totalSymbolsFromFullText);
         $totalPages = ceil($totalSymbols / 1500);
     @endphp
     <div class="container pt-0 pt-lg-5 pb-5 mt-0">
@@ -297,7 +299,7 @@
                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow hover-elevate">
                                 <i class="bi bi-book-half me-2"></i> Читать онлайн
                             </a>
-                            @if($book->file_txt || $book->file_fb2 || $book->file_epub)
+                            @if(!$book->hide_download_button && ($book->file_txt || $book->file_fb2 || $book->file_epub))
                                 <a href="#downloads"
                                    class="btn btn-primary rounded-pill px-4 fw-bold shadow-glow hover-elevate d-flex align-items-center">
                                     <i class="bi bi-download me-2"></i>   Скачать книгу
@@ -372,7 +374,7 @@
                         </div>
                     </div>
                 </div>
-                @if($book->file_txt || $book->file_fb2 || $book->file_epub)
+                @if(!$book->hide_download_button && ($book->file_txt || $book->file_fb2 || $book->file_epub))
                     @php
                         $formatSize = function ($path) {
                             if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path))
@@ -388,21 +390,21 @@
                     <div class="mb-5 text-center text-lg-start" id="downloads">
                         <h2 class="text-white text-uppercase tracking-wider fw-bold mb-3 h5">Скачать книгу</h2>
                         <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-                            @if($book->file_txt)
+                            @if(!$book->hide_txt && $book->file_txt)
                                 <a class="btn btn-outline-primary rounded-pill download-link"
                                    href="{{ route('books.download.page', ['book' => $book->id, 'format' => 'txt']) }}">
                                     <i class="bi bi-file-text fs-5 me-2"></i> Скачать TXT <span
                                         class="ms-1 opacity-75 small">{{ $formatSize($book->file_txt) }}</span>
                                 </a>
                             @endif
-                            @if($book->file_fb2)
+                            @if(!$book->hide_fb2 && $book->file_fb2)
                                 <a class="btn btn-outline-info rounded-pill download-link"
                                    href="{{ route('books.download.page', ['book' => $book->id, 'format' => 'fb2']) }}">
                                     <i class="bi bi-book fs-5 me-2"></i> Скачать FB2 <span
                                         class="ms-1 opacity-75 small">{{ $formatSize($book->file_fb2) }}</span>
                                 </a>
                             @endif
-                            @if($book->file_epub)
+                            @if(!$book->hide_epub && $book->file_epub)
                                 <a class="btn btn-outline-success rounded-pill download-link"
                                    href="{{ route('books.download.page', ['book' => $book->id, 'format' => 'epub']) }}">
                                     <i class="bi bi-journal-richtext fs-5 me-2"></i> Скачать EPUB <span
