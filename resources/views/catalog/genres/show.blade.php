@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', trim($seoTitle))
 @section('description', trim($seoDescription))
+@section('og_image', asset('favicon.svg'))
 @section('content')
     <div class="container py-3">
         <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap animate-fade-in-up">

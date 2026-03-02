@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('og_image', asset('favicon.svg'))
 @section('content')
     <div class="container pb-5">
         <h1 class="h2 fw-bold text-white mb-4">Топ-100 лучших книг</h1>

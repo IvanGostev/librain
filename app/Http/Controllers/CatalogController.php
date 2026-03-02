@@ -383,8 +383,7 @@ class CatalogController extends Controller
                 'authors',
                 'genres',
                 'series.books' => function ($q) {
-                    $q->select('books.id', 'books.title', 'books.slug', 'books.cover_image', 'books.rating')
-                        ->orderBy('pivot_order');
+                    $q->select('books.id', 'books.title', 'books.slug', 'books.cover_image', 'books.rating', 'books.created_at');
                 }
             ])
             ->with([

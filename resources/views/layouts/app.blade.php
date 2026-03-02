@@ -36,13 +36,13 @@
     <meta property="og:title" content="@yield('title', isset($title) ? $title : config('app.name', 'Librain'))">
     <meta property="og:description"
         content="@yield('description', isset($description) ? $description : 'Librain - ваша цифровая библиотека. Читайте книги онлайн, следите за авторами и создавайте свою коллекцию.')">
-    <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="og:image" content="@yield('og_image', asset('favicon.svg'))">
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="@yield('title', isset($title) ? $title : config('app.name', 'Librain'))">
     <meta property="twitter:description"
         content="@yield('description', isset($description) ? $description : 'Librain - ваша цифровая библиотека. Читайте книги онлайн, следите за авторами и создавайте свою коллекцию.')">
-    <meta property="twitter:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="twitter:image" content="@yield('og_image', asset('favicon.svg'))">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">

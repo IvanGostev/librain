@@ -52,8 +52,8 @@ class BookResource extends Resource
                                             Forms\Components\TextInput::make('order')
                                                 ->label('Номер в серии')
                                                 ->numeric()
-                                                ->required()
-                                                ->default(1),
+                                                ->default(0)
+                                                ->dehydrateStateUsing(fn ($state) => $state ?? 0),
                                         ])
                                     ->columns(2)
                                     ->defaultItems(0)

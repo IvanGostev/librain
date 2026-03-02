@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', trim($seoTitle))
 @section('description', trim($seoDescription))
-@section('og_image', $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg'))
+@section('og_image', $book->cover_image ? asset('storage/' . $book->cover_image) : asset('favicon.svg'))
 @section('schema')
     <script type="application/ld+json">
                                                                                                                                                                 {

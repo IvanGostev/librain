@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', trim($seoTitle))
 @section('description', trim($seoDescription))
+@section('og_image', $series->cover ? asset('storage/' . $series->cover) : asset('favicon.svg'))
 @section('content')
     <div class="container py-5">
         <div class="row g-5">
@@ -32,7 +33,7 @@
                 </div>
             </div>
             <div class="col-md-8 col-lg-9 animate-fade-in-up delay-100">
-                <p class="fw-bold text-white mb-4 border-start border-4 border-secondary ps-3">Книги серии</p>
+                <p class="fw-bold text-white mb-4 border-start border-4 border-secondary ps-3 h4">Книги серии</p>
                 <div
                     class="d-flex justify-content-center justify-content-md-start gap-3 mb-4 flex-wrap animate-fade-in-up delay-100">
                     @if($filter === 'order')
@@ -79,12 +80,12 @@
                             <div class="d-flex flex-column gap-3">
                                 @foreach($reviews as $review)
                                     <div class="card bg-dark-card border-white-10 p-4 rounded-4 hover-elevate transition-transform">
-                                        <div class="mb-3 border-bottom border-white-10 pb-3 d-flex align-items-center gap-3">
+                                        <div class="mb-3 border-bottom border-white-10 pb-3 d-flex align-items-center gap-4">
                                             <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}"
                                                 class="flex-shrink-0">
                                                 <img src="{{ $review->book->cover_image ? asset('storage/' . $review->book->cover_image) : asset('images/no-cover.svg') }}"
                                                     alt="{{ $review->book->title }}" class="rounded shadow-sm object-fit-cover"
-                                                    style="width: 50px; height: 75px;"
+                                                    style="width: 120px; height: 180px;"
                                                     onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                                             </a>
                                             <div>
@@ -173,10 +174,10 @@
                                             <span class="h4 fw-bold mb-0">{{ $book->pivot->order ?? $index + 1 }}</span>
                                         </div>
                                         <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
-                                            class="me-3 d-none d-sm-block">
+                                            class="me-4 d-none d-sm-block flex-shrink-0">
                                             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                                                 alt="{{ $book->title }}" class="rounded shadow-sm"
-                                                style="width: 50px; height: 75px; object-fit: cover;">
+                                                style="width: 120px; height: 180px; object-fit: cover;">
                                         </a>
                                         <div class="flex-grow-1 min-w-0">
                                             <p class="fw-bold text-white mb-1">

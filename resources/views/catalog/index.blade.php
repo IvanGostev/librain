@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('og_image', asset('favicon.svg'))
 @section('content')
     <div class="container pb-5">
         <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap animate-fade-in-up delay-100">

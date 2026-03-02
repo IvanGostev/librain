@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', trim($seoTitle))
 @section('description', trim($seoDescription))
+@section('og_image', $author->photo ? asset('storage/' . $author->photo) : asset('favicon.svg'))
 @section('schema')
     <script type="application/ld+json">
                         {

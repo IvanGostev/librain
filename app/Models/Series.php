@@ -12,6 +12,10 @@ class Series extends Model
 
     public function books()
     {
-        return $this->belongsToMany(Book::class, 'book_series')->withPivot('order')->orderBy('pivot_order');
+        return $this->belongsToMany(Book::class, 'book_series')
+            ->withPivot('order')
+            ->orderByRaw('CASE WHEN book_series.order > 0 THEN 0 ELSE 1 END')
+            ->orderBy('book_series.order', 'asc')
+            ->orderBy('books.created_at', 'desc');
     }
 }
