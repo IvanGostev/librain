@@ -1,6 +1,6 @@
 @props(['book'])
 
-<div class="card bg-dark-card border-0 h-100 hover-card-lift transition-transform group rounded-4 overflow-hidden">
+<div class="card bg-dark-card border-0 h-100 hover-card-lift transition-transform group rounded-4 overflow-hidden mx-auto vertical-book-card-wrapper">
     <div class="position-relative">
         <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
             class="d-block overflow-hidden rounded-4">
@@ -87,15 +87,15 @@
         </div>
     </div>
 
-    <div class="card-body p-3 d-flex flex-column">
-        <p class="card-title fw-bold text-white fs-6 mb-1">
+    <div class="card-body p-2 p-sm-3 d-flex flex-column">
+        <p class="card-title fw-bold text-white book-title-responsive mb-1 text-truncate-2">
             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                 class="text-white text-decoration-none hover-text-primary transition-colors">
                 {{ $book->title }}
             </a>
         </p>
 
-        <p class="card-text text-muted small mb-2">
+        <p class="card-text text-muted small mb-1">
             {{ $book->created_at ? $book->created_at->format('d.m.Y') . ' - ' : '' }}
             @if($book->authors->isNotEmpty())
                 @foreach($book->authors as $author)
@@ -107,6 +107,10 @@
             @else
                 Автор неизвестен
             @endif
+        </p>
+
+        <p class="card-text text-muted small mb-2" title="{{ $book->genres->isNotEmpty() ? $book->genres->first()->name : 'Без жанра' }}">
+            <i class="bi bi-tags me-1"></i>{{ $book->genres->isNotEmpty() ? $book->genres->first()->name : 'Без жанра' }}
         </p>
 
         <div class="mt-auto pt-2 border-top border-white-10 d-flex justify-content-between align-items-center">
@@ -121,6 +125,15 @@
 </div>
 
 <style>
+    .vertical-book-card-wrapper {
+        width: 100%;
+    }
+    @media (max-width: 575.98px) {
+        .vertical-book-card-wrapper {
+            max-width: 260px;
+        }
+    }
+
     .text-truncate-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -134,5 +147,16 @@
 
     .fs-7 {
         font-size: 0.75rem;
+    }
+
+    .book-title-responsive {
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+    
+    @media (max-width: 575.98px) {
+        .book-title-responsive {
+            font-size: 1.05rem;
+        }
     }
 </style>

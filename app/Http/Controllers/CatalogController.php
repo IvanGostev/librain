@@ -551,12 +551,40 @@ class CatalogController extends Controller
             foreach ($paragraphs as $p) {
                 $cleanP = strip_tags($p);
                 $charCount = mb_strlen(trim($cleanP));
-                $currentPage[] = $p;
-                $currentCharCount += $charCount;
-                if ($currentCharCount >= 2500) {
-                    $pagesArray[] = implode("\n", $currentPage);
-                    $currentPage = [];
-                    $currentCharCount = 0;
+                
+                if ($charCount > 4000) {
+                    $words = preg_split('/(\s+)/u', $p, -1, PREG_SPLIT_DELIM_CAPTURE);
+                    $tempP = '';
+                    $tempCount = 0;
+                    foreach ($words as $word) {
+                        $tempP .= $word;
+                        $tempCount += mb_strlen(strip_tags($word));
+                        if ($tempCount >= 2500) {
+                            $currentPage[] = $tempP;
+                            $pagesArray[] = implode("\n", $currentPage);
+                            $currentPage = [];
+                            $tempCount = 0;
+                            $tempP = '';
+                            $currentCharCount = 0;
+                        }
+                    }
+                    if ($tempP !== '') {
+                        $currentPage[] = $tempP;
+                        $currentCharCount += mb_strlen(strip_tags($tempP));
+                        if ($currentCharCount >= 2500) {
+                            $pagesArray[] = implode("\n", $currentPage);
+                            $currentPage = [];
+                            $currentCharCount = 0;
+                        }
+                    }
+                } else {
+                    $currentPage[] = $p;
+                    $currentCharCount += $charCount;
+                    if ($currentCharCount >= 2500) {
+                        $pagesArray[] = implode("\n", $currentPage);
+                        $currentPage = [];
+                        $currentCharCount = 0;
+                    }
                 }
             }
             if (!empty($currentPage)) {
@@ -713,9 +741,22 @@ class CatalogController extends Controller
         $filePath = $book->$field;
         if (!$filePath || !\Illuminate\Support\Facades\Storage::disk('public')->exists($filePath)) {
             $chapters = $book->chapters()->orderBy('order')->get();
-            if ($chapters->isEmpty()) {
-                abort(404, 'Нет глав для скачивания.');
+            if ($chapters->isEmpty() && empty($book->full_text)) {
+                abort(404, 'Нет текста для скачивания.');
             }
+            
+            if ($chapters->isEmpty() && !empty($book->full_text)) {
+                $text = preg_replace('/(<br\s*\/?>)/i', "\n", $book->full_text);
+                $text = preg_replace('/(<\/(p|div|h[1-6]|figure|blockquote|ul|ol)>)/i', "\n", $text);
+                $text = strip_tags($text);
+                
+                $dummyChapter = new \App\Models\Chapter([
+                    'title' => $book->title,
+                    'content' => trim($text)
+                ]);
+                $chapters = collect([$dummyChapter]);
+            }
+
             $generatedPath = 'books/files/' . \Illuminate\Support\Str::slug($book->slug) . '_' . time() . '.' . $format;
             $importService = app(\App\Services\BookImportService::class);
             if ($format === 'txt') {

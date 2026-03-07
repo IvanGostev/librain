@@ -168,17 +168,21 @@
                             @foreach($books as $index => $book)
                                 <div class="card bg-dark-card border-0 p-3 hover-card-lift transition-transform">
                                     <div class="d-flex align-items-center">
-                                        <div class="me-3 d-flex flex-column align-items-center justify-content-center"
-                                            style="width: 50px; height: 50px; min-width: 50px;">
-                                            <span class="small text-muted text-uppercase" style="font-size: 0.6rem;">Книга</span>
-                                            <span class="h4 fw-bold mb-0">{{ $book->pivot->order ?? $index + 1 }}</span>
+                                        <div class="d-flex flex-column flex-sm-row align-items-center me-3 me-sm-4 flex-shrink-0 gap-2 gap-sm-0">
+                                            @if($book->pivot->order > 0)
+                                                <div class="d-flex flex-row flex-sm-column align-items-center justify-content-center bg-dark bg-opacity-50 border border-white-10 rounded-pill rounded-sm-3 px-2 py-1 px-sm-2 py-sm-1"
+                                                    style="min-width: 55px;">
+                                                    <span class="text-white-50 text-uppercase me-2 me-sm-0 mb-sm-1" style="font-size: 0.55rem; letter-spacing: 0.5px;">Книга</span>
+                                                    <span class="fs-6 fw-bold mb-0 text-white lh-1">{{ $book->pivot->order }}</span>
+                                                </div>
+                                            @endif
+                                            
+                                            <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
+                                                class="ms-0 ms-sm-3 position-relative d-block">
+                                                <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
+                                                    alt="{{ $book->title }}" class="rounded shadow-sm object-fit-cover series-book-cover">
+                                            </a>
                                         </div>
-                                        <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
-                                            class="me-4 d-none d-sm-block flex-shrink-0">
-                                            <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
-                                                alt="{{ $book->title }}" class="rounded shadow-sm"
-                                                style="width: 120px; height: 180px; object-fit: cover;">
-                                        </a>
                                         <div class="flex-grow-1 min-w-0">
                                             <p class="fw-bold text-white mb-1">
                                                 <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
@@ -186,25 +190,33 @@
                                                     {{ $book->title }}
                                                 </a>
                                             </p>
-                                            <p class="text-muted small mb-0">
+                                            <p class="text-muted small mb-2">
+                                                <i class="bi bi-person me-1"></i>
                                                 {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Автор неизвестен' }}
                                             </p>
+                                            <div class="d-flex flex-wrap gap-2 gap-sm-3 text-muted small mt-auto">
+                                                <span title="Дата добавления"><i class="bi bi-calendar3 me-1"></i>{{ $book->created_at ? $book->created_at->format('d.m.Y') : '-' }}</span>
+                                                <span title="Просмотры"><i class="bi bi-eye me-1"></i>{{ number_format($book->views, 0, ',', ' ') }}</span>
+                                                <span title="Комментарии"><i class="bi bi-chat-left-text me-1"></i>{{ $book->reviews_count ?? $book->reviews()->count() }}</span>
+                                                <span class="text-truncate d-none d-sm-inline-block" style="max-width: 150px;" title="Жанр"><i class="bi bi-tags me-1"></i>{{ $book->genres->isNotEmpty() ? $book->genres->first()->name : 'Без жанра' }}</span>
+                                            </div>
                                         </div>
-                                        <div class="ms-3">
+                                        <div class="ms-1 ms-sm-3 align-self-stretch d-flex align-items-center">
                                             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
-                                                class="btn btn-sm btn-outline-secondary rounded-circle" title="Читать">
+                                                class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Читать">
                                                 <i class="bi bi-arrow-right"></i>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                                 @if(!$loop->last)
-                                    <div class="ms-4 ps-2 border-start border-white-10 h-4"></div>
+                                    <div class="d-none d-sm-block ms-4 ps-2 border-start border-white-10 h-4"></div>
+                                    <div class="d-block d-sm-none py-1 align-self-center"><i class="bi bi-arrow-down text-white-10"></i></div>
                                 @endif
                             @endforeach
                         </div>
                     @else
-                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-sm-3">
                             @foreach($books as $book)
                                 <div class="col animate-fade-in-up">
                                     <x-book-card-vertical :book="$book" />
@@ -238,6 +250,16 @@
         }
         .cursor-default {
             cursor: default !important;
+        }
+        .series-book-cover {
+            width: 70px;
+            height: 105px;
+        }
+        @media (min-width: 576px) {
+            .series-book-cover {
+                width: 120px;
+                height: 180px;
+            }
         }
     </style>
 @endsection

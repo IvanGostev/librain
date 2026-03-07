@@ -135,7 +135,7 @@
         @else
             @if($books->count() > 0)
                 <div
-                    class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3 animate-fade-in-up delay-100">
+                    class="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-2 g-sm-3 animate-fade-in-up delay-100">
                     @foreach($books as $book)
                         <div class="col">
                             <x-book-card-vertical :book="$book" />

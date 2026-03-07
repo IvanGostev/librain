@@ -79,7 +79,7 @@
                         @endforeach
                     </div>
                 @endif
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-sm-3">
                     @if($books->count() > 0)
                         @foreach($books as $book)
                             <div class="col animate-fade-in-up">

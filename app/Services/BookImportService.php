@@ -294,6 +294,17 @@ XML;
             $chapterId = "chapter_{$index}";
             $chapterFilename = "chapter_{$index}.xhtml";
 
+            $contentHtml = '';
+            if (strip_tags($chapter->content) === trim($chapter->content)) {
+                foreach (explode("\n", $chapter->content) as $line) {
+                    if (trim($line) !== '') {
+                        $contentHtml .= '<p>' . htmlspecialchars(trim($line)) . '</p>';
+                    }
+                }
+            } else {
+                $contentHtml = $chapter->content;
+            }
+
             $chapterContent = <<<HTML
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -303,7 +314,7 @@ XML;
 </head>
 <body>
     <h1>{$chapter->title}</h1>
-    {$chapter->content}
+    {$contentHtml}
 </body>
 </html>
 HTML;
