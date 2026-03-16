@@ -42,6 +42,10 @@ class GenreResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(Genre::class, 'slug', ignoreRecord: true),
+
+                                Forms\Components\RichEditor::make('description')
+                                    ->label('Описание')
+                                    ->columnSpanFull(),
                             ])->columns(2),
 
                     \App\Filament\Helpers\SeoHelper::seoSection('genre'),
