@@ -7,8 +7,8 @@
                     <div id="download-step-1">
                         <div class="mb-4">
                             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
-                                alt="{{ $book->title }}" class="rounded shadow-lg mb-4"
-                                style="width: 120px; height: 180px; object-fit: cover;">
+                                alt="{{ $book->title }}" class="rounded shadow-lg mb-4 bg-dark"
+                                style="width: 120px; height: 180px; object-fit: contain;">
                             <h1 class="h3 fw-bold text-white mb-2">{{ $book->title }}</h1>
                             <p class="text-white-50 mb-0">Автор: {{ $book->authors->isNotEmpty() ? $book->authors->pluck('name')->join(', ') : 'Неизвестен' }}</p>
                         </div>

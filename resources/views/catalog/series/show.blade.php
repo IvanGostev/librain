@@ -9,12 +9,7 @@
                 <div class="card bg-dark-card border-0 shadow-lg position-sticky" style="top: 100px;">
                     <div class="card-body p-4">
                         <div class="text-center mb-4">
-                            <div class="mb-3">
-                                <img src="{{ $series->cover ? asset('storage/' . $series->cover) : asset('images/no-cover.svg') }}"
-                                    alt="{{ $series->name }}" class="rounded-3 shadow-lg border border-white-10 w-100"
-                                    style="max-width: 150px; aspect-ratio: 1/1; object-fit: cover;"
-                                    onerror="this.src='{{ asset('images/no-cover.svg') }}'">
-                            </div>
+
                             <h1 class="h3 fw-bold text-white mb-2">{{ $series->name }}</h1>
                             <div class="badge bg-secondary text-dark fw-bold rounded-pill px-3">
                                 {{ $series->books->count() }}
@@ -84,7 +79,7 @@
                                             <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}"
                                                 class="flex-shrink-0">
                                                 <img src="{{ $review->book->cover_image ? asset('storage/' . $review->book->cover_image) : asset('images/no-cover.svg') }}"
-                                                    alt="{{ $review->book->title }}" class="rounded shadow-sm object-fit-cover"
+                                                    alt="{{ $review->book->title }}" class="rounded shadow-sm object-fit-contain bg-dark"
                                                     style="width: 120px; height: 180px;"
                                                     onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                                             </a>
@@ -180,7 +175,7 @@
                                             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}"
                                                 class="ms-0 ms-sm-3 position-relative d-block">
                                                 <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
-                                                    alt="{{ $book->title }}" class="rounded shadow-sm object-fit-cover series-book-cover">
+                                                    alt="{{ $book->title }}" class="rounded shadow-sm object-fit-contain bg-dark series-book-cover">
                                             </a>
                                         </div>
                                         <div class="flex-grow-1 min-w-0">

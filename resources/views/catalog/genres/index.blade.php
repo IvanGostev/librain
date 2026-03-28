@@ -13,8 +13,7 @@
                                     class="card bg-dark-card border-0 h-100 shadow-sm hover-card-lift position-relative overflow-hidden">
                                     <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center"
                                         style="min-height: 180px;">
-                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10"
-                                            style="width: 120px; height: 120px; filter: blur(20px);"></div>
+                                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary genre-glow"></div>
                                         <div class="position-relative z-1">
                                             <p class="h4 fw-bold genre-title mb-2 group-hover:text-primary transition-colors">
                                                 {{ $genre->name }}
@@ -22,8 +21,7 @@
                                             <span
                                                 class="badge bg-white bg-opacity-10 text-white rounded-pill border border-white-10 px-3"
                                                 style="color: white !important;">
-                                                {{ $genre->books_count }}
-                                                {{ trans_choice('книга|книги|книг', $genre->books_count) }}
+                                                {{ $genre->books_count . ($genre->books_count == 1 ? ' книга' : " книг") }}
                                             </span>
                                         </div>
                                     </div>
@@ -63,12 +61,34 @@
         .genre-title {
             color: white !important;
         }
-        /* Override for light theme to keep it white */
+        /* Override for light theme to keep it white and add shadow */
         [data-bs-theme="light"] .genre-title {
             color: white !important;
+            text-shadow: 0 1px 6px var(--bs-primary), 0 0 12px var(--bs-primary);
+        }
+        /* Text shadow for badge text too */
+        [data-bs-theme="light"] .group .badge {
+            text-shadow: 0 1px 4px var(--bs-primary);
         }
         [data-bs-theme="light"] .group:hover .group-hover\:text-primary {
             color: var(--bs-primary) !important;
+        }
+        
+        /* Genre Card Glow Effect */
+        .genre-glow {
+            width: 160px;
+            height: 160px;
+            filter: blur(25px);
+            opacity: 0.15;
+            transition: all 0.3s ease;
+        }
+        
+        [data-bs-theme="light"] .genre-glow {
+            width: 180px;
+            height: 180px;
+            background-color: var(--bs-primary) !important;
+            filter: blur(30px);
+            opacity: 0.85;
         }
     </style>
 @endsection

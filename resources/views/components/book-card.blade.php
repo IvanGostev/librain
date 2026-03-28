@@ -4,8 +4,8 @@
         <div class="flex-shrink-0 me-3 position-relative">
             <a href="{{ route('books.show', ['genre' => $book->genre_slug, 'slug' => $book->slug]) }}">
                 <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
-                    alt="{{ $book->title }}" class="rounded shadow-sm"
-                    style="width: 80px; height: 120px; object-fit: cover;"
+                    alt="{{ $book->title }}" class="rounded shadow-sm bg-dark"
+                    style="width: 80px; height: 120px; object-fit: contain;"
                     onerror="this.src='{{ asset('images/no-cover.svg') }}'">
             </a>
             @auth

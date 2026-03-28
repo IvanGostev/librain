@@ -39,6 +39,11 @@ class SeoSettingsPage extends Page implements HasForms
             
             'seo_title_series' => SiteSetting::where('key', 'tpl_seo_title_series')->value('value') ?? '{name} — Книжная серия читать',
             'seo_desc_series' => SiteSetting::where('key', 'tpl_seo_desc_series')->value('value') ?? '{name} — читать книги серии по порядку.',
+            
+            'seo_title_series_index' => SiteSetting::where('key', 'tpl_seo_title_series_index')->value('value') ?? 'Все книжные серии - Librain',
+            'seo_title_genres_index' => SiteSetting::where('key', 'tpl_seo_title_genres_index')->value('value') ?? 'Все жанры книг - Librain',
+            'seo_title_authors_index' => SiteSetting::where('key', 'tpl_seo_title_authors_index')->value('value') ?? 'Все авторы - Librain',
+            'seo_title_top100' => SiteSetting::where('key', 'tpl_seo_title_top100')->value('value') ?? 'Топ-100 популярных книг - Librain',
         ]);
     }
 
@@ -99,6 +104,25 @@ class SeoSettingsPage extends Page implements HasForms
                                     ->label('Мета-описание')
                                     ->multiline()
                                     ->variables(array_merge(['{name}' => 'Название серии'], $settingsVariables))
+                                    ->required(),
+                            ]),
+                        Tabs\Tab::make('Тайтлы страниц (Списки)')
+                            ->schema([
+                                SeoTemplateInput::make('seo_title_series_index')
+                                    ->label('Страница: Все серии')
+                                    ->variables($settingsVariables)
+                                    ->required(),
+                                SeoTemplateInput::make('seo_title_genres_index')
+                                    ->label('Страница: Все жанры')
+                                    ->variables($settingsVariables)
+                                    ->required(),
+                                SeoTemplateInput::make('seo_title_authors_index')
+                                    ->label('Страница: Все авторы')
+                                    ->variables($settingsVariables)
+                                    ->required(),
+                                SeoTemplateInput::make('seo_title_top100')
+                                    ->label('Страница: Топ-100')
+                                    ->variables($settingsVariables)
                                     ->required(),
                             ]),
                     ])

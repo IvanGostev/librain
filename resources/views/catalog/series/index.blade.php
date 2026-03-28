@@ -78,12 +78,7 @@
                                     class="card bg-dark-card border-white-10 shadow-sm hover-card-lift position-relative overflow-hidden">
                                     <div class="card-body p-3">
                                         <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0 me-4">
-                                                <img src="{{ $item->cover ? asset('storage/' . $item->cover) : asset('images/no-cover.svg') }}"
-                                                    alt="{{ $item->name }}" class="rounded-3 shadow-sm border border-white-10"
-                                                    style="width: 120px; aspect-ratio: 2/3; object-fit: cover;"
-                                                    onerror="this.src='{{ asset('images/no-cover.svg') }}'">
-                                            </div>
+
                                             <div class="flex-grow-1 min-w-0">
                                                 <div class="mb-2">
                                                     <div class="d-flex flex-wrap gap-2 mb-2">

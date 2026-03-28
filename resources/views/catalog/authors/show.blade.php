@@ -9,7 +9,7 @@
                           "@@type": "Person",
                           "name": "{{ $author->name }}",
                           "description": "{{ Str::limit(strip_tags($author->bio), 200) }}",
-                          "image": "{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
+                          "image": "{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/default-avatar.svg') }}"
                         }
                         </script>
 @endsection
@@ -21,7 +21,7 @@
                     <div class="card-body text-center p-4">
                         <div class="rounded-circle overflow-hidden border border-4 border-dark shadow-xl mx-auto mb-4"
                             style="width: 150px; height: 150px;">
-                            <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
+                            <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/default-avatar.svg') }}"
                                 alt="{{ $author->name }}" class="w-100 h-100 object-fit-cover">
                         </div>
                         <h1 class="h3 fw-bold text-white mb-1">{{ $author->name }}</h1>

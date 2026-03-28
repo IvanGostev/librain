@@ -46,8 +46,8 @@
                                 </div>
                                 <div class="me-4 d-none d-sm-block">
                                     <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
-                                        alt="{{ $book->title }}" class="rounded shadow-sm"
-                                        style="width: 120px; height: 180px; object-fit: cover;">
+                                        alt="{{ $book->title }}" class="rounded shadow-sm bg-dark"
+                                        style="width: 120px; height: 180px; object-fit: contain;">
                                 </div>
                                 <div class="flex-grow-1 min-w-0">
                                     <p class="fw-bold text-white mb-1">

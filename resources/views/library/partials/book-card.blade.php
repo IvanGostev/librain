@@ -4,7 +4,7 @@
             <div class="position-relative flex-shrink-0">
                 <a href="{{ route('books.show', ['genre' => $entry->book->genre_slug, 'slug' => $entry->book->slug]) }}">
                     <img src="{{ $entry->book->cover_image ? asset('storage/' . $entry->book->cover_image) : asset('images/no-cover.svg') }}"
-                        class="rounded-3 shadow-sm" style="width: 80px; height: 120px; object-fit: cover;"
+                        class="rounded-3 shadow-sm bg-dark" style="width: 80px; height: 120px; object-fit: contain;"
                         onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                 </a>
                 <div class="dropdown position-absolute top-0 start-0 m-1">

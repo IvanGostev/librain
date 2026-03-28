@@ -52,7 +52,7 @@
                                 <a href="{{ route('books.show', ['genre' => $review->book->genres->first()->slug ?? 'general', 'slug' => $review->book->slug]) }}" class="flex-shrink-0">
                                     <img src="{{ $review->book->cover_image ? asset('storage/' . $review->book->cover_image) : asset('images/no-cover.svg') }}"
                                          alt="{{ $review->book->title }}"
-                                         class="rounded shadow-sm object-fit-cover"
+                                         class="rounded shadow-sm object-fit-contain bg-dark"
                                          style="width: 50px; height: 75px;"
                                          onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                                 </a>

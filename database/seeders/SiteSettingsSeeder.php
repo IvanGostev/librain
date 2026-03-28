@@ -37,5 +37,10 @@ class SiteSettingsSeeder extends Seeder
         SiteSetting::updateOrCreate(['key' => 'tpl_seo_desc_author'], ['value' => '{name} — читать лучшие книги онлайн.']);
         SiteSetting::updateOrCreate(['key' => 'tpl_seo_desc_genre'], ['value' => '{name} — большая библиотека произведений онлайн.']);
         SiteSetting::updateOrCreate(['key' => 'tpl_seo_desc_series'], ['value' => '{name} — читать книги серии по порядку.']);
+
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_series_index'], ['value' => 'Все книжные серии - Librain']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_genres_index'], ['value' => 'Все жанры книг - Librain']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_authors_index'], ['value' => 'Все авторы - Librain']);
+        SiteSetting::updateOrCreate(['key' => 'tpl_seo_title_top100'], ['value' => 'Топ-100 популярных книг - Librain']);
     }
 }

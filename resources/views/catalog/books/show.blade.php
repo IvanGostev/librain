@@ -54,7 +54,7 @@
                              style="max-width: 300px; margin: 0 auto;">
                             <img
                                 src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
-                                class="w-100 object-fit-cover mx-auto d-block" alt="{{ $book->title }}"
+                                class="w-100 object-fit-contain bg-dark mx-auto d-block" alt="{{ $book->title }}"
                                 style="width: 100%; aspect-ratio: 2/3;"
                                 onerror="this.src='{{ asset('images/no-cover.svg') }}'">
                             <div class="position-absolute top-0 end-0 p-3">
@@ -224,10 +224,7 @@
                     <span class="me-2">
                         @if($book->authors->isNotEmpty())
                             @foreach($book->authors as $author)
-                                <a href="{{ route('authors.show', $author->slug) }}"
-                                   class="text-decoration-none text-primary">
-                                    {{ $author->name }}
-                                </a>@if(!$loop->last)<span class="text-white">, </span>@endif
+                                <a href="{{ route('authors.show', $author->slug) }}" class="text-decoration-none text-primary">{{ $author->name }}</a>@if(!$loop->last)<span class="text-white">, </span>@endif
                             @endforeach
                         @else
                             <span class="text-white-50">Автор неизвестен</span>

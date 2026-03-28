@@ -69,7 +69,9 @@ class CatalogController extends Controller
     public function genres()
     {
         $genres = Genre::withCount('books')->orderBy('name')->get();
-        $title = 'Все жанры книг - Librain';
+        $seoTitleTpl = \App\Models\SiteSetting::where('key', 'tpl_seo_title_genres_index')->value('value') ?: 'Все жанры книг - Librain';
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $title = strtr($seoTitleTpl, $settingsReplacements);
         $bottomTitle = \App\Models\SiteSetting::where('key', 'genres_bottom_title')->value('value');
         $bottomText = \App\Models\SiteSetting::where('key', 'genres_bottom_text')->value('value');
         return view('catalog.genres.index', compact('genres', 'title', 'bottomTitle', 'bottomText'));
@@ -186,7 +188,9 @@ class CatalogController extends Controller
         }
         $authors = $query->paginate(20);
         $authors->appends(request()->query());
-        $title = 'Все авторы - Librain';
+        $seoTitleTpl = \App\Models\SiteSetting::where('key', 'tpl_seo_title_authors_index')->value('value') ?: 'Все авторы - Librain';
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $title = strtr($seoTitleTpl, $settingsReplacements);
         $bottomTitle = \App\Models\SiteSetting::where('key', 'authors_bottom_title')->value('value');
         $bottomText = \App\Models\SiteSetting::where('key', 'authors_bottom_text')->value('value');
         return view('catalog.authors.index', compact('authors', 'title', 'sort', 'letters', 'currentLetter', 'bottomTitle', 'bottomText'));
@@ -303,7 +307,9 @@ class CatalogController extends Controller
         }
         $series = $query->paginate(20);
         $series->appends(request()->query());
-        $title = 'Все книжные серии - Librain';
+        $seoTitleTpl = \App\Models\SiteSetting::where('key', 'tpl_seo_title_series_index')->value('value') ?: 'Все книжные серии - Librain';
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $title = strtr($seoTitleTpl, $settingsReplacements);
         $bottomTitle = \App\Models\SiteSetting::where('key', 'series_bottom_title')->value('value');
         $bottomText = \App\Models\SiteSetting::where('key', 'series_bottom_text')->value('value');
         return view('catalog.series.index', compact('series', 'title', 'sort', 'letters', 'currentLetter', 'bottomTitle', 'bottomText'));
@@ -320,6 +326,12 @@ class CatalogController extends Controller
         }
         $query = $series->books()->where('is_published', true);
         if ($filter === 'order') {
+            $booksList = (clone $query)->select('books.id', 'books.title')->get();
+            $sortedIds = $booksList->sortBy('title', SORT_NATURAL | SORT_FLAG_CASE)->pluck('id')->toArray();
+            if (!empty($sortedIds)) {
+                $idsOrdered = implode(',', $sortedIds);
+                $query->reorder()->orderByRaw("FIELD(books.id, $idsOrdered)");
+            }
         } elseif ($filter === 'new') {
             $query->reorder()->latest();
         } elseif ($filter === 'popular') {
@@ -640,7 +652,9 @@ class CatalogController extends Controller
             $query->orderByDesc('views');
         }
         $books = $query->take(100)->get();
-        $title = 'Топ-100 популярных книг - Librain';
+        $seoTitleTpl = \App\Models\SiteSetting::where('key', 'tpl_seo_title_top100')->value('value') ?: 'Топ-100 популярных книг - Librain';
+        $settingsReplacements = \App\Models\SiteSetting::pluck('value', 'key')->mapWithKeys(fn($v, $k) => ["{setting:$k}" => $v])->toArray();
+        $title = strtr($seoTitleTpl, $settingsReplacements);
         $bottomTitle = \App\Models\SiteSetting::where('key', 'top100_bottom_title')->value('value');
         $bottomText = \App\Models\SiteSetting::where('key', 'top100_bottom_text')->value('value');
         return view('catalog.top100', compact('books', 'title', 'period', 'bottomTitle', 'bottomText'));

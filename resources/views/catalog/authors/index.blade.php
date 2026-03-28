@@ -79,7 +79,7 @@
                                     <div class="card-body p-3 position-relative" style="z-index: 1;">
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0 me-3 me-md-4">
-                                                <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/no-cover.svg') }}"
+                                                <img src="{{ $author->photo ? asset('storage/' . $author->photo) : asset('images/default-avatar.svg') }}"
                                                     alt="{{ $author->name }}"
                                                     class="rounded-circle border border-white-10 shadow-sm"
                                                     style="width: 80px; height: 80px; object-fit: cover;">

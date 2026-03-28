@@ -6,7 +6,7 @@
             class="d-block overflow-hidden rounded-4">
             <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/no-cover.svg') }}"
                 alt="{{ $book->title }}"
-                class="w-100 object-fit-cover transition-transform group-hover:scale-105 duration-500"
+                class="w-100 object-fit-contain transition-transform group-hover:scale-105 duration-500 bg-dark"
                 style="aspect-ratio: 3/4;" onerror="this.src='{{ asset('images/no-cover.svg') }}'">
         </a>
 
@@ -99,10 +99,7 @@
             {{ $book->created_at ? $book->created_at->format('d.m.Y') . ' - ' : '' }}
             @if($book->authors->isNotEmpty())
                 @foreach($book->authors as $author)
-                    <a href="{{ route('authors.show', $author->slug) }}"
-                        class="text-muted text-decoration-none hover-text-primary transition-colors">
-                        {{ $author->name }}
-                    </a>{{ !$loop->last ? ', ' : '' }}
+                    <a href="{{ route('authors.show', $author->slug) }}" class="text-muted text-decoration-none hover-text-primary transition-colors">{{ $author->name }}</a>{{ !$loop->last ? ', ' : '' }}
                 @endforeach
             @else
                 Автор неизвестен
